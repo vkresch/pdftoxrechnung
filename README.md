@@ -25,6 +25,16 @@ To use the Ollama model locally:
 - **Docker**: Containerized backend service
 - **Ollama**: Custom-trained model to extract fields from invoices
 
+## Backend Setup
+
+uvicorn backend.app.main:app --reload
+
+## Frontend Setup
+
+cd frontend
+npm install
+npm start
+
 ## Setup Instructions
 
 ### Backend Setup

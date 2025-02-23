@@ -3,3 +3,6 @@ uvicorn
 requests
 pdfplumber
 python-dotenv
+python-multipart
+pydantic
+black

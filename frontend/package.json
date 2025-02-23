@@ -1,16 +1,29 @@
 {
-    "name": "pdf2xml_rechnung",
-    "version": "1.0.0",
-    "main": "src/index.js",
-    "dependencies": {
-      "react": "^17.0.2",
-      "react-dom": "^17.0.2"
-    },
-    "scripts": {
-      "start": "react-scripts start",
-      "build": "react-scripts build",
-      "test": "react-scripts test",
-      "eject": "react-scripts eject"
-    }
+  "name": "pdftoxrechnung",
+  "version": "1.0.0",
+  "main": "src/index.js",
+  "dependencies": {
+    "axios": "^1.7.9",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-scripts": "^5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
   }
-  
+}
