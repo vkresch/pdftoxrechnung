@@ -1,0 +1,111 @@
+<rsm:CrossIndustryInvoice xmlns:qdt="urn:un:unece:uncefact:data:standard:QualifiedDataType:100" xmlns:ram="urn:un:unece:uncefact:data:standard:ReusableAggregateBusinessInformationEntity:100" xmlns:rsm="urn:un:unece:uncefact:data:standard:CrossIndustryInvoice:100" xmlns:udt="urn:un:unece:uncefact:data:standard:UnqualifiedDataType:100" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <rsm:ExchangedDocumentContext>
+    <ram:GuidelineSpecifiedDocumentContextParameter>
+      <ram:ID>urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended</ram:ID>
+    </ram:GuidelineSpecifiedDocumentContextParameter>
+  </rsm:ExchangedDocumentContext>
+  <rsm:ExchangedDocument>
+    <ram:ID>RE1337</ram:ID>
+    <ram:Name>RECHNUNG</ram:Name>
+    <ram:TypeCode>380</ram:TypeCode>
+    <ram:IssueDateTime>
+      <udt:DateTimeString format="102">20250224</udt:DateTimeString>
+    </ram:IssueDateTime>
+    <ram:LanguageID>de</ram:LanguageID>
+    <ram:IncludedNote>
+      <ram:Content>Test Node 1</ram:Content>
+    </ram:IncludedNote>
+  </rsm:ExchangedDocument>
+  <rsm:SupplyChainTradeTransaction>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>1</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Rainbow</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>999.0</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>999.0</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">999.0</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">1</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>E</ram:CategoryCode>
+          <ram:RateApplicablePercent>999.0</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>999.0</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:ApplicableHeaderTradeAgreement>
+      <ram:SellerTradeParty>
+        <ram:Name>Lieferant GmbH</ram:Name>
+        <ram:PostalTradeAddress>
+          <ram:CountryID>DE</ram:CountryID>
+          <ram:CountrySubDivisionName>Bayern</ram:CountrySubDivisionName>
+        </ram:PostalTradeAddress>
+        <ram:SpecifiedTaxRegistration>
+          <ram:ID schemeID="VA">DE000000000</ram:ID>
+        </ram:SpecifiedTaxRegistration>
+      </ram:SellerTradeParty>
+      <ram:BuyerTradeParty>
+        <ram:Name>Kunde GmbH</ram:Name>
+      </ram:BuyerTradeParty>
+      <ram:SellerOrderReferencedDocument>
+        <ram:FormattedIssueDateTime>
+          <qdt:DateTimeString format="102">20250224</qdt:DateTimeString>
+        </ram:FormattedIssueDateTime>
+      </ram:SellerOrderReferencedDocument>
+      <ram:BuyerOrderReferencedDocument>
+        <ram:FormattedIssueDateTime>
+          <qdt:DateTimeString format="102">20250224</qdt:DateTimeString>
+        </ram:FormattedIssueDateTime>
+      </ram:BuyerOrderReferencedDocument>
+      <ram:UltimateCustomerOrderReferencedDocument>
+        <ram:FormattedIssueDateTime>
+          <qdt:DateTimeString format="102">20250224</qdt:DateTimeString>
+        </ram:FormattedIssueDateTime>
+      </ram:UltimateCustomerOrderReferencedDocument>
+    </ram:ApplicableHeaderTradeAgreement>
+    <ram:ApplicableHeaderTradeDelivery />
+    <ram:ApplicableHeaderTradeSettlement>
+      <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
+      <ram:InvoiceeTradeParty>
+        <ram:Name>Kunde GmbH</ram:Name>
+      </ram:InvoiceeTradeParty>
+      <ram:PayeeTradeParty>
+        <ram:Name>Lieferant GmbH</ram:Name>
+      </ram:PayeeTradeParty>
+      <ram:SpecifiedTradeSettlementPaymentMeans>
+        <ram:TypeCode>ZZZ</ram:TypeCode>
+      </ram:SpecifiedTradeSettlementPaymentMeans>
+      <ram:ApplicableTradeTax>
+        <ram:CalculatedAmount>0.0</ram:CalculatedAmount>
+        <ram:TypeCode>VAT</ram:TypeCode>
+        <ram:BasisAmount>0.0</ram:BasisAmount>
+        <ram:CategoryCode>E</ram:CategoryCode>
+        <ram:RateApplicablePercent>0.0</ram:RateApplicablePercent>
+      </ram:ApplicableTradeTax>
+      <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+        <ram:LineTotalAmount>999.0</ram:LineTotalAmount>
+        <ram:ChargeTotalAmount>0.0</ram:ChargeTotalAmount>
+        <ram:AllowanceTotalAmount>0.0</ram:AllowanceTotalAmount>
+        <ram:TaxBasisTotalAmount>999.0</ram:TaxBasisTotalAmount>
+        <ram:TaxTotalAmount currencyID="EUR">0.0</ram:TaxTotalAmount>
+        <ram:GrandTotalAmount>999.0</ram:GrandTotalAmount>
+        <ram:DuePayableAmount>999.0</ram:DuePayableAmount>
+      </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
+    </ram:ApplicableHeaderTradeSettlement>
+  </rsm:SupplyChainTradeTransaction>
+</rsm:CrossIndustryInvoice>

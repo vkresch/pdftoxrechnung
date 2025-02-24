@@ -4,5 +4,7 @@ requests
 pdfplumber
 python-dotenv
 python-multipart
+pytest
 pydantic
 black
+drafthorse==2025.1.0
