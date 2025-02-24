@@ -16,19 +16,21 @@ Expected valid JSON output format:
   "invoice_number": "string",
   "date": "YYYY-MM-DD",
   "total": "float",
-  "currency": "string",
+  "currency": "string", # example: EUR, USD, ...
   "supplier_name": "string",
   "supplier_address": "string",
-  "supplier_state": "string",  # New: Bundesland
-  "supplier_vat_id": "string",  # New: Umsatzsteuer-ID
+  "supplier_country_id": "string",  # example: State code e.g DE (optional)
+  "supplier_country_subdivision": "string",  # example: Bayern (optional)
+  "supplier_vat_id": "string",  # example: Umsatzsteuer-ID, Value Added Tax ID
   "customer_name": "string",
   "customer_address": "string",
-  "customer_state": "string",  # New: State or location of customer (optional)
+  "customer_country_id": "string",  # example: State code e.g DE (optional)
+  "customer_country_subdivision": "string",  # example: Bayern (optional)
   "company": "string",
   "fee": "float",
   "payment_info": {
-    "account_number": "string",
-    "bank_name": "string",
+    "": "string",
+    "bank_nameaccount_number": "string",
     "bank_details": "string",
   },
   "items": [
@@ -38,27 +40,27 @@ Expected valid JSON output format:
       "hours": "float",
       "fee": "float",
       "total_price": "float",
-      "vat_category": "string",  # New: Umsatzsteuerkategorie (VAT Category)
-      "unit_code": "string",  # New: Einheit (Unit)
-      "unit_price": "float",  # New: Preis pro Einheit (Unit price)
+      "vat_category": "string",  # example: Umsatzsteuerkategorie (VAT Category)
+      "unit_code": "string",  # example: Einheit (Unit)
+      "unit_price": "float",  # example: Preis pro Einheit (Unit price)
     }
   ],
-  "comments": "string",  # New: Remarks or notes for the invoice (e.g. 'Test Node 1')
+  "comments": "string",  # example: Remarks or notes for the invoice (e.g. 'Test Node 1')
   "tax_details": {
-    "tax_category": "string",  # New: Umsatzsteuerkategorie
-    "tax_rate": "float",  # New: Umsatzsteuersatz
-    "tax_amount": "float"  # New: Umsatzsteuerbetrag
+    "tax_category": "string",  # example: Umsatzsteuerkategorie
+    "tax_rate": "float",  # example: Umsatzsteuersatz
+    "tax_amount": "float"  # example: Umsatzsteuerbetrag
   },
   "invoice_summary": {
-    "position_sum": "float",  # New: Summe aller Positionen
-    "discount_sum": "float",  # New: Summe Nachlässe
-    "surcharge_sum": "float",  # New: Summe Zuschläge
-    "total_sum": "float",  # New: Gesamtsumme
-    "tax_sum": "float",  # New: Summe Umsatzsteuer
-    "foreign_claims_sum": "float",  # New: Summe Fremdforderungen
-    "due_amount": "float",  # New: Fälliger Betrag
-    "vatex_category": "string",  # New: VATEX category (e.g. VATEX-EU-AE)
-    "exemption_reason": "string"  # New: Befreiungsgrund
+    "position_sum": "float",  # example: Summe aller Positionen
+    "discount_sum": "float",  # example: Summe Nachlässe
+    "surcharge_sum": "float",  # example: Summe Zuschläge
+    "total_sum": "float",  # example: Gesamtsumme
+    "tax_sum": "float",  # example: Summe Umsatzsteuer
+    "foreign_claims_sum": "float",  # example: Summe Fremdforderungen
+    "due_amount": "float",  # example: Fälliger Betrag
+    "exemption_vatex_category": "string",  # example: VATEX category (e.g. VATEX-EU-AE)
+    "exemption_reason": "string"  # example: Befreiungsgrund
   }
 }
 
