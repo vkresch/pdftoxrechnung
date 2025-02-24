@@ -29,8 +29,8 @@ Expected valid JSON output format:
   "company": "string",
   "fee": "float",
   "payment_info": {
-    "": "string",
-    "bank_nameaccount_number": "string",
+    "account_number": "string",
+    "bank_name": "string",
     "bank_details": "string",
   },
   "items": [

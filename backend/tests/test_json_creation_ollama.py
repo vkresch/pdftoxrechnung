@@ -27,8 +27,8 @@ def test_json_creation_ollama():
         "company": None,
         "fee": None,
         "payment_info": {
-            "": None,
-            "bank_nameaccount_number": None,
+            "account_number": None,
+            "bank_name": None,
             "bank_details": None,
         },
         "items": [
