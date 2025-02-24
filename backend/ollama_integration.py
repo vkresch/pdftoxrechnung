@@ -49,6 +49,8 @@ def query_ollama(model: str, prompt: str):
     payload = {
         "model": model,
         "prompt": prompt,
+        "seed": 42,
+        "temperature": 0, # Make the output deterministic
         "stream": False,  # Set to True for streamed responses
     }
     response = requests.post(OLLAMA_API_URL, json=payload)
