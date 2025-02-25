@@ -9,64 +9,105 @@ OLLAMA_CMD = "ollama run"  # Command to invoke the local Ollama model
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
 FORMAT = """
-Extract the following fields from the given invoice text. Always return a valid JSON object with the exact same keys, even if some values are missing.
-
-Expected valid JSON output format:
+You are an expert in document processing.
+Given the extracted text from an invoice PDF, extract and return only the invoice_data dictionary in JSON format, with the following structure:
 {
-  "invoice_number": "string",
-  "date": "YYYY-MM-DD",
-  "total": "float",
-  "currency": "string", # example: EUR, USD, ...
-  "supplier_name": "string",
-  "supplier_address": "string",
-  "supplier_country_id": "string",  # example: State code e.g DE (optional)
-  "supplier_country_subdivision": "string",  # example: Bayern (optional)
-  "supplier_vat_id": "string",  # example: Umsatzsteuer-ID, Value Added Tax ID
-  "customer_name": "string",
-  "customer_address": "string",
-  "customer_country_id": "string",  # example: State code e.g DE (optional)
-  "customer_country_subdivision": "string",  # example: Bayern (optional)
-  "company": "string",
-  "fee": "float",
-  "payment_info": {
-    "account_number": "string",
-    "bank_name": "string",
-    "bank_details": "string",
+  "context": {
+      "guideline_parameter": {
+          "id": "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
+      }
   },
-  "items": [
-    {
-      "description": "string",
-      "quantity": "int",
-      "hours": "float",
-      "fee": "float",
-      "total_price": "float",
-      "vat_category": "string",  # example: Umsatzsteuerkategorie (VAT Category)
-      "unit_code": "string",  # example: Einheit (Unit)
-      "unit_price": "float",  # example: Preis pro Einheit (Unit price)
-    }
-  ],
-  "comments": "string",  # example: Remarks or notes for the invoice (e.g. 'Test Node 1')
-  "tax_details": {
-    "tax_category": "string",  # example: Umsatzsteuerkategorie
-    "tax_rate": "float",  # example: Umsatzsteuersatz
-    "tax_amount": "float"  # example: Umsatzsteuerbetrag
+  "header": {
+      "id": "RE1337",
+      "type_code": "380",
+      "name": "RECHNUNG",
+      "issue_date_time": datetime.today().date(),
+      "languages": "de",
+      "notes": [{"content": ["Test Node 1"]}],
   },
-  "invoice_summary": {
-    "position_sum": "float",  # example: Summe aller Positionen
-    "discount_sum": "float",  # example: Summe Nachlässe
-    "surcharge_sum": "float",  # example: Summe Zuschläge
-    "total_sum": "float",  # example: Gesamtsumme
-    "tax_sum": "float",  # example: Summe Umsatzsteuer
-    "foreign_claims_sum": "float",  # example: Summe Fremdforderungen
-    "due_amount": "float",  # example: Fälliger Betrag
-    "exemption_vatex_category": "string",  # example: VATEX category (e.g. VATEX-EU-AE)
-    "exemption_reason": "string"  # example: Befreiungsgrund
-  }
+  "trade": {
+      "agreement": {
+          "seller": {
+              "name": "Lieferant GmbH",
+              "address": {"country_id": "DE", "country_subdivision": "Bayern"},
+              "tax_registrations": [{"id": ("VA", "DE000000000")}],
+              "order": {"issue_date_time": datetime.now(timezone.utc)},
+          },
+          "buyer": {
+              "name": "Kunde GmbH",
+              "order": {"issue_date_time": datetime.now(timezone.utc)},
+          },
+          "seller_order": {
+              "issue_date_time": datetime(2025, 2, 25)  # Example for Seller Order
+          },
+          "buyer_order": {
+              "issue_date_time": datetime(2025, 2, 25)  # Example for Buyer Order
+          },
+          "customer_order": {
+              "issue_date_time": datetime(
+                  2025, 2, 25
+              )  # Example for Ultimate Customer Order
+          },
+      },
+      "settlement": {
+          "payee": {"name": "Lieferant GmbH"},
+          "invoicee": {"name": "Kunde GmbH"},
+          "currency_code": "EUR",
+          "payment_means": {"type_code": "ZZZ"},
+          "advance_payment": {"received_date": datetime.now(timezone.utc)},
+          "trade_tax": [
+              {
+                  "calculated_amount": Decimal("0.00"),
+                  "basis_amount": Decimal("999.00"),
+                  "type_code": "VAT",
+                  "category_code": "AE",
+                  "exemption_reason_code": "VATEX-EU-AE",
+                  "rate_applicable_percent": Decimal("0.00"),
+              }
+          ],
+          "monetary_summation": {
+              "line_total": Decimal("999.00"),
+              "charge_total": Decimal("0.00"),
+              "allowance_total": Decimal("0.00"),
+              "tax_basis_total": Decimal("999.00"),
+              "tax_total": (Decimal("0.00"), "EUR"),
+              "grand_total": Decimal("999.00"),
+              "due_amount": Decimal("999.00"),
+          },
+      },
+      "items": [
+          {
+              "document": {"line_id": "1"},
+              "product": {"name": "Rainbow"},
+              "agreement": {
+                  "gross": {
+                      "amount": Decimal("999.00"),
+                      "basis_quantity": (Decimal("1.0000"), "C62"),
+                  },
+                  "net": {
+                      "amount": Decimal("999.00"),
+                      "basis_quantity": (Decimal("999.00"), "EUR"),
+                  },
+              },
+              "delivery": {"billed_quantity": (Decimal("1.0000"), "C62")},
+              "settlement": {
+                  "trade_tax": {
+                      "type_code": "VAT",
+                      "category_code": "E",
+                      "rate_applicable_percent": Decimal("0.00"),
+                  },
+                  "monetary_summation": {"total_amount": Decimal("999.00")},
+              },
+          }
+      ],
+  },
 }
 
-If any value is missing in the input, return null for that field instead of omitting it.
+Extract all relevant values from the text.
+Ensure all numerical values remain in their original format.
+Do not include any explanations or additional text, **only** return the dictionary as valid JSON.
 
-Here is the invoice text return only only valid json output as a string no code or no comments from you:
+Extracted PDF text:
 
 """
 

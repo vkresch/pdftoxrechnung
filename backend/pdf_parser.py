@@ -1,5 +1,5 @@
 import os
-from ollama_integration import process_with_ollama
+from backend.ollama_integration import process_with_ollama
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -11,200 +11,123 @@ from drafthorse.models.tradelines import LineItem
 from drafthorse.pdf import attach_xml
 
 
-def generate_invoice_xml_from_dict(invoice_dict):
-    # Create the document object
+def generate_invoice_xml(invoice_data):
     doc = Document()
-    doc.context.guideline_parameter.id = (
-        "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
-    )
 
-    # Header info
-    doc.header.id = (
-        invoice_dict.get("invoice_number")
-        if invoice_dict.get("invoice_number") is not None
-        else ""
-    )
-    doc.header.type_code = "380"
-    doc.header.name = "RECHNUNG"
-    doc.header.issue_date_time = (
-        datetime.strptime(invoice_dict["date"], "%Y-%m-%d").date()
-        if invoice_dict.get("date")
-        else datetime.today().date()
-    )
-    doc.header.languages.add("de")
+    # Set context
+    doc.context.guideline_parameter.id = invoice_data["context"]["guideline_parameter"][
+        "id"
+    ]
 
-    # Notes
-    if "comments" in invoice_dict and invoice_dict["comments"] is not None:
+    # Set header information
+    header = invoice_data["header"]
+    doc.header.id = header["id"]
+    doc.header.type_code = header["type_code"]
+    doc.header.name = header["name"]
+    doc.header.issue_date_time = header["issue_date_time"]
+    doc.header.languages.add(header["languages"])
+
+    # Add notes to the document header
+    for note_data in header["notes"]:
         note = IncludedNote()
-        note.content.add(invoice_dict["comments"])
+        # If `note.content` is a container with an `add` method
+        for content in note_data["content"]:
+            note.content.add(content)
         doc.header.notes.add(note)
 
-    # Trade Agreement
-    if "supplier_name" in invoice_dict and invoice_dict["supplier_name"] is not None:
-        doc.trade.agreement.seller.name = invoice_dict["supplier_name"]
-        doc.trade.settlement.payee.name = invoice_dict["supplier_name"]
+    # Set trade agreement (Seller and Buyer)
+    trade = invoice_data["trade"]
+    doc.trade.agreement.seller.name = trade["agreement"]["seller"]["name"]
+    doc.trade.settlement.payee.name = trade["settlement"]["payee"]["name"]
+    doc.trade.agreement.buyer.name = trade["agreement"]["buyer"]["name"]
+    doc.trade.settlement.invoicee.name = trade["settlement"]["invoicee"]["name"]
+    doc.trade.settlement.currency_code = trade["settlement"]["currency_code"]
+    doc.trade.settlement.payment_means.type_code = trade["settlement"]["payment_means"][
+        "type_code"
+    ]
 
-    if "customer_name" in invoice_dict and invoice_dict["customer_name"] is not None:
-        doc.trade.agreement.buyer.name = invoice_dict["customer_name"]
-        doc.trade.settlement.invoicee.name = invoice_dict["customer_name"]
-
-    # Currency & Payment Means
-    doc.trade.settlement.currency_code = invoice_dict.get("currency", "EUR")
-    doc.trade.settlement.payment_means.type_code = "ZZZ"
-
-    # Seller address and VAT registration
-    if "supplier_state" in invoice_dict and invoice_dict["supplier_state"] is not None:
-        doc.trade.agreement.seller.address.country_id = invoice_dict["supplier_state"]
-
-    if (
-        "supplier_vat_id" in invoice_dict
-        and invoice_dict["supplier_vat_id"] is not None
-    ):
+    # Seller Address and Tax Registration
+    seller = trade["agreement"]["seller"]
+    doc.trade.agreement.seller.address.country_id = seller["address"]["country_id"]
+    doc.trade.agreement.seller.address.country_subdivision = seller["address"][
+        "country_subdivision"
+    ]
+    for tax_registration in seller["tax_registrations"]:
         doc.trade.agreement.seller.tax_registrations.add(
-            TaxRegistration(id=("VA", invoice_dict["supplier_vat_id"]))
+            TaxRegistration(id=tax_registration["id"])
         )
 
-    tax_details = invoice_dict.get("tax_details")
+    # Seller Order Reference
+    doc.trade.agreement.seller_order.issue_date_time = (
+        trade["agreement"].get("seller_order", {}).get("issue_date_time")
+    )
 
-    # Dates for seller, buyer and customer orders
-    current_datetime = datetime.now(timezone.utc)
-    doc.trade.agreement.seller_order.issue_date_time = current_datetime
-    doc.trade.agreement.buyer_order.issue_date_time = current_datetime
-    doc.trade.settlement.advance_payment.received_date = current_datetime
-    doc.trade.agreement.customer_order.issue_date_time = current_datetime
+    # Buyer Order Reference
+    doc.trade.agreement.buyer_order.issue_date_time = (
+        trade["agreement"].get("buyer_order", {}).get("issue_date_time")
+    )
 
-    # Line Items
-    if "items" in invoice_dict and isinstance(invoice_dict["items"], list):
-        for i, item in enumerate(invoice_dict["items"], start=1):
-            li = LineItem()
-            li.document.line_id = str(i)
+    # Ultimate Customer Order Reference
+    doc.trade.agreement.customer_order.issue_date_time = (
+        trade["agreement"].get("customer_order", {}).get("issue_date_time")
+    )
 
-            if "description" in item and item["description"] is not None:
-                li.product.name = item["description"]
+    # Add line items to the document
+    for item_data in trade["items"]:
+        li = LineItem()
+        li.document.line_id = item_data["document"]["line_id"]
+        li.product.name = item_data["product"]["name"]
+        li.agreement.gross.amount = item_data["agreement"]["gross"]["amount"]
+        li.agreement.gross.basis_quantity = item_data["agreement"]["gross"][
+            "basis_quantity"
+        ]
+        li.agreement.net.amount = item_data["agreement"]["net"]["amount"]
+        li.agreement.net.basis_quantity = item_data["agreement"]["net"][
+            "basis_quantity"
+        ]
+        li.delivery.billed_quantity = item_data["delivery"]["billed_quantity"]
+        li.settlement.trade_tax.type_code = item_data["settlement"]["trade_tax"][
+            "type_code"
+        ]
+        li.settlement.trade_tax.category_code = item_data["settlement"]["trade_tax"][
+            "category_code"
+        ]
+        li.settlement.trade_tax.rate_applicable_percent = item_data["settlement"][
+            "trade_tax"
+        ]["rate_applicable_percent"]
+        li.settlement.monetary_summation.total_amount = item_data["settlement"][
+            "monetary_summation"
+        ]["total_amount"]
+        doc.trade.items.add(li)
 
-            if "total_price" in item and item["total_price"] is not None:
-                li.agreement.gross.amount = Decimal(str(item["total_price"]))
-
-            if "quantity" in item and item["quantity"] is not None:
-                li.agreement.gross.basis_quantity = (
-                    Decimal(str(item["quantity"])),
-                    "C62",
-                )  # C62 == pieces
-
-                li.delivery.billed_quantity = (
-                    Decimal(str(item["quantity"])),
-                    "C62",
-                )  # C62 == pieces
-
-            if "tax_rate" in tax_details and tax_details["tax_rate"] is not None:
-                li.settlement.trade_tax.rate_applicable_percent = Decimal(
-                    str(tax_details["tax_rate"])
-                )
-                li.agreement.net.amount = Decimal(
-                    str(
-                        float(item["total_price"])
-                        - float(tax_details["tax_rate"]) * float(item["total_price"])
-                    )
-                )
-                li.agreement.net.basis_quantity = (
-                    Decimal(str(item["quantity"])),
-                    "C62",
-                )  # C62 == pieces
-            else:
-                li.agreement.net.amount = Decimal(str(item["total_price"]))
-                li.agreement.net.basis_quantity = (
-                    Decimal(str(item["quantity"])),
-                    "C62",
-                )  # C62 == pieces
-
-            if "vat_category" in item and item["vat_category"] is not None:
-                li.settlement.trade_tax.type_code = item["vat_category"]
-
-            if "fee" in item and item["fee"] is not None:
-                li.settlement.trade_tax.basis_amount = Decimal(
-                    str(item["fee"])
-                )  # Apply VAT
-                li.settlement.trade_tax.category_code = item[
-                    "vat_category"
-                ]  # Apply VAT
-
-            if "total_price" in item and item["total_price"] is not None:
-                li.settlement.monetary_summation.total_amount = Decimal(
-                    str(item["total_price"])
-                )
-            doc.trade.items.add(li)
-
-    # Tax Details
-    if "tax_details" in invoice_dict and invoice_dict["tax_details"] is not None:
-        tax_details = invoice_dict["tax_details"]
+    # Add settlement trade tax
+    for tax_data in trade["settlement"]["trade_tax"]:
         trade_tax = ApplicableTradeTax()
-        trade_tax_add = False
+        trade_tax.calculated_amount = tax_data["calculated_amount"]
+        trade_tax.basis_amount = tax_data["basis_amount"]
+        trade_tax.type_code = tax_data["type_code"]
+        trade_tax.category_code = tax_data["category_code"]
+        trade_tax.exemption_reason_code = tax_data["exemption_reason_code"]
+        trade_tax.rate_applicable_percent = tax_data["rate_applicable_percent"]
+        doc.trade.settlement.trade_tax.add(trade_tax)
 
-        if "tax_amount" in tax_details and tax_details["tax_amount"] is not None:
-            trade_tax.calculated_amount = Decimal(str(tax_details["tax_amount"]))
-            trade_tax.basis_amount = Decimal(str(item["total_price"]))
-            trade_tax_add = True
+    # Set monetary summation
+    summation = trade["settlement"]["monetary_summation"]
+    doc.trade.settlement.monetary_summation.line_total = summation["line_total"]
+    doc.trade.settlement.monetary_summation.charge_total = summation["charge_total"]
+    doc.trade.settlement.monetary_summation.allowance_total = summation[
+        "allowance_total"
+    ]
+    doc.trade.settlement.monetary_summation.tax_basis_total = summation[
+        "tax_basis_total"
+    ]
+    doc.trade.settlement.monetary_summation.tax_total = summation["tax_total"]
+    doc.trade.settlement.monetary_summation.grand_total = summation["grand_total"]
+    doc.trade.settlement.monetary_summation.due_amount = summation["due_amount"]
 
-        if "tax_category" in tax_details and tax_details["tax_category"] is not None:
-            trade_tax.type_code = tax_details["tax_category"]
-            trade_tax_add = True
-
-        if "tax_rate" in tax_details and tax_details["tax_rate"] is not None:
-            # trade_tax.rate_applicable_percent = Decimal(str(tax_details["tax_rate"]))
-            trade_tax.basis_amount = Decimal(str(tax_details["tax_rate"]))  # Apply VAT
-            trade_tax.category_code = tax_details["tax_category"]
-            trade_tax_add = True
-
-        if (
-            "exemption_reason" in tax_details
-            and tax_details["exemption_reason"] is not None
-        ):
-            trade_tax.exemption_reason_code = tax_details["exemption_reason"]
-            trade_tax_add = True
-
-        if trade_tax_add:
-            doc.trade.settlement.trade_tax.add(trade_tax)
-
-    # Monetary Summation
-    if (
-        "invoice_summary" in invoice_dict
-        and invoice_dict["invoice_summary"] is not None
-    ):
-        summary = invoice_dict["invoice_summary"]
-        if "position_sum" in summary and summary["position_sum"] is not None:
-            doc.trade.settlement.monetary_summation.line_total = Decimal(
-                str(summary["position_sum"])
-            )
-        if "discount_sum" in summary and summary["discount_sum"] is not None:
-            doc.trade.settlement.monetary_summation.charge_total = Decimal(
-                str(summary["discount_sum"])
-            )
-        if "surcharge_sum" in summary and summary["surcharge_sum"] is not None:
-            doc.trade.settlement.monetary_summation.allowance_total = Decimal(
-                str(summary["surcharge_sum"])
-            )
-        if "tax_basis_sum" in summary and summary["tax_basis_sum"] is not None:
-            doc.trade.settlement.monetary_summation.tax_basis_total = Decimal(
-                str(summary["tax_basis_sum"])
-            )
-        if "tax_sum" in summary and summary["tax_sum"] is not None:
-            doc.trade.settlement.monetary_summation.tax_total = (
-                Decimal(str(summary["tax_sum"])),
-                "EUR",
-            )
-            doc.trade.settlement.monetary_summation.grand_total = Decimal(
-                str(summary["total_sum"])
-            )
-        # if "total_sum" in summary and summary["total_sum"] is not None:
-        if "due_amount" in summary and summary["due_amount"] is not None:
-            doc.trade.settlement.monetary_summation.due_amount = Decimal(
-                str(summary["due_amount"])
-            )
-
-    # Generate the XML
+    # Generate XML file
     xml = doc.serialize(schema="FACTUR-X_EXTENDED")
-
-    return xml
+    return xml.decode("utf-8")
 
 
 def process_pdf(pdf_file_path: str) -> str:
@@ -218,21 +141,5 @@ def process_pdf(pdf_file_path: str) -> str:
     fields = process_with_ollama(pdf_text)
 
     # Generate the XRechnung XML
-    xml_content = generate_invoice_xml_from_dict(fields)
+    xml_content = generate_invoice_xml(invoice_data)
     return xml_content
-
-
-def generate_xrechnung_xml(fields: dict) -> str:
-    # Example XML structure for XRechnung (simplified)
-    xml = f"""
-    <Invoice>
-        <InvoiceNumber>{ fields.get('invoice_number', '')}</InvoiceNumber>
-        <IssueDate>{ fields.get('date', '')}</IssueDate>
-        <TotalAmount>{ fields.get('total', '')}</TotalAmount>
-        <Fee>{ fields.get('fee', '')}</Fee>
-        <Customer>{ fields.get('customer_name', '')}</Customer>
-        <Company>{ fields.get('company', '')}</Company>
-        <Items>{ fields.get('items', '')}</Items>
-    </Invoice>
-    """
-    return xml

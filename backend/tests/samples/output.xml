@@ -9,7 +9,7 @@
     <ram:Name>RECHNUNG</ram:Name>
     <ram:TypeCode>380</ram:TypeCode>
     <ram:IssueDateTime>
-      <udt:DateTimeString format="102">20250224</udt:DateTimeString>
+      <udt:DateTimeString format="102">20250225</udt:DateTimeString>
     </ram:IssueDateTime>
     <ram:LanguageID>de</ram:LanguageID>
     <ram:IncludedNote>
@@ -64,17 +64,17 @@
       </ram:BuyerTradeParty>
       <ram:SellerOrderReferencedDocument>
         <ram:FormattedIssueDateTime>
-          <qdt:DateTimeString format="102">20250224</qdt:DateTimeString>
+          <qdt:DateTimeString format="102">20250225</qdt:DateTimeString>
         </ram:FormattedIssueDateTime>
       </ram:SellerOrderReferencedDocument>
       <ram:BuyerOrderReferencedDocument>
         <ram:FormattedIssueDateTime>
-          <qdt:DateTimeString format="102">20250224</qdt:DateTimeString>
+          <qdt:DateTimeString format="102">20250225</qdt:DateTimeString>
         </ram:FormattedIssueDateTime>
       </ram:BuyerOrderReferencedDocument>
       <ram:UltimateCustomerOrderReferencedDocument>
         <ram:FormattedIssueDateTime>
-          <qdt:DateTimeString format="102">20250224</qdt:DateTimeString>
+          <qdt:DateTimeString format="102">20250225</qdt:DateTimeString>
         </ram:FormattedIssueDateTime>
       </ram:UltimateCustomerOrderReferencedDocument>
     </ram:ApplicableHeaderTradeAgreement>
