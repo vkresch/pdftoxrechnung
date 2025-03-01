@@ -4,13 +4,16 @@ import requests
 import os
 import json
 
-OLLAMA_MODEL = "llama3.2:3b"  # Replace with your model of choice
+# mistral, deepseek-r1:14b, deepseek-r1:8b, deepseek-r1:1.5b, llama3.2:3b
+OLLAMA_MODEL = "deepseek-r1:8b"  # Replace with your model of choice (ollama list)
 OLLAMA_CMD = "ollama run"  # Command to invoke the local Ollama model
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 
 FORMAT = """
 You are an expert in document processing.
-Given the extracted text from an invoice PDF, extract and return only the invoice_data dictionary in JSON format, with the following structure:
+Given the extracted text from an invoice PDF, extract and return only the invoice data in english JSON object format with the following schema with **exactly** the provided key names:
+
+```json
 {
   "context": {
       "guideline_parameter": {
@@ -21,59 +24,57 @@ Given the extracted text from an invoice PDF, extract and return only the invoic
       "id": "RE1337",
       "type_code": "380",
       "name": "RECHNUNG",
-      "issue_date_time": datetime.today().date(),
+      "issue_date_time": "2025/2/25",
       "languages": "de",
-      "notes": [{"content": ["Test Node 1"]}],
+      "notes": [{"content": ["Test Node 1"]}]
   },
   "trade": {
       "agreement": {
           "seller": {
               "name": "Lieferant GmbH",
               "address": {"country_id": "DE", "country_subdivision": "Bayern"},
-              "tax_registrations": [{"id": ("VA", "DE000000000")}],
-              "order": {"issue_date_time": datetime.now(timezone.utc)},
+              "tax_registrations": "DE000000000",
+              "order": {"issue_date_time": "2025/2/25"}
           },
           "buyer": {
               "name": "Kunde GmbH",
-              "order": {"issue_date_time": datetime.now(timezone.utc)},
+              "order": {"issue_date_time": "2025/2/25"}
           },
           "seller_order": {
-              "issue_date_time": datetime(2025, 2, 25)  # Example for Seller Order
+              "issue_date_time": "2025/2/25"
           },
           "buyer_order": {
-              "issue_date_time": datetime(2025, 2, 25)  # Example for Buyer Order
+              "issue_date_time": "2025/2/25"
           },
           "customer_order": {
-              "issue_date_time": datetime(
-                  2025, 2, 25
-              )  # Example for Ultimate Customer Order
-          },
+              "issue_date_time": "2025/2/25"
+          }
       },
       "settlement": {
           "payee": {"name": "Lieferant GmbH"},
           "invoicee": {"name": "Kunde GmbH"},
           "currency_code": "EUR",
           "payment_means": {"type_code": "ZZZ"},
-          "advance_payment": {"received_date": datetime.now(timezone.utc)},
+          "advance_payment": {"received_date": "2025/2/25"},
           "trade_tax": [
               {
-                  "calculated_amount": Decimal("0.00"),
-                  "basis_amount": Decimal("999.00"),
+                  "calculated_amount": "0.00",
+                  "basis_amount": "999.00",
                   "type_code": "VAT",
                   "category_code": "AE",
                   "exemption_reason_code": "VATEX-EU-AE",
-                  "rate_applicable_percent": Decimal("0.00"),
+                  "rate_applicable_percent": "0.00"
               }
           ],
           "monetary_summation": {
-              "line_total": Decimal("999.00"),
-              "charge_total": Decimal("0.00"),
-              "allowance_total": Decimal("0.00"),
-              "tax_basis_total": Decimal("999.00"),
-              "tax_total": (Decimal("0.00"), "EUR"),
-              "grand_total": Decimal("999.00"),
-              "due_amount": Decimal("999.00"),
-          },
+              "line_total": "999.00",
+              "charge_total": "0.00",
+              "allowance_total": "0.00",
+              "tax_basis_total": "999.00",
+              "tax_total": "0.00",
+              "grand_total": "999.00",
+              "due_amount": "999.00"
+          }
       },
       "items": [
           {
@@ -81,33 +82,34 @@ Given the extracted text from an invoice PDF, extract and return only the invoic
               "product": {"name": "Rainbow"},
               "agreement": {
                   "gross": {
-                      "amount": Decimal("999.00"),
-                      "basis_quantity": (Decimal("1.0000"), "C62"),
+                      "amount": "999.00",
+                      "basis_quantity": "1.0000"
                   },
                   "net": {
-                      "amount": Decimal("999.00"),
-                      "basis_quantity": (Decimal("999.00"), "EUR"),
-                  },
+                      "amount": "999.00",
+                      "basis_quantity": "1.0000"
+                  }
               },
-              "delivery": {"billed_quantity": (Decimal("1.0000"), "C62")},
+              "delivery": {"billed_quantity": "1.0000"},
               "settlement": {
                   "trade_tax": {
                       "type_code": "VAT",
                       "category_code": "E",
-                      "rate_applicable_percent": Decimal("0.00"),
+                      "rate_applicable_percent": "0.00"
                   },
-                  "monetary_summation": {"total_amount": Decimal("999.00")},
-              },
+                  "monetary_summation": {"total_amount": "999.00"}
+              }
           }
-      ],
-  },
+      ]
+  }
 }
+```
 
 Extract all relevant values from the text.
 Ensure all numerical values remain in their original format.
-Do not include any explanations or additional text, **only** return the dictionary as valid JSON.
+Do not include any explanations or additional text, **only** return the the valid JSON object with the **exact** key names.
 
-Extracted PDF text:
+Input text:
 
 """
 
@@ -132,6 +134,7 @@ def process_with_ollama(pdf_text: str) -> dict:
         response = query_ollama(OLLAMA_MODEL, f"{FORMAT} {pdf_text}")
         json_match = re.search(r"({.*})", response.get("response"), re.DOTALL)
         json_str = json_match.group(1)
+        print(json_str)
         return json.loads(json_str)
 
     except subprocess.CalledProcessError as e:

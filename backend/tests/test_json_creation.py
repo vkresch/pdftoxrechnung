@@ -1,5 +1,7 @@
 import pytest
 from pdfplumber import open as open_pdf
+from decimal import Decimal
+from datetime import datetime, timezone
 from backend.ollama_integration import process_with_ollama
 
 

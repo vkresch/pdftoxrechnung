@@ -21,22 +21,22 @@ def generate_invoice_xml(invoice_data):
 
     # Set header information
     header = invoice_data["header"]
-    doc.header.id = header["id"]
-    doc.header.type_code = header["type_code"]
-    doc.header.name = header["name"]
-    doc.header.issue_date_time = header["issue_date_time"]
-    doc.header.languages.add(header["languages"])
+    doc.header.id = header.get("id")
+    doc.header.type_code = header.get("type_code")
+    doc.header.name = header.get("name", "Rechnung")
+    doc.header.issue_date_time = header.get("issue_date_time")
+    doc.header.languages.add(header.get("languages", "de"))
 
     # Add notes to the document header
-    for note_data in header["notes"]:
+    for note_data in header.get("notes", []):
         note = IncludedNote()
         # If `note.content` is a container with an `add` method
-        for content in note_data["content"]:
+        for content in note_data.get("content", []):
             note.content.add(content)
         doc.header.notes.add(note)
 
     # Set trade agreement (Seller and Buyer)
-    trade = invoice_data["trade"]
+    trade = invoice_data.get("trade")
     doc.trade.agreement.seller.name = trade["agreement"]["seller"]["name"]
     doc.trade.settlement.payee.name = trade["settlement"]["payee"]["name"]
     doc.trade.agreement.buyer.name = trade["agreement"]["buyer"]["name"]
@@ -52,10 +52,9 @@ def generate_invoice_xml(invoice_data):
     doc.trade.agreement.seller.address.country_subdivision = seller["address"][
         "country_subdivision"
     ]
-    for tax_registration in seller["tax_registrations"]:
-        doc.trade.agreement.seller.tax_registrations.add(
-            TaxRegistration(id=tax_registration["id"])
-        )
+    doc.trade.agreement.seller.tax_registrations.add(
+        TaxRegistration(id=seller["tax_registrations"])
+    )
 
     # Seller Order Reference
     doc.trade.agreement.seller_order.issue_date_time = (
@@ -137,8 +136,9 @@ def process_pdf(pdf_file_path: str) -> str:
         for page in pdf.pages:
             pdf_text += page.extract_text()
 
+    print(pdf_text)
     # Send extracted text to Ollama model for field recognition
-    fields = process_with_ollama(pdf_text)
+    invoice_data = process_with_ollama(pdf_text)
 
     # Generate the XRechnung XML
     xml_content = generate_invoice_xml(invoice_data)
