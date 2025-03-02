@@ -1,4 +1,5 @@
 import os
+import logging
 from backend.ollama_integration import process_with_ollama
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
@@ -10,14 +11,17 @@ from drafthorse.models.party import TaxRegistration
 from drafthorse.models.tradelines import LineItem
 from drafthorse.pdf import attach_xml
 
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
 
 def generate_invoice_xml(invoice_data):
     doc = Document()
 
     # Set context
-    doc.context.guideline_parameter.id = invoice_data["context"]["guideline_parameter"][
-        "id"
-    ]
+    doc.context.guideline_parameter.id = invoice_data["context"]["guideline_parameter"]
 
     # Set header information
     header = invoice_data["header"]
@@ -48,7 +52,7 @@ def generate_invoice_xml(invoice_data):
 
     # Seller Address and Tax Registration
     seller = trade["agreement"]["seller"]
-    doc.trade.agreement.seller.address.country_id = seller["address"]["country_id"]
+    doc.trade.agreement.seller.address.country_id = seller["address"]["country_code"]
     doc.trade.agreement.seller.address.country_subdivision = seller["address"][
         "country_subdivision"
     ]
@@ -130,13 +134,13 @@ def generate_invoice_xml(invoice_data):
 
 
 def process_pdf(pdf_file_path: str) -> str:
+    logging.info(f"Starting processing {pdf_file_path} ...")
     # Extract text from the PDF using pdfplumber
     with open_pdf(pdf_file_path) as pdf:
         pdf_text = ""
         for page in pdf.pages:
             pdf_text += page.extract_text()
 
-    print(pdf_text)
     # Send extracted text to Ollama model for field recognition
     invoice_data = process_with_ollama(pdf_text)
 
