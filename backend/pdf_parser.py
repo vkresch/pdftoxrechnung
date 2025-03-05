@@ -50,12 +50,15 @@ def generate_invoice_xml(invoice_data):
     doc.trade.agreement.seller.name = invoice_data["trade"]["agreement"]["seller"].get("name", "")
     doc.trade.agreement.seller.address.country_id = invoice_data["trade"]["agreement"]["seller"]["address"].get("country_code", "")
     doc.trade.agreement.seller.address.country_subdivision = invoice_data["trade"]["agreement"]["seller"]["address"].get("region", "")
+    doc.trade.agreement.seller_order.issue_date_time = datetime.now(timezone.utc)
     
     tax_id = invoice_data["trade"]["agreement"]["seller"].get("tax_id", "")
     if tax_id:
         doc.trade.agreement.seller.tax_registrations.add(TaxRegistration(id=("VA", tax_id)))
     
     doc.trade.agreement.buyer.name = invoice_data["trade"]["agreement"]["buyer"].get("name", "")
+    doc.trade.agreement.buyer_order.issue_date_time = datetime.now(timezone.utc)
+    doc.trade.agreement.customer_order.issue_date_time = datetime.now(timezone.utc)
     
     # Trade Settlement
     doc.trade.settlement.payee.name = invoice_data["trade"]["settlement"]["payee"].get("name", "")

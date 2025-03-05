@@ -6,8 +6,8 @@ import json
 import logging
 from backend.schemas import Invoice
 
-# mistral, deepseek-r1:14b, deepseek-r1:8b, deepseek-r1:1.5b, llama3.2:3b
-OLLAMA_MODEL = "mistral"  # Replace with your model of choice (ollama list)
+# mistral, deepseek-r1:14b, deepseek-r1:8b, deepseek-r1:1.5b, llama3.2:3b, llama3.1
+OLLAMA_MODEL = "llama3.1"  # Replace with your model of choice (ollama list)
 OLLAMA_CMD = "ollama run"  # Command to invoke the local Ollama model
 OLLAMA_API_URL = "http://localhost:11434/api/generate"
 

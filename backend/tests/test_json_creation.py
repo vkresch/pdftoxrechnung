@@ -14,91 +14,61 @@ def test_json_creation_output():
 
     assert process_with_ollama(pdf_text) == {
         "context": {
-            "guideline_parameter": {
-                "id": "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
-            }
+            "type": "Invoice",
+            "guideline_parameter": "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extant",
         },
         "header": {
             "id": "RE1337",
             "type_code": "380",
-            "name": "RECHNUNG",
-            "issue_date_time": datetime.today().date(),
+            "name": "Kunde GmbH",
+            "issue_date_time": "2025-02-24",
             "languages": "de",
-            "notes": [{"content": ["Test Node 1"]}],
+            "notes": [
+                {
+                    "content_code": "Test Node 1",
+                    "content": "Bemerkung: Test Node 1",
+                    "subject_code": "REM",
+                }
+            ],
+            "type": "InvoiceHeader",
         },
         "trade": {
             "agreement": {
                 "seller": {
                     "name": "Lieferant GmbH",
-                    "address": {"country_id": "DE", "country_subdivision": "Bayern"},
-                    "tax_registrations": [{"id": ("VA", "DE000000000")}],
-                    "order": {"issue_date_time": datetime.now(timezone.utc)},
+                    "address": {"country_code": "DE", "state_code": "Bayern"},
+                    "tax_id": "DE000000000",
                 },
                 "buyer": {
                     "name": "Kunde GmbH",
-                    "order": {"issue_date_time": datetime.now(timezone.utc)},
+                    "address": {"country_code": "DE", "state_code": "Bayern"},
+                    "tax_id": "",
                 },
-                "seller_order": {
-                    "issue_date_time": datetime(2025, 2, 25)  # Example for Seller Order
-                },
-                "buyer_order": {
-                    "issue_date_time": datetime(2025, 2, 25)  # Example for Buyer Order
-                },
-                "customer_order": {
-                    "issue_date_time": datetime(
-                        2025, 2, 25
-                    )  # Example for Ultimate Customer Order
-                },
+                "orders": [],
             },
             "settlement": {
                 "payee": {"name": "Lieferant GmbH"},
                 "invoicee": {"name": "Kunde GmbH"},
                 "currency_code": "EUR",
                 "payment_means": {"type_code": "ZZZ"},
-                "advance_payment": {"received_date": datetime.now(timezone.utc)},
-                "trade_tax": [
-                    {
-                        "calculated_amount": Decimal("0.00"),
-                        "basis_amount": Decimal("999.00"),
-                        "type_code": "VAT",
-                        "category_code": "AE",
-                        "exemption_reason_code": "VATEX-EU-AE",
-                        "rate_applicable_percent": Decimal("0.00"),
-                    }
-                ],
+                "advance_payment_date": "2025-02-24",
+                "trade_tax": [{"category": "AE", "rate": 0, "amount": 0}],
                 "monetary_summation": {
-                    "line_total": Decimal("999.00"),
-                    "charge_total": Decimal("0.00"),
-                    "allowance_total": Decimal("0.00"),
-                    "tax_basis_total": Decimal("999.00"),
-                    "tax_total": (Decimal("0.00"), "EUR"),
-                    "grand_total": Decimal("999.00"),
-                    "due_amount": Decimal("999.00"),
+                    "total": 999,
+                    "tax_total": 0,
+                    "type": "MonetarySummation",
                 },
             },
             "items": [
                 {
-                    "document": {"line_id": "1"},
-                    "product": {"name": "Rainbow"},
-                    "agreement": {
-                        "gross": {
-                            "amount": Decimal("999.00"),
-                            "basis_quantity": (Decimal("1.0000"), "C62"),
-                        },
-                        "net": {
-                            "amount": Decimal("999.00"),
-                            "basis_quantity": (Decimal("999.00"), "EUR"),
-                        },
-                    },
-                    "delivery": {"billed_quantity": (Decimal("1.0000"), "C62")},
-                    "settlement": {
-                        "trade_tax": {
-                            "type_code": "VAT",
-                            "category_code": "E",
-                            "rate_applicable_percent": Decimal("0.00"),
-                        },
-                        "monetary_summation": {"total_amount": Decimal("999.00")},
-                    },
+                    "line_id": "1",
+                    "product_name": "Rainbow",
+                    "agreement_net_price": 999,
+                    "quantity": 1,
+                    "delivery_details": 999,
+                    "settlement_tax": {"category": "E", "rate": 0, "amount": 0},
+                    "total_amount": 999,
+                    "type": "Item",
                 }
             ],
         },
