@@ -1,11 +1,12 @@
+import os
 import uvicorn
 from fastapi import FastAPI, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
 from typing import List
-from pdf_parser import process_pdf
-import os
+from pathlib import Path
+from pdf_parser import extract_invoice_data, generate_invoice_xml
 
 app = FastAPI()
 
@@ -30,18 +31,26 @@ async def root():
 
 @app.post("/upload/")
 async def upload_pdf(file: UploadFile = File(...)):
+    """Accepts a PDF invoice, extracts text, and returns a structured JSON invoice."""
+
     # Save the uploaded file
     file_path = os.path.join(UPLOAD_FOLDER, file.filename)
     with open(file_path, "wb") as f:
         f.write(await file.read())
 
-    # Process the PDF and generate XML
-    xml_response = process_pdf(file_path)
+    invoice_data = extract_invoice_data(file_path)
 
-    # Save and return the generated XML file
-    output_file_path = os.path.join(UPLOAD_FOLDER, f"{file.filename}.xml")
+    return JSONResponse(content=invoice_data)
+
+
+@app.post("/convert/")
+async def convert_to_xml(invoice_data: dict):
+    """Receives JSON invoice data and converts it to XML."""
+    xml_content = generate_invoice_xml(invoice_data)
+
+    output_file_path = Path(UPLOAD_FOLDER) / "invoice.xml"
     with open(output_file_path, "w") as f:
-        f.write(xml_response)
+        f.write(xml_content)
 
     return FileResponse(output_file_path, media_type="application/xml")
 

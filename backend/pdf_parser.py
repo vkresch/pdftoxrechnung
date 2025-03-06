@@ -134,17 +134,18 @@ def preprocess_invoice_text(text):
     return text
 
 
-def process_pdf(pdf_file_path: str) -> str:
-    logging.info(f"Starting processing {pdf_file_path} ...")
+def extract_text_from_pdf(pdf_file_path: str) -> str:
     # Extract text from the PDF using pdfplumber
     with open_pdf(pdf_file_path) as pdf:
         pdf_text = ""
         for page in pdf.pages:
             pdf_text += page.extract_text()
+    return preprocess_invoice_text(pdf_text)
+
+
+def extract_invoice_data(pdf_file_path: str) -> str:
+    logging.info(f"Starting processing {pdf_file_path} ...")
 
     # Send extracted text to Ollama model for field recognition
-    invoice_data = process_with_ollama(preprocess_invoice_text(pdf_text))
-
-    # Generate the XRechnung XML
-    xml_content = generate_invoice_xml(invoice_data)
-    return xml_content
+    processed_text = extract_text_from_pdf(pdf_file_path)
+    return process_with_ollama(processed_text)
