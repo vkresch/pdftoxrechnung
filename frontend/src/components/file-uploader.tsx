@@ -58,7 +58,7 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
   return (
     <div
       className={cn(
-        "relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-6 transition-colors",
+        "relative flex flex-col items-center justify-center rounded-lg border-2 border-dashed p-12 transition-colors",
         isDragging ? "border-primary bg-primary/5" : "border-muted-foreground/25",
         selectedFile ? "bg-muted/50" : "",
         "hover:bg-muted/50 cursor-pointer",
@@ -76,13 +76,19 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
         className="hidden"
         disabled={isLoading}
       />
-      <div className="flex flex-col items-center justify-center space-y-2 text-center">
-        <div className="rounded-full bg-primary/10 p-3">
-          <Upload className="h-6 w-6 text-primary" />
+      <div className="flex flex-col items-center justify-center space-y-4 text-center">
+        <div className="rounded-full bg-primary/10 p-4">
+          <Upload className="h-8 w-8 text-primary" />
         </div>
-        <h3 className="text-lg font-semibold">{selectedFile ? "Replace file" : "Upload invoice"}</h3>
-        <p className="text-sm text-muted-foreground">Drag and drop your PDF invoice or click to browse</p>
-        <p className="text-xs text-muted-foreground">Supports PDF files up to 10MB</p>
+        <h3 className="text-xl font-semibold">{selectedFile ? "Replace file" : "Upload invoice"}</h3>
+        <p className="text-muted-foreground">Drag and drop your PDF invoice or click to browse</p>
+
+        {selectedFile && (
+          <div className="mt-4 p-3 bg-background rounded-md border w-full">
+            <p className="font-medium truncate">{selectedFile.name}</p>
+            <p className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(2)} KB</p>
+          </div>
+        )}
       </div>
     </div>
   )
