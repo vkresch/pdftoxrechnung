@@ -5,7 +5,7 @@ import { FileUploader } from "./file-uploader"
 import { DataValidator } from "./data-validator"
 import { ConversionStatus } from "./conversion-status"
 import { ThemeToggle } from "./theme-toggle"
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Download, FileText } from "lucide-react"
 
@@ -95,7 +95,7 @@ export default function InvoiceConverter() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 w-full">
       <div className="flex justify-end">
         <ThemeToggle />
       </div>
@@ -114,8 +114,8 @@ export default function InvoiceConverter() {
             <FileUploader onFileSelect={handleFileSelect} selectedFile={file} isLoading={isLoading} />
           )}
 
-          {currentStep === "validate" && extractedData && (
-            <DataValidator data={extractedData} onValidate={handleConversion} />
+          {currentStep === "validate" && extractedData && file && (
+            <DataValidator data={extractedData} onValidate={handleConversion} pdfFile={file} />
           )}
 
           {file && currentStep === "upload" && (
