@@ -38,6 +38,7 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
       if (file.type === "application/pdf") {
         onFileSelect(file)
       } else {
+        // Use toast instead of alert for better UX
         alert("Please upload a PDF file")
       }
     }

@@ -36,47 +36,35 @@ export default function XRechnungGenerator() {
     setIsLoading(true)
 
     try {
-      // In a real application, this would call your backend API to extract data
-      // For this example, we'll simulate a response with mock data
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Create FormData to send the PDF file
+      const formData = new FormData()
+      formData.append("file", pdfFile)
 
-      // Mock extracted data
-      setExtractedData({
-        invoiceNumber: "INV-2023-001",
-        invoiceDate: "2023-03-15",
-        dueDate: "2023-04-15",
-        seller: {
-          name: "Example Company GmbH",
-          address: "Musterstraße 123, 10115 Berlin",
-          taxId: "DE123456789",
-        },
-        buyer: {
-          name: "Client Corporation AG",
-          address: "Kundenweg 45, 60329 Frankfurt",
-        },
-        items: [
-          {
-            description: "Professional Services",
-            quantity: 1,
-            unitPrice: 1000,
-            totalPrice: 1000,
-            taxRate: 19,
-          },
-        ],
-        totalAmount: 1000,
-        taxAmount: 190,
+      // Call the API endpoint to extract data from the PDF
+      const response = await fetch("http://localhost:8000/upload/", {
+        method: "POST",
+        body: formData,
       })
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`)
+      }
+
+      // Parse the extracted data from the response
+      const extractedData = await response.json()
+      console.log("Extracted data:", extractedData)
+      setExtractedData(extractedData)
 
       setCurrentStep("validate")
       toast({
         title: "Success",
-        description: "Data extracted successfully",
+        description: "Data extracted successfully from PDF",
       })
     } catch (error) {
       console.error("Error extracting data:", error)
       toast({
         title: "Error",
-        description: "Failed to extract data from PDF",
+        description: "Failed to extract data from PDF. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -101,23 +89,22 @@ export default function XRechnungGenerator() {
     setIsLoading(true)
 
     try {
-      // In a real application, this would call your backend API
-      // to generate the XML based on the validated data
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Call the API endpoint to convert the validated data to XML
+      const response = await fetch("http://localhost:8000/convert/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(extractedData),
+      })
 
-      // Mock XML blob
-      const xmlString = `<?xml version="1.0" encoding="UTF-8"?>
-<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
-             xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-             xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
-  <cbc:ID>${extractedData.invoiceNumber}</cbc:ID>
-  <cbc:IssueDate>${extractedData.invoiceDate}</cbc:IssueDate>
-  <cbc:DueDate>${extractedData.dueDate}</cbc:DueDate>
-  <!-- More XML content would be here in a real application -->
-</ubl:Invoice>`
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`)
+      }
 
-      const blob = new Blob([xmlString], { type: "application/xml" })
-      setXmlBlob(blob)
+      // Get the XML data from the response
+      const xmlBlob = await response.blob()
+      setXmlBlob(xmlBlob)
       setCurrentStep("download")
 
       toast({
@@ -128,7 +115,7 @@ export default function XRechnungGenerator() {
       console.error("Error generating XML:", error)
       toast({
         title: "Error",
-        description: "Failed to generate XRechnung XML",
+        description: "Failed to generate XRechnung XML. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -153,7 +140,7 @@ export default function XRechnungGenerator() {
     const url = URL.createObjectURL(xmlBlob)
     const a = document.createElement("a")
     a.href = url
-    a.download = `${extractedData?.invoiceNumber || "invoice"}.xml`
+    a.download = `${extractedData?.header?.id || "invoice"}.xml`
     document.body.appendChild(a)
     a.click()
     document.body.removeChild(a)
