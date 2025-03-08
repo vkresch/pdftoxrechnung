@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from typing import List
 from pathlib import Path
 from pdf_parser import extract_invoice_data, generate_invoice_xml
+from backend.xrechnung_generator import generate_xrechnung
 
 app = FastAPI()
 
@@ -43,11 +44,22 @@ async def upload_pdf(file: UploadFile = File(...)):
     return JSONResponse(content=invoice_data)
 
 
-@app.post("/convert/")
-async def convert_to_xml(invoice_data: dict):
+@app.post("/convert/zugferd")
+async def convert_to_zugferd(invoice_data: dict):
     """Receives JSON invoice data and converts it to XML."""
     xml_content = generate_invoice_xml(invoice_data)
 
+    output_file_path = Path(UPLOAD_FOLDER) / "invoice.xml"
+    with open(output_file_path, "w") as f:
+        f.write(xml_content)
+
+    return FileResponse(output_file_path, media_type="application/xml")
+
+
+@app.post("/convert/")
+async def convert_to_xrechnung(invoice_data: dict):
+    """Receives JSON invoice data and converts it to XML."""
+    xml_content = generate_xrechnung(invoice_data)
     output_file_path = Path(UPLOAD_FOLDER) / "invoice.xml"
     with open(output_file_path, "w") as f:
         f.write(xml_content)

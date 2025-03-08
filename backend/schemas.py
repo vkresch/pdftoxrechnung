@@ -15,6 +15,9 @@ class Address(BaseModel):
     country: str = "Germany"
     country_code: str = "DE"
     country_subdivision: str = None
+    street_name: str = None
+    city_name: str = None
+    postal_zone: int = None
 
 
 class Seller(BaseModel):

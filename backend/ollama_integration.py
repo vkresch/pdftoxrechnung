@@ -43,13 +43,24 @@ EXAMPLE_JSON = """
         "address": {
           "@type": "Address",
           "country": "Germany",
-          "state": "Bayern"
+          "state": "Bayern",
+          "street_name": "Admiralbogen 45",
+          "city_name": "München",
+          "postal_zone": 80934
         },
         "tax_id": "DE000000000"
       },
       "buyer": {
         "@type": "Buyer",
-        "name": "Kunde GmbH"
+        "name": "Kunde GmbH",
+        "address": {
+          "@type": "Address",
+          "country": "Germany",
+          "state": "Sachsen",
+          "street_name": "Berliner 123",
+          "city_name": "KundenStadt",
+          "postal_zone": 23451
+        }
       },
       "orders": [
         {

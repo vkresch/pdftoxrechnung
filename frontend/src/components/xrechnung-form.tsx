@@ -210,6 +210,30 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 />
               </div>
               <div>
+                <Label htmlFor="sellerStreet">Street</Label>
+                <Input
+                  id="sellerStreet"
+                  value={formState.trade.agreement.seller.address?.street_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.address.street_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="sellerCityName">City</Label>
+                <Input
+                  id="sellerCityName"
+                  value={formState.trade.agreement.seller.address?.city_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.address.city_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="sellerPostalZone">PLZ</Label>
+                <Input
+                  id="sellerPostalZone"
+                  value={formState.trade.agreement.seller.address?.postal_zone || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.address.postal_zone", e.target.value)}
+                />
+              </div>
+              <div>
                 <Label htmlFor="sellerTaxId">Tax ID</Label>
                 <Input
                   id="sellerTaxId"
@@ -231,6 +255,54 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="buyerName"
                   value={formState.trade.agreement.buyer.name}
                   onChange={(e) => handleInputChange("trade.agreement.buyer.name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="buyerCountry">Country</Label>
+                <Input
+                  id="buyerCountry"
+                  value={formState.trade.agreement.buyer.address?.country || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.country", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="buyerState">State</Label>
+                <Input
+                  id="buyerState"
+                  value={formState.trade.agreement.buyer.address?.state || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.state", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="buyerStreet">Street</Label>
+                <Input
+                  id="buyerStreet"
+                  value={formState.trade.agreement.buyer.address?.street_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.street_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="buyerCityName">City</Label>
+                <Input
+                  id="buyerCityName"
+                  value={formState.trade.agreement.buyer.address?.city_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.city_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="buyerPostalZone">PLZ</Label>
+                <Input
+                  id="buyerPostalZone"
+                  value={formState.trade.agreement.buyer.address?.postal_zone || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.postal_zone", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="buyerTaxId">Tax ID</Label>
+                <Input
+                  id="buyerTaxId"
+                  value={formState.trade.agreement.buyer.tax_id}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.tax_id", e.target.value)}
                 />
               </div>
             </div>
