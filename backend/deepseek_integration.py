@@ -22,12 +22,13 @@ def process_with_deepseek(pdf_text):
         #   user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
         sb.open("https://chat.deepseek.com/sign_in")
+        logged_in = False
 
-        try:
-            sb.wait_for_element_visible("#chat-input", timeout=1)
-            logged_in = True
-        except Exception:
-            logged_in = False
+        #   try:
+        #       sb.wait_for_element_visible("#chat-input", timeout=1)
+        #       logged_in = True
+        #   except Exception:
+        #       logged_in = False
 
         # Check if already logged in
         if not logged_in:
@@ -68,8 +69,6 @@ def process_with_deepseek(pdf_text):
 
         # response = sb.find_element(".ds-markdown--block p").text
         response = sb.find_element(".md-code-block pre").text
-
-        logging.info(f"Reponse: {response}")
 
         # Save a screenshot
         sb.save_screenshot("backend/deepseek_chat.png")

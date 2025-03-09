@@ -119,7 +119,6 @@ class Trade(BaseModel):
 class Notes(BaseModel):
     content_code: str
     content: str
-    subject_code: str
 
 
 class Header(BaseModel):
