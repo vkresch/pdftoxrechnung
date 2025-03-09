@@ -10,7 +10,7 @@ from jinja2 import Template
 class Invoice:
     def __init__(self):
         self.invoiceNumber = None
-        self.leitwegID = None
+        self.leitwegID = ""
         self.invoiceDate = None
         self.dueDate = None
         self.note = None
@@ -77,16 +77,23 @@ def generate_xrechnung(invoice_data):
     invoice.note = invoice_data["header"].get("notes", [{}])[0].get("content", "")
     
     invoice.ownCompanyName = invoice_data["trade"]["agreement"]["seller"]["name"]
+    invoice.ownContactName = invoice_data["trade"]["agreement"]["seller"]["name"]
     invoice.ownStreetname = invoice_data["trade"]["agreement"]["seller"]["address"]["street_name"]
     invoice.ownCityname = invoice_data["trade"]["agreement"]["seller"]["address"]["city_name"]
     invoice.ownPostalCode = invoice_data["trade"]["agreement"]["seller"]["address"]["postal_zone"]
     invoice.ownCompanyID = invoice_data["trade"]["agreement"]["seller"].get("tax_id", "")
+    invoice.ownContactEmail = invoice_data["trade"]["agreement"]["seller"].get("email")
+    invoice.ownContactPhone = invoice_data["trade"]["agreement"]["seller"].get("phone")
+    invoice.ownIban = invoice_data["trade"]["agreement"]["seller"]["iban"]
+    invoice.ownHraNo = invoice_data["trade"]["agreement"]["seller"]["handels_register_number"]
+    invoice.ownHraName = invoice_data["trade"]["agreement"]["seller"]["handels_register_name"]
     
     invoice.customerCompanyName = invoice_data["trade"]["agreement"]["buyer"]["name"]
     invoice.customerStreetname = invoice_data["trade"]["agreement"]["buyer"]["address"]["street_name"]
     invoice.customerCityname = invoice_data["trade"]["agreement"]["buyer"]["address"]["city_name"]
     invoice.customerPostalZone = invoice_data["trade"]["agreement"]["buyer"]["address"]["postal_zone"]
     invoice.customerCompanyID = invoice_data["trade"]["agreement"]["buyer"].get("tax_id", "")
+    invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
     
     invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["total"]
     invoice.priceFull = invoice.priceNet + invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]

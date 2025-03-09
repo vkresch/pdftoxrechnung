@@ -46,6 +46,10 @@ __pycache__/
 .pytest_cache/
 node_modules/
 uploads/
+user_data/
+latest_logs/
+downloaded_files/
 
 .env
 *.pyc
+backend/deepseek_chat.png

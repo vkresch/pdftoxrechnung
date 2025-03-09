@@ -25,6 +25,12 @@ class Seller(BaseModel):
     name: str
     address: Address
     tax_id: str
+    iban: str
+    phone: str
+    email: str
+    homepage: str
+    handels_register_name: str
+    handels_register_number: str
 
 
 class Buyer(BaseModel):

@@ -2,6 +2,7 @@ import os
 import re
 import logging
 from backend.ollama_integration import process_with_ollama
+from backend.deepseek_integration import process_with_deepseek
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -113,23 +114,9 @@ def generate_invoice_xml(invoice_data):
 
 
 def preprocess_invoice_text(text):
-    # Remove extra whitespace and newlines
-    text = re.sub(r"\s+", " ", text)
-
-    # Remove duplicated headers or footers (like "E-Rechnung | Lieferant GmbH Seite X / X")
-    text = re.sub(r"E-Rechnung \| Lieferant GmbH Seite \d+ / \d+", "", text)
-
-    # Remove unnecessary notes
-    text = re.sub(r"\* Wichtig:.*?!", "", text)
 
     # Normalize number formatting (ensure consistent decimal separator)
     text = text.replace(",", ".")
-
-    # Remove multiple spaces introduced by previous cleaning steps
-    text = re.sub(r"\s{2,}", " ", text)
-
-    # Strip leading and trailing whitespace
-    text = text.strip()
 
     return text
 
@@ -148,4 +135,4 @@ def extract_invoice_data(pdf_file_path: str) -> str:
 
     # Send extracted text to Ollama model for field recognition
     processed_text = extract_text_from_pdf(pdf_file_path)
-    return process_with_ollama(processed_text)
+    return process_with_deepseek(processed_text)
