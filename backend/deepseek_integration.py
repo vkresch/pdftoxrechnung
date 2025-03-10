@@ -19,7 +19,7 @@ def process_with_deepseek(pdf_text):
     with SB(
         uc=True,
         headless=True,  # Set to True for headless mode
-        #   user_data_dir="./user_data",  # Reuse Chrome profile to persist login
+        # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
         sb.open("https://chat.deepseek.com/sign_in")
         logged_in = False

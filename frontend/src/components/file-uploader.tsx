@@ -78,13 +78,22 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
         disabled={isLoading}
       />
       <div className="flex flex-col items-center justify-center space-y-4 text-center">
-        <div className="rounded-full bg-primary/10 p-4">
-          <Upload className="h-8 w-8 text-primary" />
-        </div>
-        <h3 className="text-xl font-semibold">{selectedFile ? "Replace file" : "Upload invoice"}</h3>
-        <p className="text-muted-foreground">Drag and drop your PDF invoice or click to browse</p>
-
-        {selectedFile && (
+        {isLoading ? (
+          <>
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
+            <h3 className="text-xl font-semibold">Processing PDF</h3>
+            <p className="text-muted-foreground">Please wait while we extract the data</p>
+          </>
+        ) : (
+          <>
+            <div className="rounded-full bg-primary/10 p-4">
+              <Upload className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold">{selectedFile ? "Replace file" : "Upload invoice"}</h3>
+            <p className="text-muted-foreground">Drag and drop your PDF invoice or click to browse</p>
+          </>
+        )}
+        {selectedFile && !isLoading && (
           <div className="mt-4 p-3 bg-background rounded-md border w-full">
             <p className="font-medium truncate">{selectedFile.name}</p>
             <p className="text-xs text-muted-foreground">{(selectedFile.size / 1024).toFixed(2)} KB</p>
