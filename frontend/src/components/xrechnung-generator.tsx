@@ -1,20 +1,20 @@
 "use client"
 
 import { useState } from "react"
-import { PDFPreview } from "./pdf-preview"
 import { XRechnungForm } from "./xrechnung-form"
 import { FileUploader } from "./file-uploader"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { StepIndicator } from "./step-indicator"
 import { Download, ArrowLeft, ArrowRight } from "lucide-react"
+import { PDFPreview } from "./pdf-preview"
 
 type Step = "upload" | "validate" | "download"
 
 export default function XRechnungGenerator() {
   const [currentStep, setCurrentStep] = useState<Step>("upload")
   const [pdfFile, setPdfFile] = useState<File | null>(null)
-  const [extractedData, setExtractedData] = useState<any>(null)
+  const [extractedData, setExtractedData] = useState<any | null>(null)
   const [xmlBlob, setXmlBlob] = useState<Blob | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
@@ -36,11 +36,9 @@ export default function XRechnungGenerator() {
     setIsLoading(true)
 
     try {
-      // Create FormData to send the PDF file
       const formData = new FormData()
       formData.append("file", pdfFile)
 
-      // Call the API endpoint to extract data from the PDF
       const response = await fetch("http://localhost:8000/upload/", {
         method: "POST",
         body: formData,
@@ -50,9 +48,7 @@ export default function XRechnungGenerator() {
         throw new Error(`Server responded with status: ${response.status}`)
       }
 
-      // Parse the extracted data from the response
       const extractedData = await response.json()
-      console.log("Extracted data:", extractedData)
       setExtractedData(extractedData)
 
       setCurrentStep("validate")
@@ -89,7 +85,6 @@ export default function XRechnungGenerator() {
     setIsLoading(true)
 
     try {
-      // Call the API endpoint to convert the validated data to XML
       const response = await fetch("http://localhost:8000/convert/", {
         method: "POST",
         headers: {
@@ -102,9 +97,8 @@ export default function XRechnungGenerator() {
         throw new Error(`Server responded with status: ${response.status}`)
       }
 
-      // Get the XML data from the response
-      const xmlBlob = await response.blob()
-      setXmlBlob(xmlBlob)
+      const blob = await response.blob()
+      setXmlBlob(blob)
       setCurrentStep("download")
 
       toast({
@@ -135,7 +129,7 @@ export default function XRechnungGenerator() {
   }
 
   const handleDownloadXML = () => {
-    if (!xmlBlob) return
+    if (!xmlBlob || !pdfFile) return
 
     const url = URL.createObjectURL(xmlBlob)
     const a = document.createElement("a")
@@ -148,7 +142,7 @@ export default function XRechnungGenerator() {
 
     toast({
       title: "Download Started",
-      description: "Your XRechnung XML file is being downloaded",
+      description: `XRechnung XML file for ${pdfFile.name} is being downloaded`,
     })
   }
 
@@ -166,13 +160,10 @@ export default function XRechnungGenerator() {
       case "validate":
         return (
           <div className="flex-grow flex h-[calc(100vh-180px)]">
-            {/* PDF Preview - 50% width */}
             <div className="w-1/2 overflow-auto p-6 border-r">
               <h2 className="text-xl font-bold mb-4">PDF Preview</h2>
               {pdfFile && <PDFPreview file={pdfFile} />}
             </div>
-
-            {/* Form - 50% width */}
             <div className="w-1/2 overflow-auto p-6">
               <h2 className="text-xl font-bold mb-4">Validate Data</h2>
               {extractedData && <XRechnungForm data={extractedData} onChange={handleFormChange} />}
@@ -252,7 +243,6 @@ export default function XRechnungGenerator() {
 
   return (
     <div className="flex flex-col h-screen">
-      {/* Header with step indicator */}
       <div className="p-6 border-b">
         <h1 className="text-2xl font-bold mb-6 text-center">XRechnung Generator</h1>
         <StepIndicator
@@ -265,10 +255,8 @@ export default function XRechnungGenerator() {
         />
       </div>
 
-      {/* Main content area */}
       {renderStepContent()}
 
-      {/* Fixed footer with buttons */}
       <div className="p-4 border-t bg-background shadow-md">{renderButtons()}</div>
     </div>
   )

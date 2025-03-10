@@ -38,7 +38,6 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
       if (file.type === "application/pdf") {
         onFileSelect(file)
       } else {
-        // Use toast instead of alert for better UX
         alert("Please upload a PDF file")
       }
     }
@@ -46,7 +45,12 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
-      onFileSelect(e.target.files[0])
+      const file = e.target.files[0]
+      if (file.type === "application/pdf") {
+        onFileSelect(file)
+      } else {
+        alert("Please upload a PDF file")
+      }
     }
   }
 
@@ -79,20 +83,19 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
       />
       <div className="flex flex-col items-center justify-center space-y-4 text-center">
         {isLoading ? (
-          <>
-            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
-            <h3 className="text-xl font-semibold">Processing PDF</h3>
-            <p className="text-muted-foreground">Please wait while we extract the data</p>
-          </>
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary"></div>
         ) : (
-          <>
-            <div className="rounded-full bg-primary/10 p-4">
-              <Upload className="h-8 w-8 text-primary" />
-            </div>
-            <h3 className="text-xl font-semibold">{selectedFile ? "Replace file" : "Upload invoice"}</h3>
-            <p className="text-muted-foreground">Drag and drop your PDF invoice or click to browse</p>
-          </>
+          <div className="rounded-full bg-primary/10 p-4">
+            <Upload className="h-8 w-8 text-primary" />
+          </div>
         )}
+        <h3 className="text-xl font-semibold">
+          {isLoading ? "Processing PDF" : selectedFile ? "Replace file" : "Upload invoice"}
+        </h3>
+        <p className="text-muted-foreground">
+          {isLoading ? "Please wait while we extract the data" : "Drag and drop your PDF invoice or click to browse"}
+        </p>
+
         {selectedFile && !isLoading && (
           <div className="mt-4 p-3 bg-background rounded-md border w-full">
             <p className="font-medium truncate">{selectedFile.name}</p>
