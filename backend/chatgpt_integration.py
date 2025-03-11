@@ -37,6 +37,7 @@ def process_with_chatgpt(pdf_text):
             sb.wait_for_element_not_visible(
                 'button[data-testid="stop-button"]', timeout=180
             )
+            time.sleep(0.5)
         response = sb.find_element("[data-message-author-role='assistant'] code").text
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)
