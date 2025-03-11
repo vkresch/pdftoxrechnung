@@ -25,14 +25,16 @@ app.add_middleware(
 UPLOAD_FOLDER = Path("./uploads")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 
+
 @app.get("/")
 async def root():
     return {"message": "Hello World!"}
 
+
 @app.post("/upload/")
 async def upload_pdf(file: UploadFile = File(...)):
     """Accepts a PDF invoice, extracts text, and returns a structured JSON invoice."""
-    if not file.filename.lower().endswith('.pdf'):
+    if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
     file_path = UPLOAD_FOLDER / file.filename
@@ -49,6 +51,7 @@ async def upload_pdf(file: UploadFile = File(...)):
         if file_path.exists():
             file_path.unlink()  # Delete the temporary file
 
+
 @app.post("/convert/zugferd")
 async def convert_to_zugferd(invoice_data: dict):
     """Receives JSON invoice data and converts it to XML."""
@@ -57,9 +60,14 @@ async def convert_to_zugferd(invoice_data: dict):
         output_file_path = UPLOAD_FOLDER / "invoice_zugferd.xml"
         with open(output_file_path, "w") as f:
             f.write(xml_content)
-        return FileResponse(output_file_path, media_type="application/xml", filename="invoice_zugferd.xml")
+        return FileResponse(
+            output_file_path,
+            media_type="application/xml",
+            filename="invoice_zugferd.xml",
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+
 
 @app.post("/convert/")
 async def convert_to_xrechnung(invoice_data: dict):
@@ -69,10 +77,14 @@ async def convert_to_xrechnung(invoice_data: dict):
         output_file_path = UPLOAD_FOLDER / "invoice_xrechnung.xml"
         with open(output_file_path, "w") as f:
             f.write(xml_content)
-        return FileResponse(output_file_path, media_type="application/xml", filename="invoice_xrechnung.xml")
+        return FileResponse(
+            output_file_path,
+            media_type="application/xml",
+            filename="invoice_xrechnung.xml",
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
+
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
-

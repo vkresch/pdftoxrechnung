@@ -1,7 +1,7 @@
 from backend.schemas import Invoice
 
 EXAMPLE_JSON = """
-```json
+```
 {
   "context": {
     "@type": "Context",
@@ -116,14 +116,16 @@ PROMPT = f"""
 You are an expert in document processing.
 Given the extracted text from an invoice PDF, 
 extract and return only the invoice data in 
-JSON object format with the following schema with **exactly** the provided key names:
+JSON object format with the following schema with exactly the provided key names:
 
+```
 {Invoice.model_json_schema()}
+```
 
 Extract all relevant values from the text.
 Ensure all numerical values remain in their original format.
-Do not include any explanations or additional text, **only** 
-return the the valid JSON object with the **exact** key names.
+Do not include any explanations or additional text, only
+return the the valid JSON object with the exact key names.
 
 Example output:
 

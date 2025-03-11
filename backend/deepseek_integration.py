@@ -8,6 +8,11 @@ from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from seleniumbase import SB  # SB is a simple SeleniumBase driver
 from backend.utils import PROMPT
 
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
+
 # Load credentials from environment variables (or replace with actual values)
 MAIL = os.environ.get("DEEPSEEK_MAIL", "your_email@example.com")
 PASSWORD = os.environ.get("DEEPSEEK_PASSWORD", "your_password")
@@ -24,6 +29,7 @@ def process_with_deepseek(pdf_text):
         sb.open("https://chat.deepseek.com/sign_in")
         logged_in = False
 
+        # TODO: Readd this once headless mode works with user_data_dir to avoid login for every request
         #   try:
         #       sb.wait_for_element_visible("#chat-input", timeout=1)
         #       logged_in = True
@@ -45,12 +51,6 @@ def process_with_deepseek(pdf_text):
         else:
             logging.info("Already logged in, proceeding to chat.")
 
-        # sb.send_keys("#chat-input", f"{PROMPT} {pdf_text}" + Keys.ENTER)
-        # print(f"{PROMPT} {pdf_text}")
-        time.sleep(2)
-        # sb.execute_script(
-        #    f"document.getElementById('chat-input').value = 'Hello How Are you?\n';"
-        # )
         chat_text_area = sb.find_element("id", "chat-input")
         sb.execute_script(
             """
@@ -64,14 +64,14 @@ def process_with_deepseek(pdf_text):
         chat_text_area.send_keys(Keys.ENTER)
 
         # Wait for response elements to load
-        logging.info("Extracting pdf data ...")
-        sb.wait_for_element_visible("//div[@class='ds-flex abe97156']", timeout=120)
+        logging.info("Extracting pdf data into json ...")
+        sb.wait_for_element_visible("//div[@class='ds-flex abe97156']", timeout=180)
 
         # response = sb.find_element(".ds-markdown--block p").text
         response = sb.find_element(".md-code-block pre").text
 
         # Save a screenshot
-        sb.save_screenshot("backend/deepseek_chat.png")
+        # sb.save_screenshot("backend/deepseek_chat.png")
 
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)

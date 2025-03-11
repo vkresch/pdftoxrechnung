@@ -1,8 +1,10 @@
 import os
 import re
 import logging
-from backend.ollama_integration import process_with_ollama
+import time
+from backend.chatgpt_integration import process_with_chatgpt
 from backend.deepseek_integration import process_with_deepseek
+from backend.ollama_integration import process_with_ollama
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 from decimal import Decimal
@@ -17,6 +19,17 @@ logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
     level=logging.INFO,
 )
+
+
+def process(pdf_text, model="chatgpt"):
+
+    if model == "ollama":
+        return process_with_ollama(pdf_text)
+    elif model == "deepseek":
+        return process_with_deepseek(pdf_text)
+    elif model == "chatgpt":
+        return process_with_chatgpt(pdf_text)
+    return process_with_chatgpt(pdf_text)
 
 
 def parse_iso_datetime(value):
@@ -135,4 +148,9 @@ def extract_invoice_data(pdf_file_path: str) -> str:
 
     # Send extracted text to Ollama model for field recognition
     processed_text = extract_text_from_pdf(pdf_file_path)
-    return process_with_deepseek(processed_text)
+    start_time = time.perf_counter()
+    invoice_data = process(processed_text, model="chatgpt")
+    logging.info(
+        f"Execution time of data extraction: {time.perf_counter() - start_time:.6f} seconds"
+    )
+    return invoice_data
