@@ -172,25 +172,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Label htmlFor="invoiceNotes">Notes</Label>
                 <Textarea
                   id="invoiceNotes"
-                  value={
-                    formState.header.notes
-                      ? formState.header.notes
-                          .map(note => `${note.content_code}: ${note.content}`)
-                          .join("\n")
-                      : ""
-                  }
-                  onChange={(e) =>
-                    handleInputChange(
-                      "header.notes",
-                      e.target.value.split("\n").map(line => {
-                        const [content_code, ...contentParts] = line.split(": ");
-                        return {
-                          content_code,
-                          content: contentParts.join(": ") // Join back in case content had colons
-                        };
-                      })
-                    )
-                  }
+                  value={formState.header.notes ? formState.header.notes.join("\n") : ""}
+                  onChange={(e) => handleInputChange("header.notes", e.target.value.split("\n"))}
                   className="min-h-[80px]"
                 />
               </div>

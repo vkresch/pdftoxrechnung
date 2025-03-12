@@ -102,6 +102,8 @@ class Item(BaseModel):
     type: str = "Item"
     line_id: str
     product_name: str
+    period_start: date
+    period_end: date
     agreement_net_price: float
     quantity: int
     delivery_details: float
@@ -116,11 +118,6 @@ class Trade(BaseModel):
     items: List[Item]
 
 
-class Notes(BaseModel):
-    content_code: str
-    content: str
-
-
 class Header(BaseModel):
     id: str
     type: str = "Header"
@@ -128,7 +125,8 @@ class Header(BaseModel):
     name: str
     issue_date_time: date
     languages: str
-    notes: List[Notes]
+    notes: List[str] = []
+    leitwegid: str = None  # https://www.e-rechnung-bund.de/faq/leitweg-id/
 
 
 class Invoice(BaseModel):

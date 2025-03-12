@@ -10,7 +10,7 @@ from jinja2 import Template
 class Invoice:
     def __init__(self):
         self.invoiceNumber = None
-        self.leitwegID = ""
+        self.leitwegID = None
         self.invoiceDate = None
         self.dueDate = None
         self.note = None
@@ -74,7 +74,8 @@ def generate_xrechnung(invoice_data):
     invoice.invoiceNumber = invoice_data["header"]["id"]
     invoice.invoiceDate = invoice_data["header"]["issue_date_time"]
     invoice.dueDate = invoice_data["trade"]["settlement"]["advance_payment_date"]
-    invoice.note = invoice_data["header"].get("notes", [{}])[0].get("content", "")
+    invoice.leitwegID = invoice_data["header"].get("leitweg_id")
+    invoice.note = " ".join(invoice_data["header"].get("notes", []))
     
     invoice.ownCompanyName = invoice_data["trade"]["agreement"]["seller"]["name"]
     invoice.ownContactName = invoice_data["trade"]["agreement"]["seller"]["name"]
@@ -95,9 +96,9 @@ def generate_xrechnung(invoice_data):
     invoice.customerCompanyID = invoice_data["trade"]["agreement"]["buyer"].get("tax_id", "")
     invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
     
-    invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["total"]
-    invoice.priceFull = invoice.priceNet + invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
+    invoice.priceFull = invoice_data["trade"]["settlement"]["monetary_summation"]["total"]
     invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
+    invoice.priceNet = invoice.priceFull - invoice.priceTax
     invoice.taxPercent = invoice_data["trade"]["settlement"]["trade_tax"][0]["rate"]
     
     invoiceDateObject = datetime.strptime(invoice.invoiceDate, "%Y-%m-%d")
@@ -107,6 +108,8 @@ def generate_xrechnung(invoice_data):
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({
             "lineID": item["line_id"],
+            "periodStart": item["period_start"],
+            "periodEnd": item["period_end"],
             "positionName": item["product_name"],
             "quantity": item["quantity"],
             "priceNet": item["agreement_net_price"],

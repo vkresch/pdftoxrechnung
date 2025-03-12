@@ -15,7 +15,8 @@ EXAMPLE_JSON = """
     "name": "E-Rechnung",
     "issue_date_time": "2025-02-24",
     "languages": "de",
-    "notes": ["Test Node 1"]
+    "leitweg_id": "04011000-12345ABCXYZ-86",
+    "notes": ["Zahlbar innerhalb von 30 Tagen netto auf unser Konto."]
   },
   "trade": {
     "@type": "Trade",
@@ -94,6 +95,8 @@ EXAMPLE_JSON = """
         "@type": "Item",
         "line_id": "1",
         "product_name": "Rainbow",
+        "period_start": "2025-01-01",
+        "period_end": "2025-02-01",
         "agreement_net_price": 999.00,
         "quantity": 1,
         "delivery_details": 999.00,
