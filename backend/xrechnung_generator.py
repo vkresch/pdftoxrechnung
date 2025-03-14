@@ -108,8 +108,8 @@ def generate_xrechnung(invoice_data):
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({
             "lineID": item["line_id"],
-            "periodStart": item["period_start"],
-            "periodEnd": item["period_end"],
+            "periodStart": item.get("period_start", invoice.invoiceDate),
+            "periodEnd": item.get("period_end", invoice.invoiceDate),
             "positionName": item["product_name"],
             "quantity": item["quantity"],
             "priceNet": item["agreement_net_price"],

@@ -94,6 +94,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         agreement_net_price: 0,
         quantity: 1,
         delivery_details: 0,
+        period_start: "",
+        period_end: "",
         settlement_tax: {
           "@type": "Tax",
           category: "E",
@@ -393,6 +395,24 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       onChange={(e) =>
                         handleInputChange(`trade.items.${index}.agreement_net_price`, Number(e.target.value))
                       }
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`item-${index}-period-start`}>Period Start</Label>
+                    <Input
+                      id={`item-${index}-period-start`}
+                      type="date"
+                      value={item.period_start || ""}
+                      onChange={(e) => handleInputChange(`trade.items.${index}.period_start`, e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`item-${index}-period-end`}>Period End</Label>
+                    <Input
+                      id={`item-${index}-period-end`}
+                      type="date"
+                      value={item.period_end || ""}
+                      onChange={(e) => handleInputChange(`trade.items.${index}.period_end`, e.target.value)}
                     />
                   </div>
                   <div>

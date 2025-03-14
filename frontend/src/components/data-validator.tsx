@@ -40,6 +40,8 @@ export function DataValidator({ data, onValidate, pdfFile }: DataValidatorProps)
         agreement_net_price: 0,
         quantity: 1,
         delivery_details: 0,
+        period_start: "",
+        period_end: "",
         settlement_tax: {
           "@type": "Tax",
           category: "E",
@@ -98,6 +100,21 @@ export function DataValidator({ data, onValidate, pdfFile }: DataValidatorProps)
           </div>
         )
       } else {
+        // Special handling for date fields
+        if (key === "period_start" || key === "period_end") {
+          return (
+            <div key={currentPath} className="mb-4">
+              <Label htmlFor={currentPath}>{key === "period_start" ? "Period Start" : "Period End"}</Label>
+              <Input
+                id={currentPath}
+                type="date"
+                value={value as string}
+                onChange={(e) => handleInputChange(currentPath, e.target.value)}
+              />
+            </div>
+          )
+        }
+
         return (
           <div key={currentPath} className="mb-4">
             <Label htmlFor={currentPath}>{key}</Label>
