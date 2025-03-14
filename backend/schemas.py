@@ -23,21 +23,27 @@ class Address(BaseModel):
 class Seller(BaseModel):
     type: str = "Seller"
     name: str
+    contact_name: str
     address: Address
     tax_id: str
     iban: str
     phone: str
     email: str
     homepage: str
+    legal_form: str = "GmbH"
     handels_register_name: str
     handels_register_number: str
 
 
 class Buyer(BaseModel):
     type: str = "Buyer"
+    id: str
     name: str
+    contact_name: str
     address: Address
     tax_id: str
+    order_number: str
+    legal_form: str = "GmbH"
 
 
 class Order(BaseModel):

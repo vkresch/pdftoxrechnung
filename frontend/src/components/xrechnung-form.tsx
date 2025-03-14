@@ -355,12 +355,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
         <Card>
           <CardContent className="pt-6">
-            <div className="flex justify-between items-center mb-4">
+            <div className="mb-4">
               <h3 className="text-lg font-semibold">Line Items</h3>
-              <Button onClick={addItem} size="sm">
-                <PlusCircle className="h-4 w-4 mr-2" />
-                Add Item
-              </Button>
             </div>
 
             {formState.trade.items.map((item: any, index: number) => (
@@ -454,6 +450,13 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 </div>
               </div>
             ))}
+
+            <div className="flex justify-center mt-4 mb-6">
+              <Button onClick={addItem} className="w-full sm:w-auto">
+                <PlusCircle className="h-4 w-4 mr-2" />
+                Add Item
+              </Button>
+            </div>
 
             <Separator className="my-4" />
 

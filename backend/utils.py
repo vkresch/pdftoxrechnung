@@ -38,12 +38,17 @@ EXAMPLE_JSON = """
         "phone": "(0123) 4567",
         "email": "info@kraxi.com",
         "homepage": "www.kraxi.com",
+        "legal_form": "GmbH",
         "handels_register_name": "Handelsregister München",
         "handels_register_number": "HRB 999999"
       },
       "buyer": {
         "@type": "Buyer",
+        "id": "987-654",
         "name": "Kunde GmbH",
+        "contact_name": "Peter Lustig",
+        "order_number": "ABC-123",
+        "legal_form": "GmbH",
         "address": {
           "@type": "Address",
           "country": "Deutschland",

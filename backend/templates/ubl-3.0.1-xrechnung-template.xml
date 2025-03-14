@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2"
-             xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2"
-             xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
     <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</cbc:CustomizationID>
     <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
     <cbc:ID>{{ data.invoiceNumber }}</cbc:ID>
@@ -10,10 +8,15 @@
     <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
-    {% if data.leitwegID is not none %}<cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>{% endif %}
+    <cac:OrderReference>
+        <cbc:ID>{{ data.customerOrderNumber }}</cbc:ID>
+    </cac:OrderReference>
+    {% if data.leitwegID is not none %}
+    <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
+    {% endif -%}
     <cac:AccountingSupplierParty>
         <cac:Party>
-            <cbc:EndpointID schemeID="EM">{{ data.ownContactEmail }}</cbc:EndpointID>
+            <cbc:EndpointID schemeID="EM">{{ data.ownCompanyID }}</cbc:EndpointID>
             <cac:PartyName>
                 <cbc:Name>{{ data.ownCompanyName }}</cbc:Name>
             </cac:PartyName>
@@ -34,18 +37,18 @@
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.ownCompanyName }}</cbc:RegistrationName>
                 <cbc:CompanyID>{{ data.ownHraNo }}</cbc:CompanyID>
-                <cbc:CompanyLegalForm>{{ data.ownHraNo }}, Eintrag im {{ data.ownHraName }}</cbc:CompanyLegalForm>
+                <cbc:CompanyLegalForm>{{ data.ownLegalForm }}</cbc:CompanyLegalForm>
             </cac:PartyLegalEntity>
             <cac:Contact>
                 <cbc:Name>{{ data.ownContactName }}</cbc:Name>
-                <cbc:Telephone>{{ data.ownContactNPhone }}</cbc:Telephone>
+                <cbc:Telephone>{{ data.ownContactPhone }}</cbc:Telephone>
                 <cbc:ElectronicMail>{{ data.ownContactEmail }}</cbc:ElectronicMail>
             </cac:Contact>
         </cac:Party>
     </cac:AccountingSupplierParty>
     <cac:AccountingCustomerParty>
         <cac:Party>
-            <cbc:EndpointID schemeID="EM">{{ data.customerEmail }}</cbc:EndpointID>
+            <cbc:EndpointID schemeID="EM">{{ data.customerID }}</cbc:EndpointID>
             <cac:PartyIdentification>
                 <cbc:ID>{{ data.customerCompanyID }}</cbc:ID>
             </cac:PartyIdentification>
@@ -60,10 +63,14 @@
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.customerCompanyName }}</cbc:RegistrationName>
             </cac:PartyLegalEntity>
+            <cac:Contact>
+                <cbc:Name>{{ data.customerContactName }}</cbc:Name>
+            </cac:Contact>
         </cac:Party>
     </cac:AccountingCustomerParty>
     <cac:PaymentMeans>
         <cbc:PaymentMeansCode>58</cbc:PaymentMeansCode>
+        <cbc:PaymentID>{{ data.invoiceNumber }}</cbc:PaymentID>
         <cac:PayeeFinancialAccount>
             <cbc:ID>{{ data.ownIban }}</cbc:ID>
         </cac:PayeeFinancialAccount>
@@ -91,20 +98,24 @@
         <cbc:TaxInclusiveAmount currencyID="EUR">{{ data.priceFull }}</cbc:TaxInclusiveAmount>
         <cbc:PayableAmount currencyID="EUR">{{ data.priceFull }}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
-    {% for item in data.items %}
+    {% for item in data.items -%}
     <cac:InvoiceLine>
         <cbc:ID>{{ item.lineID }}</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">{{ item.priceNet }}</cbc:LineExtensionAmount>
+        <cbc:InvoicedQuantity unitCode="XPP">{{ item.quantity }}</cbc:InvoicedQuantity>
+        <cbc:LineExtensionAmount currencyID="EUR">{{ item.deliveryDetails }}</cbc:LineExtensionAmount>
+        {% if item.periodStart is not none and item.periodEnd is not none -%}
         <cac:InvoicePeriod>
             <cbc:StartDate>{{ item.periodStart }}</cbc:StartDate>
             <cbc:EndDate>{{ item.periodEnd }}</cbc:EndDate>
         </cac:InvoicePeriod>
+        {% endif -%}
         <cac:Item>
+            <cbc:Description>{{ item.positionName }}</cbc:Description>
             <cbc:Name>{{ item.positionName }}</cbc:Name>
             <cac:SellersItemIdentification>
-                <cbc:ID>246</cbc:ID>
+                <cbc:ID>{{ item.lineID }}</cbc:ID>
             </cac:SellersItemIdentification>
+            <cac:CommodityClassification/>
             <cac:ClassifiedTaxCategory>
                 <cbc:ID>S</cbc:ID>
                 <cbc:Percent>{{ item.taxPercent }}</cbc:Percent>
@@ -117,5 +128,5 @@
             <cbc:PriceAmount currencyID="EUR">{{ item.priceNet }}</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
-    {% endfor %}
+    {% endfor -%}
 </ubl:Invoice>

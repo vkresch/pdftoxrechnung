@@ -78,7 +78,7 @@ def generate_xrechnung(invoice_data):
     invoice.note = " ".join(invoice_data["header"].get("notes", []))
     
     invoice.ownCompanyName = invoice_data["trade"]["agreement"]["seller"]["name"]
-    invoice.ownContactName = invoice_data["trade"]["agreement"]["seller"]["name"]
+    invoice.ownContactName = invoice_data["trade"]["agreement"]["seller"]["contact_name"]
     invoice.ownStreetname = invoice_data["trade"]["agreement"]["seller"]["address"]["street_name"]
     invoice.ownCityname = invoice_data["trade"]["agreement"]["seller"]["address"]["city_name"]
     invoice.ownPostalCode = invoice_data["trade"]["agreement"]["seller"]["address"]["postal_zone"]
@@ -86,10 +86,14 @@ def generate_xrechnung(invoice_data):
     invoice.ownContactEmail = invoice_data["trade"]["agreement"]["seller"].get("email")
     invoice.ownContactPhone = invoice_data["trade"]["agreement"]["seller"].get("phone")
     invoice.ownIban = invoice_data["trade"]["agreement"]["seller"]["iban"]
+    invoice.ownLegalForm = invoice_data["trade"]["agreement"]["seller"]["legal_form"]
     invoice.ownHraNo = invoice_data["trade"]["agreement"]["seller"]["handels_register_number"]
     invoice.ownHraName = invoice_data["trade"]["agreement"]["seller"]["handels_register_name"]
     
+    invoice.customerID = invoice_data["trade"]["agreement"]["buyer"]["id"]
     invoice.customerCompanyName = invoice_data["trade"]["agreement"]["buyer"]["name"]
+    invoice.customerContactName = invoice_data["trade"]["agreement"]["buyer"]["contact_name"]
+    invoice.customerOrderNumber = invoice_data["trade"]["agreement"]["buyer"]["order_number"]
     invoice.customerStreetname = invoice_data["trade"]["agreement"]["buyer"]["address"]["street_name"]
     invoice.customerCityname = invoice_data["trade"]["agreement"]["buyer"]["address"]["city_name"]
     invoice.customerPostalZone = invoice_data["trade"]["agreement"]["buyer"]["address"]["postal_zone"]
@@ -108,10 +112,11 @@ def generate_xrechnung(invoice_data):
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({
             "lineID": item["line_id"],
-            "periodStart": item.get("period_start", invoice.invoiceDate),
-            "periodEnd": item.get("period_end", invoice.invoiceDate),
+            "periodStart": item.get("period_start"),
+            "periodEnd": item.get("period_end"),
             "positionName": item["product_name"],
             "quantity": item["quantity"],
+            "deliveryDetails": item["delivery_details"],
             "priceNet": item["agreement_net_price"],
             "taxPercent": item["settlement_tax"]["rate"],
         })
