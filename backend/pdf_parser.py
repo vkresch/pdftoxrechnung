@@ -149,7 +149,7 @@ def extract_invoice_data(pdf_file_path: str) -> str:
     # Send extracted text to Ollama model for field recognition
     processed_text = extract_text_from_pdf(pdf_file_path)
     start_time = time.perf_counter()
-    invoice_data = process(processed_text, model="chatgpt")
+    invoice_data = process(processed_text, model="deepseek")
     logging.info(
         f"Execution time of data extraction: {time.perf_counter() - start_time:.6f} seconds"
     )

@@ -23,6 +23,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     onChange(formState)
   }, [formState, onChange])
 
+  // Also update the handleInputChange function to ensure tax is recalculated when tax rate changes
   const handleInputChange = (path: string, value: any) => {
     const keys = path.split(".")
     setFormState((prevState: any) => {
@@ -38,16 +39,17 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
       current[keys[keys.length - 1]] = value
 
-      // If changing item quantity or price, update the total price
-      if (path.includes("items") && (path.includes("quantity") || path.includes("agreement_net_price"))) {
+      // If changing item quantity, price, or tax rate, update the total price and tax
+      if (
+        path.includes("items") &&
+        (path.includes("quantity") || path.includes("agreement_net_price") || path.includes("settlement_tax.rate"))
+      ) {
         const itemIndex = Number.parseInt(path.split(".")[2])
         const item = newState.trade.items[itemIndex]
-        item.total_amount = item.quantity * item.agreement_net_price
+        item.total_amount = Number.parseFloat((item.quantity * item.agreement_net_price).toFixed(2))
         item.delivery_details = item.total_amount
-      }
 
-      // Update monetary summation totals
-      if (path.includes("items")) {
+        // Update all totals including tax calculations
         updateTotals(newState)
       }
 
@@ -55,33 +57,40 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
   }
 
+  // Replace the updateTotals function with this corrected version
   const updateTotals = (state: any) => {
+    // First update each line item's tax amount
+    state.trade.items.forEach((item: any) => {
+      if (item.settlement_tax && item.settlement_tax.rate !== undefined) {
+        // Calculate tax amount for this line item
+        const taxRate = Number(item.settlement_tax.rate) / 100 // Convert percentage to decimal
+        const taxAmount = Number(item.total_amount) * taxRate
+
+        // Update the tax amount in the item
+        item.settlement_tax.amount = Number.parseFloat(taxAmount.toFixed(2))
+      }
+    })
+
     // Calculate total amount from items
-    const totalAmount = state.trade.items.reduce(
-      (sum: number, item: any) => sum + Number.parseFloat(item.total_amount || 0),
+    const totalAmount = state.trade.items.reduce((sum: number, item: any) => sum + Number(item.total_amount || 0), 0)
+
+    // Calculate tax total by summing up all individual tax amounts
+    const taxTotal = state.trade.items.reduce(
+      (sum: number, item: any) => sum + Number(item.settlement_tax?.amount || 0),
       0,
     )
 
     // Update monetary summation
     if (state.trade.settlement && state.trade.settlement.monetary_summation) {
-      state.trade.settlement.monetary_summation.total = totalAmount
-    }
+      state.trade.settlement.monetary_summation.total = Number.parseFloat(totalAmount.toFixed(2))
+      state.trade.settlement.monetary_summation.tax_total = Number.parseFloat(taxTotal.toFixed(2))
 
-    // Calculate tax total if applicable
-    const taxTotal = state.trade.items.reduce((sum: number, item: any) => {
-      if (item.settlement_tax && item.settlement_tax.rate) {
-        return (
-          sum + (Number.parseFloat(item.total_amount || 0) * Number.parseFloat(item.settlement_tax.rate || 0)) / 100
-        )
-      }
-      return sum
-    }, 0)
-
-    if (state.trade.settlement && state.trade.settlement.monetary_summation) {
-      state.trade.settlement.monetary_summation.tax_total = taxTotal
+      // Calculate and update the grand total (including tax)
+      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((totalAmount + taxTotal).toFixed(2))
     }
   }
 
+  // Update the addItem function to include the tax amount field
   const addItem = () => {
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
@@ -429,6 +438,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     />
                   </div>
                   <div>
+                    <Label htmlFor={`item-${index}-tax-amount`}>Tax Amount (€)</Label>
+                    <Input
+                      id={`item-${index}-tax-amount`}
+                      type="number"
+                      step="0.01"
+                      value={item.settlement_tax.amount || 0}
+                      disabled
+                    />
+                  </div>
+                  <div>
                     <Label htmlFor={`item-${index}-total`}>Total Price (€)</Label>
                     <Input id={`item-${index}-total`} type="number" step="0.01" value={item.total_amount} disabled />
                   </div>
@@ -438,14 +457,27 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
             <Separator className="my-4" />
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="col-span-1 ml-auto">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
                 <Label htmlFor="taxTotal">Tax Amount (€)</Label>
                 <Input id="taxTotal" value={formState.trade.settlement.monetary_summation.tax_total} disabled />
               </div>
-              <div className="col-span-1">
-                <Label htmlFor="totalAmount">Total Amount (€)</Label>
+              <div>
+                <Label htmlFor="totalAmount">Net Amount (€)</Label>
                 <Input id="totalAmount" value={formState.trade.settlement.monetary_summation.total} disabled />
+              </div>
+              <div>
+                <Label htmlFor="grandTotal">Grand Total (€)</Label>
+                <Input
+                  id="grandTotal"
+                  value={
+                    formState.trade.settlement.monetary_summation.grand_total ||
+                    formState.trade.settlement.monetary_summation.total +
+                      formState.trade.settlement.monetary_summation.tax_total
+                  }
+                  disabled
+                  className="font-bold"
+                />
               </div>
             </div>
           </CardContent>

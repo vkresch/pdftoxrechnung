@@ -31,13 +31,14 @@ def process_with_chatgpt(pdf_text):
         )
         chat_text_area.send_keys(Keys.ENTER)
 
-        with suppress(Exception):
-            # The "Stop" button disappears when ChatGPT is done typing a response
-            logging.info("Extracting pdf data into json ...")
-            sb.wait_for_element_not_visible(
-                'button[data-testid="stop-button"]', timeout=180
-            )
-        time.sleep(1)
+        # Save a screenshot for debugging issues
+        # sb.save_screenshot("backend/chatgpt_chat.png")
+
+        logging.info("Extracting pdf data into json ...")
+        sb.wait_for_element_visible(
+            "//button[@data-testid='copy-turn-action-button']", timeout=180
+        )
+
         response = sb.find_element("[data-message-author-role='assistant'] code").text
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)
