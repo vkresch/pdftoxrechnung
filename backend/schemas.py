@@ -82,8 +82,9 @@ class TradeTax(BaseModel):
 
 class MonetarySummation(BaseModel):
     type: str = "MonetarySummation"
-    total: float
+    net_total: float
     tax_total: float
+    grand_total: float
 
 
 class Settlement(BaseModel):

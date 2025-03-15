@@ -91,8 +91,9 @@ EXAMPLE_JSON = """
       ],
       "monetary_summation": {
         "@type": "MonetarySummation",
-        "total": 999,
-        "tax_total": 0
+        "grand_total": 1000.00, 
+        "net_total": 995.00,
+        "tax_total": 5.00
       }
     },
     "items": [

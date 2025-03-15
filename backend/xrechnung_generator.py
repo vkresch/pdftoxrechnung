@@ -100,9 +100,9 @@ def generate_xrechnung(invoice_data):
     invoice.customerCompanyID = invoice_data["trade"]["agreement"]["buyer"].get("tax_id", "")
     invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
     
-    invoice.priceFull = invoice_data["trade"]["settlement"]["monetary_summation"]["total"]
+    invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["net_total"]
     invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
-    invoice.priceNet = invoice.priceFull - invoice.priceTax
+    invoice.priceFull = invoice.priceNet + invoice.priceTax
     invoice.taxPercent = invoice_data["trade"]["settlement"]["trade_tax"][0]["rate"]
     
     invoiceDateObject = datetime.strptime(invoice.invoiceDate, "%Y-%m-%d")

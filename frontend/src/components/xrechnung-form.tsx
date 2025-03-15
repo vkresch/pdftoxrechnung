@@ -82,7 +82,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
     // Update monetary summation
     if (state.trade.settlement && state.trade.settlement.monetary_summation) {
-      state.trade.settlement.monetary_summation.total = Number.parseFloat(totalAmount.toFixed(2))
+      state.trade.settlement.monetary_summation.net_total = Number.parseFloat(totalAmount.toFixed(2))
       state.trade.settlement.monetary_summation.tax_total = Number.parseFloat(taxTotal.toFixed(2))
 
       // Calculate and update the grand total (including tax)
@@ -467,7 +467,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
               </div>
               <div>
                 <Label htmlFor="totalAmount">Net Amount (€)</Label>
-                <Input id="totalAmount" value={formState.trade.settlement.monetary_summation.total} disabled />
+                <Input id="totalAmount" value={formState.trade.settlement.monetary_summation.net_total} disabled />
               </div>
               <div>
                 <Label htmlFor="grandTotal">Grand Total (€)</Label>
@@ -475,7 +475,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="grandTotal"
                   value={
                     formState.trade.settlement.monetary_summation.grand_total ||
-                    formState.trade.settlement.monetary_summation.total +
+                    formState.trade.settlement.monetary_summation.net_total +
                       formState.trade.settlement.monetary_summation.tax_total
                   }
                   disabled
