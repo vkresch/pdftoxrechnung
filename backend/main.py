@@ -38,18 +38,12 @@ async def upload_pdf(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
     file_path = UPLOAD_FOLDER / file.filename
-    try:
-        content = await file.read()
-        with open(file_path, "wb") as f:
-            f.write(content)
+    content = await file.read()
+    with open(file_path, "wb") as f:
+        f.write(content)
 
-        invoice_data = extract_invoice_data(str(file_path))
-        return JSONResponse(content=invoice_data)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
-    finally:
-        if file_path.exists():
-            file_path.unlink()  # Delete the temporary file
+    invoice_data = extract_invoice_data(str(file_path))
+    return JSONResponse(content=invoice_data)
 
 
 @app.post("/convert/zugferd")
@@ -72,18 +66,15 @@ async def convert_to_zugferd(invoice_data: dict):
 @app.post("/convert/")
 async def convert_to_xrechnung(invoice_data: dict):
     """Receives JSON invoice data and converts it to XML."""
-    try:
-        xml_content = generate_xrechnung(invoice_data)
-        output_file_path = UPLOAD_FOLDER / "invoice_xrechnung.xml"
-        with open(output_file_path, "w") as f:
-            f.write(xml_content)
-        return FileResponse(
-            output_file_path,
-            media_type="application/xml",
-            filename="invoice_xrechnung.xml",
-        )
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
+    xml_content = generate_xrechnung(invoice_data)
+    output_file_path = UPLOAD_FOLDER / "invoice_xrechnung.xml"
+    with open(output_file_path, "w") as f:
+        f.write(xml_content)
+    return FileResponse(
+        output_file_path,
+        media_type="application/xml",
+        filename="invoice_xrechnung.xml",
+    )
 
 
 if __name__ == "__main__":

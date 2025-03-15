@@ -8,3 +8,4 @@ pytest
 pydantic
 black
 drafthorse==2025.1.0
+seleniumbase==4.35.7

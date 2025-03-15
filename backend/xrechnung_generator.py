@@ -106,8 +106,9 @@ def generate_xrechnung(invoice_data):
     invoice.taxPercent = invoice_data["trade"]["settlement"]["trade_tax"][0]["rate"]
     
     invoiceDateObject = datetime.strptime(invoice.invoiceDate, "%Y-%m-%d")
-    dueDateObject = datetime.strptime(invoice.dueDate, "%Y-%m-%d")
-    invoice.dueDays = (dueDateObject - invoiceDateObject).days
+    if invoice.dueDate != "":
+        dueDateObject = datetime.strptime(invoice.dueDate, "%Y-%m-%d")
+        invoice.dueDays = (dueDateObject - invoiceDateObject).days
     
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({

@@ -23,10 +23,14 @@ def process_with_deepseek(pdf_text):
     logging.info(f"Starting deepseek extraction process ...")
     with SB(
         uc=True,
-        headless=True,  # Set to True for headless mode
+        xvfb=True,
+        headed=True,
+        ad_block=True,
+        incognito=True,
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
-        sb.open("https://chat.deepseek.com/sign_in")
+        sb.uc_open_with_reconnect("https://chat.deepseek.com/sign_in", 4)
+        # sb.uc_gui_click_captcha()
         logged_in = False
 
         # TODO: Readd this once headless mode works with user_data_dir to avoid login for every request
