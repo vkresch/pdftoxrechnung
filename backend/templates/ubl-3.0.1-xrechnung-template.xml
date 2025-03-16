@@ -68,7 +68,7 @@
         </cac:Party>
     </cac:AccountingCustomerParty>
     <cac:PaymentMeans>
-        <cbc:PaymentMeansCode>58</cbc:PaymentMeansCode>
+        <cbc:PaymentMeansCode>{{ data.paymentMeansCode }}</cbc:PaymentMeansCode>
         <cbc:PaymentID>{{ data.invoiceNumber }}</cbc:PaymentID>
         <cac:PayeeFinancialAccount>
             <cbc:ID>{{ data.ownIban }}</cbc:ID>

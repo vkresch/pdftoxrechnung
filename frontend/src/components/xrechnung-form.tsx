@@ -504,11 +504,27 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <SelectTrigger id="paymentType">
                     <SelectValue placeholder="Select payment type" />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover">
-                    <SelectItem value="58">58: SEPA Credit Transfer</SelectItem>
-                    <SelectItem value="30">30: Credit Transfer</SelectItem>
-                    <SelectItem value="42">42: Payment to Bank Account</SelectItem>
-                    <SelectItem value="ZZZ">ZZZ: Other</SelectItem>
+                  <SelectContent className="bg-gray-700 text-white">
+                    <SelectItem value="58" className="focus:bg-black hover:bg-gray-900">
+                      <div className="flex flex-col">
+                        <span>SEPA Credit Transfer</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="30" className="focus:bg-black hover:bg-gray-900">
+                      <div className="flex flex-col">
+                        <span>Credit Transfer</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="42" className="focus:bg-black hover:bg-gray-900">
+                      <div className="flex flex-col">
+                        <span>Payment to Bank Account</span>
+                      </div>
+                    </SelectItem>
+                    <SelectItem value="ZZZ" className="focus:bg-black hover:bg-gray-900">
+                      <div className="flex flex-col">
+                        <span>Mutually defined</span>
+                      </div>
+                    </SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -614,13 +630,52 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <SelectTrigger id={`item-${index}-tax-category`}>
                         <SelectValue placeholder="Select tax category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-popover">
-                        <SelectItem value="AE">AE: VAT Reverse Charge</SelectItem>
-                        <SelectItem value="E">E: Exempt from Tax</SelectItem>
-                        <SelectItem value="S">S: Standard rate</SelectItem>
-                        <SelectItem value="Z">Z: Zero rated goods</SelectItem>
-                        <SelectItem value="H">H: Higher rate</SelectItem>
-                        <SelectItem value="AA">AA: Lower rate</SelectItem>
+                      <SelectContent className="bg-gray-700 text-white">
+                        {[
+                          {
+                            code: "AE",
+                            name: "Vat Reverse Charge",
+                          },
+                          {
+                            code: "E",
+                            name: "Exempt from Tax",
+                          },
+                          { code: "S", name: "Standard rate"},
+                          {
+                            code: "Z",
+                            name: "Zero rated goods",
+                          },
+                          {
+                            code: "G",
+                            name: "Free export item, VAT not charged",
+                          },
+                          {
+                            code: "O",
+                            name: "Services outside scope of tax",
+                          },
+                          {
+                            code: "K",
+                            name: "VAT exempt for EEA intra-community supply of goods and services",
+                          },
+                          {
+                            code: "L",
+                            name: "Canary Islands general indirect tax",
+                          },
+                          {
+                            code: "M",
+                            name: "Tax for production, services and importation in Ceuta and Melilla",
+                          },
+                          {
+                            code: "B",
+                            name: "Transferred (VAT), In Italy",
+                          },
+                        ].map((tax) => (
+                          <SelectItem key={tax.code} value={tax.code} className="focus:bg-black hover:bg-gray-900">
+                            <div className="flex flex-col">
+                              <span>{tax.name}</span>
+                            </div>
+                          </SelectItem>
+                        ))}
                       </SelectContent>
                     </Select>
                   </div>

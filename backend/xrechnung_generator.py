@@ -100,6 +100,7 @@ def generate_xrechnung(invoice_data):
     invoice.customerCompanyID = invoice_data["trade"]["agreement"]["buyer"].get("tax_id", "")
     invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
     
+    invoice.paymentMeansCode = invoice_data["trade"]["settlement"]["payment_means"]["type_code"] # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
     invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["net_total"]
     invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
     invoice.priceFull = invoice.priceNet + invoice.priceTax

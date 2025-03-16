@@ -78,7 +78,7 @@ EXAMPLE_JSON = """
       "currency_code": "EUR",
       "payment_means": {
         "@type": "PaymentMeans",
-        "type_code": "ZZZ"
+        "type_code": "58"
       },
       "advance_payment_date": "2025-02-25",
       "trade_tax": [
