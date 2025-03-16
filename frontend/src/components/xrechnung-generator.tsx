@@ -20,6 +20,8 @@ interface ValidationResult {
   description: string
   error?: string
   validationMessages?: ValidationMessage[]
+  errorCount?: number
+  warningCount?: number
 }
 
 interface ValidationMessage {
@@ -141,7 +143,7 @@ export default function XRechnungGenerator() {
     }
   }
 
-  // Update the handleValidateXML function to fetch and parse the XML report
+  // Update the validation result display to show a summary of errors and warnings
   const handleValidateXML = async () => {
     setIsValidating(true)
 
@@ -169,16 +171,22 @@ export default function XRechnungGenerator() {
       const reportXml = await reportResponse.text()
       const validationMessages = parseValidationReport(reportXml)
 
+      // Count errors and warnings
+      const errorCount = validationMessages.filter((msg) => msg.level === "error").length
+      const warningCount = validationMessages.filter((msg) => msg.level === "warning").length
+
       // Add the validation messages to the result
       const enhancedResult = {
         ...result,
         validationMessages,
+        errorCount,
+        warningCount,
       }
 
       setValidationResult(enhancedResult)
 
       // Show toast based on validation result with detailed messages
-      if (result.return_code === 0) {
+      if (errorCount === 0 && warningCount === 0) {
         toast({
           title: "Validation Successful",
           description: "The XRechnung XML is valid.",
@@ -186,9 +194,14 @@ export default function XRechnungGenerator() {
       } else {
         // Display validation messages in the toast
         toast({
-          title: "Validation Failed",
+          title: `Validation ${errorCount > 0 ? "Failed" : "Warning"}`,
           description: (
             <div className="mt-2 space-y-2 max-h-[300px] overflow-auto text-sm">
+              <div className="font-medium">
+                {errorCount > 0
+                  ? `Found ${errorCount} error${errorCount > 1 ? "s" : ""} and ${warningCount} warning${warningCount > 1 ? "s" : ""}.`
+                  : `Found ${warningCount} warning${warningCount > 1 ? "s" : ""}.`}
+              </div>
               <div>{result.description || "The XRechnung XML is not valid."}</div>
 
               {validationMessages.length > 0 && (
@@ -198,7 +211,7 @@ export default function XRechnungGenerator() {
               )}
             </div>
           ),
-          variant: "destructive",
+          variant: errorCount > 0 ? "destructive" : "default",
           duration: 10000, // Longer duration to give time to read
         })
       }
@@ -228,9 +241,45 @@ export default function XRechnungGenerator() {
     const messages: ValidationMessage[] = []
 
     // Find all message elements in the report
-    // Note: We need to handle namespaces in the XML
-    const messageElements = xmlDoc.getElementsByTagName("rep:message")
+    // We need to handle the namespace in the XML
+    // Try different approaches to handle namespaces in different browsers
+    let messageElements: HTMLCollectionOf<Element> | NodeListOf<Element> = xmlDoc.getElementsByTagName("rep:message")
 
+    // If no elements found with namespace prefix, try without prefix
+    if (messageElements.length === 0) {
+      messageElements = xmlDoc.getElementsByTagName("message")
+    }
+
+    // If still no elements found, try using getElementsByTagNameNS
+    if (messageElements.length === 0) {
+      const allElements = xmlDoc.getElementsByTagName("*")
+      const filteredElements: Element[] = []
+
+      for (let i = 0; i < allElements.length; i++) {
+        const element = allElements[i]
+        if (element.localName === "message" || element.nodeName.includes("message")) {
+          filteredElements.push(element)
+        }
+      }
+
+      for (let i = 0; i < filteredElements.length; i++) {
+        const element = filteredElements[i]
+
+        const message: ValidationMessage = {
+          id: element.getAttribute("id") || `msg-${i}`,
+          level: (element.getAttribute("level") as "error" | "warning") || "warning",
+          code: element.getAttribute("code") || "",
+          message: element.textContent || "",
+          xpathLocation: element.getAttribute("xpathLocation") || undefined,
+        }
+
+        messages.push(message)
+      }
+
+      return messages
+    }
+
+    // Process the found message elements
     for (let i = 0; i < messageElements.length; i++) {
       const element = messageElements[i]
 
@@ -347,22 +396,36 @@ export default function XRechnungGenerator() {
                   <CardContent className="pt-6">
                     <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
                     <Alert
-                      variant={validationResult.return_code === 0 ? "default" : "destructive"}
+                      variant={
+                        validationResult.errorCount > 0
+                          ? "destructive"
+                          : validationResult.warningCount > 0
+                            ? "default"
+                            : "default"
+                      }
                       className={
-                        validationResult.return_code === 0
+                        validationResult.errorCount === 0 && validationResult.warningCount === 0
                           ? "bg-green-700 border-green-800 text-white"
-                          : "bg-red-700 border-red-800 text-white"
+                          : validationResult.errorCount > 0
+                            ? "bg-red-700 border-red-800 text-white"
+                            : "bg-amber-600 border-amber-700 text-white"
                       }
                     >
-                      {validationResult.return_code === 0 ? (
+                      {validationResult.errorCount === 0 && validationResult.warningCount === 0 ? (
                         <CheckCircle className="h-4 w-4 mr-2 text-white" />
+                      ) : validationResult.errorCount > 0 ? (
+                        <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       ) : (
                         <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       )}
                       <AlertDescription>
                         <div className="font-medium">
-                          {validationResult.return_code === 0 ? "Valid" : "Invalid"} (Code:{" "}
-                          {validationResult.return_code})
+                          {validationResult.errorCount === 0 && validationResult.warningCount === 0
+                            ? "Valid"
+                            : validationResult.errorCount > 0
+                              ? `Invalid - ${validationResult.errorCount} error${validationResult.errorCount > 1 ? "s" : ""}, ${validationResult.warningCount} warning${validationResult.warningCount > 1 ? "s" : ""}`
+                              : `Valid with warnings - ${validationResult.warningCount} warning${validationResult.warningCount > 1 ? "s" : ""}`}
+                          {validationResult.return_code !== undefined && ` (Code: ${validationResult.return_code})`}
                         </div>
                         <div className="mt-1">{validationResult.description}</div>
 
@@ -380,7 +443,7 @@ export default function XRechnungGenerator() {
                       </AlertDescription>
                     </Alert>
 
-                    {validationResult.return_code !== 0 && (
+                    {(validationResult.errorCount > 0 || validationResult.warningCount > 0) && (
                       <Button
                         onClick={handleDownloadValidationReport}
                         className="w-full mt-4"
