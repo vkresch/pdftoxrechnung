@@ -115,7 +115,7 @@
                 <cbc:ID>{{ item.lineID }}</cbc:ID>
             </cac:SellersItemIdentification>
             <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
+                <cbc:ID>{{ item.taxCategory }}</cbc:ID>
                 <cbc:Percent>{{ item.taxPercent }}</cbc:Percent>
                 <cac:TaxScheme>
                     <cbc:ID>VAT</cbc:ID>

@@ -9,6 +9,7 @@ import { Separator } from "@/components/ui/separator"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { PlusCircle, Trash2 } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface XRechnungFormProps {
   data: any
@@ -23,7 +24,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     onChange(formState)
   }, [formState, onChange])
 
-  // Also update the handleInputChange function to ensure tax is recalculated when tax rate changes
+  // Handle input changes for any field in the form
   const handleInputChange = (path: string, value: any) => {
     const keys = path.split(".")
     setFormState((prevState: any) => {
@@ -57,7 +58,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
   }
 
-  // Replace the updateTotals function with this corrected version
+  // Update the totals for the invoice
   const updateTotals = (state: any) => {
     // First update each line item's tax amount
     state.trade.items.forEach((item: any) => {
@@ -88,27 +89,32 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       // Calculate and update the grand total (including tax)
       state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((totalAmount + taxTotal).toFixed(2))
     }
+
+    // Update trade tax if it exists
+    if (state.trade.settlement && state.trade.settlement.trade_tax && state.trade.settlement.trade_tax.length > 0) {
+      state.trade.settlement.trade_tax[0].amount = Number.parseFloat(taxTotal.toFixed(2))
+    }
   }
 
-  // Update the addItem function to include the tax amount field
+  // Add a new item to the invoice
   const addItem = () => {
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
       const newItemId = (newState.trade.items.length + 1).toString()
 
       newState.trade.items.push({
-        "@type": "Item",
+        type: "Item",
         line_id: newItemId,
         product_name: "",
+        period_start: new Date().toISOString().split("T")[0],
+        period_end: new Date().toISOString().split("T")[0],
         agreement_net_price: 0,
         quantity: 1,
         delivery_details: 0,
-        period_start: "",
-        period_end: "",
         settlement_tax: {
-          "@type": "Tax",
+          type: "Tax",
           category: "E",
-          rate: 0,
+          rate: 19,
           amount: 0,
         },
         total_amount: 0,
@@ -119,6 +125,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
   }
 
+  // Remove an item from the invoice
   const removeItem = (index: number) => {
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
@@ -142,6 +149,24 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
   return (
     <ScrollArea className="h-[calc(100vh-240px)]">
       <div className="space-y-6 pr-4">
+        {/* Context Section */}
+        <Card>
+          <CardContent className="pt-6">
+            <h3 className="text-lg font-semibold mb-4">Context</h3>
+            <div className="space-y-4">
+              <div>
+                <Label htmlFor="guideline_parameter">Guideline Parameter</Label>
+                <Input
+                  id="guideline_parameter"
+                  value={formState.context?.guideline_parameter || ""}
+                  onChange={(e) => handleInputChange("context.guideline_parameter", e.target.value)}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Invoice Details Section */}
         <Card>
           <CardContent className="pt-6">
             <h3 className="text-lg font-semibold mb-4">Invoice Details</h3>
@@ -179,6 +204,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   onChange={(e) => handleInputChange("header.name", e.target.value)}
                 />
               </div>
+              <div>
+                <Label htmlFor="invoiceLanguage">Language</Label>
+                <Input
+                  id="invoiceLanguage"
+                  value={formState.header.languages}
+                  onChange={(e) => handleInputChange("header.languages", e.target.value)}
+                />
+              </div>
               <div className="col-span-2">
                 <Label htmlFor="invoiceNotes">Notes</Label>
                 <Textarea
@@ -192,6 +225,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           </CardContent>
         </Card>
 
+        {/* Seller Information Section */}
         <Card>
           <CardContent className="pt-6">
             <h3 className="text-lg font-semibold mb-4">Seller Information</h3>
@@ -205,20 +239,30 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="sellerCountry">Country</Label>
+                <Label htmlFor="sellerContactName">Contact Name</Label>
                 <Input
-                  id="sellerCountry"
-                  value={formState.trade.agreement.seller.address?.country || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.country", e.target.value)}
+                  id="sellerContactName"
+                  value={formState.trade.agreement.seller.contact_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.contact_name", e.target.value)}
                 />
               </div>
-              <div>
-                <Label htmlFor="sellerState">State</Label>
-                <Input
-                  id="sellerState"
-                  value={formState.trade.agreement.seller.address?.state || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.state", e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="sellerCountry">Country</Label>
+                  <Input
+                    id="sellerCountry"
+                    value={formState.trade.agreement.seller.address?.country || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.address.country", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sellerCountryCode">Country Code</Label>
+                  <Input
+                    id="sellerCountryCode"
+                    value={formState.trade.agreement.seller.address?.country_code || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.address.country_code", e.target.value)}
+                  />
+                </div>
               </div>
               <div>
                 <Label htmlFor="sellerStreet">Street</Label>
@@ -228,38 +272,123 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   onChange={(e) => handleInputChange("trade.agreement.seller.address.street_name", e.target.value)}
                 />
               </div>
-              <div>
-                <Label htmlFor="sellerCityName">City</Label>
-                <Input
-                  id="sellerCityName"
-                  value={formState.trade.agreement.seller.address?.city_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.city_name", e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="sellerCity">City</Label>
+                  <Input
+                    id="sellerCity"
+                    value={formState.trade.agreement.seller.address?.city_name || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.address.city_name", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sellerPostalCode">Postal Code</Label>
+                  <Input
+                    id="sellerPostalCode"
+                    value={formState.trade.agreement.seller.address?.postal_zone || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.address.postal_zone", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="sellerTaxId">Tax ID</Label>
+                  <Input
+                    id="sellerTaxId"
+                    value={formState.trade.agreement.seller.tax_id || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.tax_id", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sellerIBAN">IBAN</Label>
+                  <Input
+                    id="sellerIBAN"
+                    value={formState.trade.agreement.seller.iban || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.iban", e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="sellerPhone">Phone</Label>
+                  <Input
+                    id="sellerPhone"
+                    value={formState.trade.agreement.seller.phone || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.phone", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sellerEmail">Email</Label>
+                  <Input
+                    id="sellerEmail"
+                    value={formState.trade.agreement.seller.email || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.email", e.target.value)}
+                  />
+                </div>
               </div>
               <div>
-                <Label htmlFor="sellerPostalZone">PLZ</Label>
+                <Label htmlFor="sellerHomepage">Homepage</Label>
                 <Input
-                  id="sellerPostalZone"
-                  value={formState.trade.agreement.seller.address?.postal_zone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.postal_zone", e.target.value)}
+                  id="sellerHomepage"
+                  value={formState.trade.agreement.seller.homepage || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.homepage", e.target.value)}
                 />
               </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="sellerLegalForm">Legal Form</Label>
+                  <Input
+                    id="sellerLegalForm"
+                    value={formState.trade.agreement.seller.legal_form || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.seller.legal_form", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="sellerRegisterNumber">Register Number</Label>
+                  <Input
+                    id="sellerRegisterNumber"
+                    value={formState.trade.agreement.seller.handels_register_number || ""}
+                    onChange={(e) =>
+                      handleInputChange("trade.agreement.seller.handels_register_number", e.target.value)
+                    }
+                  />
+                </div>
+              </div>
               <div>
-                <Label htmlFor="sellerTaxId">Tax ID</Label>
+                <Label htmlFor="sellerRegisterName">Register Name</Label>
                 <Input
-                  id="sellerTaxId"
-                  value={formState.trade.agreement.seller.tax_id}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.tax_id", e.target.value)}
+                  id="sellerRegisterName"
+                  value={formState.trade.agreement.seller.handels_register_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.handels_register_name", e.target.value)}
                 />
               </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Buyer Information Section */}
         <Card>
           <CardContent className="pt-6">
             <h3 className="text-lg font-semibold mb-4">Buyer Information</h3>
             <div className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="buyerId">Buyer ID</Label>
+                  <Input
+                    id="buyerId"
+                    value={formState.trade.agreement.buyer.id || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.buyer.id", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="buyerOrderNumber">Order Number</Label>
+                  <Input
+                    id="buyerOrderNumber"
+                    value={formState.trade.agreement.buyer.order_number || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.buyer.order_number", e.target.value)}
+                  />
+                </div>
+              </div>
               <div>
                 <Label htmlFor="buyerName">Name</Label>
                 <Input
@@ -269,20 +398,38 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 />
               </div>
               <div>
-                <Label htmlFor="buyerCountry">Country</Label>
+                <Label htmlFor="buyerContactName">Contact Name</Label>
                 <Input
-                  id="buyerCountry"
-                  value={formState.trade.agreement.buyer.address?.country || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.country", e.target.value)}
+                  id="buyerContactName"
+                  value={formState.trade.agreement.buyer.contact_name || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.contact_name", e.target.value)}
                 />
               </div>
               <div>
-                <Label htmlFor="buyerState">State</Label>
+                <Label htmlFor="buyerLegalForm">Legal Form</Label>
                 <Input
-                  id="buyerState"
-                  value={formState.trade.agreement.buyer.address?.state || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.state", e.target.value)}
+                  id="buyerLegalForm"
+                  value={formState.trade.agreement.buyer.legal_form || ""}
+                  onChange={(e) => handleInputChange("trade.agreement.buyer.legal_form", e.target.value)}
                 />
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="buyerCountry">Country</Label>
+                  <Input
+                    id="buyerCountry"
+                    value={formState.trade.agreement.buyer.address?.country || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.buyer.address.country", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="buyerCountryCode">Country Code</Label>
+                  <Input
+                    id="buyerCountryCode"
+                    value={formState.trade.agreement.buyer.address?.country_code || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.buyer.address.country_code", e.target.value)}
+                  />
+                </div>
               </div>
               <div>
                 <Label htmlFor="buyerStreet">Street</Label>
@@ -292,34 +439,49 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   onChange={(e) => handleInputChange("trade.agreement.buyer.address.street_name", e.target.value)}
                 />
               </div>
-              <div>
-                <Label htmlFor="buyerCityName">City</Label>
-                <Input
-                  id="buyerCityName"
-                  value={formState.trade.agreement.buyer.address?.city_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.city_name", e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="buyerPostalZone">PLZ</Label>
-                <Input
-                  id="buyerPostalZone"
-                  value={formState.trade.agreement.buyer.address?.postal_zone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.postal_zone", e.target.value)}
-                />
-              </div>
-              <div>
-                <Label htmlFor="buyerTaxId">Tax ID</Label>
-                <Input
-                  id="buyerTaxId"
-                  value={formState.trade.agreement.buyer.tax_id}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.tax_id", e.target.value)}
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="buyerCity">City</Label>
+                  <Input
+                    id="buyerCity"
+                    value={formState.trade.agreement.buyer.address?.city_name || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.buyer.address.city_name", e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="buyerPostalCode">Postal Code</Label>
+                  <Input
+                    id="buyerPostalCode"
+                    value={formState.trade.agreement.buyer.address?.postal_zone || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.buyer.address.postal_zone", e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           </CardContent>
         </Card>
 
+        {/* Order Information Section */}
+        {formState.trade.agreement.orders && formState.trade.agreement.orders.length > 0 && (
+          <Card>
+            <CardContent className="pt-6">
+              <h3 className="text-lg font-semibold mb-4">Order Information</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="orderDate">Order Date</Label>
+                  <Input
+                    id="orderDate"
+                    type="date"
+                    value={formState.trade.agreement.orders[0].date || ""}
+                    onChange={(e) => handleInputChange("trade.agreement.orders.0.date", e.target.value)}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Payment Information Section */}
         <Card>
           <CardContent className="pt-6">
             <h3 className="text-lg font-semibold mb-4">Payment Information</h3>
@@ -332,13 +494,23 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   onChange={(e) => handleInputChange("trade.settlement.currency_code", e.target.value)}
                 />
               </div>
+              {/* Also update the payment type dropdown to use the same styling */}
               <div>
                 <Label htmlFor="paymentType">Payment Type</Label>
-                <Input
-                  id="paymentType"
+                <Select
                   value={formState.trade.settlement.payment_means.type_code}
-                  onChange={(e) => handleInputChange("trade.settlement.payment_means.type_code", e.target.value)}
-                />
+                  onValueChange={(value) => handleInputChange("trade.settlement.payment_means.type_code", value)}
+                >
+                  <SelectTrigger id="paymentType">
+                    <SelectValue placeholder="Select payment type" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover">
+                    <SelectItem value="58">58: SEPA Credit Transfer</SelectItem>
+                    <SelectItem value="30">30: Credit Transfer</SelectItem>
+                    <SelectItem value="42">42: Payment to Bank Account</SelectItem>
+                    <SelectItem value="ZZZ">ZZZ: Other</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
               <div>
                 <Label htmlFor="paymentDate">Payment Due Date</Label>
@@ -349,10 +521,21 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   onChange={(e) => handleInputChange("trade.settlement.advance_payment_date", e.target.value)}
                 />
               </div>
+              {formState.trade.settlement.payee && (
+                <div>
+                  <Label htmlFor="payeeName">Payee Name</Label>
+                  <Input
+                    id="payeeName"
+                    value={formState.trade.settlement.payee.name || ""}
+                    onChange={(e) => handleInputChange("trade.settlement.payee.name", e.target.value)}
+                  />
+                </div>
+              )}
             </div>
           </CardContent>
         </Card>
 
+        {/* Line Items Section */}
         <Card>
           <CardContent className="pt-6">
             <div className="mb-4">
@@ -421,6 +604,27 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     />
                   </div>
                   <div>
+                    <Label htmlFor={`item-${index}-tax-category`}>Tax Category</Label>
+                    <Select
+                      value={item.settlement_tax.category}
+                      onValueChange={(value) =>
+                        handleInputChange(`trade.items.${index}.settlement_tax.category`, value)
+                      }
+                    >
+                      <SelectTrigger id={`item-${index}-tax-category`}>
+                        <SelectValue placeholder="Select tax category" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-popover">
+                        <SelectItem value="AE">AE: VAT Reverse Charge</SelectItem>
+                        <SelectItem value="E">E: Exempt from Tax</SelectItem>
+                        <SelectItem value="S">S: Standard rate</SelectItem>
+                        <SelectItem value="Z">Z: Zero rated goods</SelectItem>
+                        <SelectItem value="H">H: Higher rate</SelectItem>
+                        <SelectItem value="AA">AA: Lower rate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
                     <Label htmlFor={`item-${index}-tax-rate`}>Tax Rate (%)</Label>
                     <Input
                       id={`item-${index}-tax-rate`}
@@ -466,18 +670,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input id="taxTotal" value={formState.trade.settlement.monetary_summation.tax_total} disabled />
               </div>
               <div>
-                <Label htmlFor="totalAmount">Net Amount (€)</Label>
-                <Input id="totalAmount" value={formState.trade.settlement.monetary_summation.net_total} disabled />
+                <Label htmlFor="netTotal">Net Amount (€)</Label>
+                <Input id="netTotal" value={formState.trade.settlement.monetary_summation.net_total} disabled />
               </div>
               <div>
                 <Label htmlFor="grandTotal">Grand Total (€)</Label>
                 <Input
                   id="grandTotal"
-                  value={
-                    formState.trade.settlement.monetary_summation.grand_total ||
-                    formState.trade.settlement.monetary_summation.net_total +
-                      formState.trade.settlement.monetary_summation.tax_total
-                  }
+                  value={formState.trade.settlement.monetary_summation.grand_total}
                   disabled
                   className="font-bold"
                 />

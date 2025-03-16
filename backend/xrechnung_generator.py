@@ -120,6 +120,7 @@ def generate_xrechnung(invoice_data):
             "deliveryDetails": item["delivery_details"],
             "priceNet": item["agreement_net_price"],
             "taxPercent": item["settlement_tax"]["rate"],
+            "taxCategory": item["settlement_tax"]["category"],
         })
     
     template = Template(open("./backend/templates/ubl-3.0.1-xrechnung-template.xml").read())

@@ -84,16 +84,16 @@ EXAMPLE_JSON = """
       "trade_tax": [
         {
           "@type": "TradeTax",
-          "category": "AE",
+          "category": "S",
           "rate": 0.00,
           "amount": 0
         }
       ],
       "monetary_summation": {
         "@type": "MonetarySummation",
-        "grand_total": 1000.00, 
-        "net_total": 995.00,
-        "tax_total": 5.00
+        "grand_total": 1288.81, 
+        "net_total": 1099.00,
+        "tax_total": 189.81
       }
     },
     "items": [
@@ -108,11 +108,28 @@ EXAMPLE_JSON = """
         "delivery_details": 999.00,
         "settlement_tax": {
           "@type": "Tax",
+          "category": "S",
+          "rate": 19,
+          "amount": 189.81
+        },
+        "total_amount": 1188.81
+      }
+      {
+        "@type": "Item",
+        "line_id": "2",
+        "product_name": "Random Package",
+        "period_start": "2025-01-01",
+        "period_end": "2025-02-01",
+        "agreement_net_price": 100.00,
+        "quantity": 1,
+        "delivery_details": 100.00,
+        "settlement_tax": {
+          "@type": "Tax",
           "category": "E",
           "rate": 0,
           "amount": 0
         },
-        "total_amount": 999.00
+        "total_amount": 100.00
       }
     ]
   }
