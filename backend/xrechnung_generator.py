@@ -73,7 +73,7 @@ def generate_xrechnung(invoice_data):
     
     invoice.invoiceNumber = invoice_data["header"]["id"]
     invoice.invoiceDate = invoice_data["header"]["issue_date_time"]
-    invoice.dueDate = invoice_data["trade"]["settlement"]["advance_payment_date"]
+    invoice.dueDate = invoice_data["trade"]["settlement"].get("advance_payment_date", "")
     invoice.leitwegID = invoice_data["header"].get("leitweg_id")
     invoice.note = " ".join(invoice_data["header"].get("notes", []))
     

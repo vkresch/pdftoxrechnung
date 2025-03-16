@@ -77,6 +77,17 @@ async def convert_to_xrechnung(invoice_data: dict):
         filename="invoice_xrechnung.xml",
     )
 
+
+@app.get("/validation-report-content/")
+async def validation_report():
+    output_file_path = UPLOAD_FOLDER / "invoice_xrechnung-report.xml"
+    return FileResponse(
+        output_file_path,
+        media_type="application/xml",
+        filename="invoice_xrechnung-report.xml",
+    )
+
+
 @app.get("/validation-report/")
 async def download_report():
     output_file_path = UPLOAD_FOLDER / "invoice_xrechnung-report.html"
@@ -86,6 +97,7 @@ async def download_report():
         filename="invoice_xrechnung-report.html",
     )
 
+
 @app.post("/validate/")
 async def validate_xml():
     jar_path = "backend/validator/validationtool-1.5.0-standalone.jar"
@@ -93,40 +105,48 @@ async def validate_xml():
     output_directory = Path.cwd() / "backend/validator/"
     xml_file = UPLOAD_FOLDER / "invoice_xrechnung.xml"
     validation_report = UPLOAD_FOLDER / "invoice_xrechnung-report.xml"
-    
+
     command = [
-        "java", "-jar", jar_path,
-        "-s", scenarios_file,
-        "-r", str(output_directory),
-        "--output-directory", 
+        "java",
+        "-jar",
+        jar_path,
+        "-s",
+        scenarios_file,
+        "-r",
+        str(output_directory),
+        "--output-directory",
         str(UPLOAD_FOLDER),
         "-h",
-        xml_file
+        xml_file,
     ]
-    
+
     try:
         result = subprocess.run(command, capture_output=True, text=True)
         return_code = result.returncode
-        
-        response = {
-            "return_code": return_code,
-            "message": "Validation completed"
-        }
-        
+
+        response = {"return_code": return_code, "message": "Validation completed"}
+
         if return_code == 0:
-            response["description"] = "Validated XML file is acceptable."
+            response["description"] = (
+                "XRechnung is valid according to KoSIT Validator 1.5.0."
+            )
         elif return_code > 0:
-            response["description"] = "Validated XML file was rejected."
+            response["description"] = (
+                "XRechnung file is invalid according to KoSIT Validator 1.5.0."
+            )
         elif return_code == -1:
             response["description"] = "Parsing error: Incorrect command-line arguments."
         elif return_code == -2:
-            response["description"] = "Configuration error: Issues with loading configuration/validation targets."
+            response["description"] = (
+                "Configuration error: Issues with loading configuration/validation targets."
+            )
         else:
             response["description"] = "Unknown error."
-        
+
         return response
     except Exception as e:
         return {"return_code": -99, "description": str(e)}
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

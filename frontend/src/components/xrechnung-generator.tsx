@@ -10,6 +10,7 @@ import { Download, ArrowLeft, ArrowRight, CheckCircle, AlertCircle, FileCheck } 
 import { PDFPreview } from "./pdf-preview"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Card, CardContent } from "@/components/ui/card"
+import { ValidationMessageDisplay } from "./validation-message-display"
 
 type Step = "upload" | "validate" | "download"
 
@@ -18,6 +19,15 @@ interface ValidationResult {
   message: string
   description: string
   error?: string
+  validationMessages?: ValidationMessage[]
+}
+
+interface ValidationMessage {
+  id: string
+  level: "error" | "warning"
+  code: string
+  message: string
+  xpathLocation?: string
 }
 
 export default function XRechnungGenerator() {
@@ -131,10 +141,12 @@ export default function XRechnungGenerator() {
     }
   }
 
+  // Update the handleValidateXML function to fetch and parse the XML report
   const handleValidateXML = async () => {
     setIsValidating(true)
 
     try {
+      // First call the validation endpoint
       const response = await fetch("http://localhost:8000/validate/", {
         method: "POST",
       })
@@ -144,19 +156,50 @@ export default function XRechnungGenerator() {
       }
 
       const result = await response.json()
-      setValidationResult(result)
 
-      // Show toast based on validation result
+      // Now fetch the XML report file
+      const reportResponse = await fetch("http://localhost:8000/validation-report-content/", {
+        method: "GET",
+      })
+
+      if (!reportResponse.ok) {
+        throw new Error(`Failed to fetch validation report: ${reportResponse.status}`)
+      }
+
+      const reportXml = await reportResponse.text()
+      const validationMessages = parseValidationReport(reportXml)
+
+      // Add the validation messages to the result
+      const enhancedResult = {
+        ...result,
+        validationMessages,
+      }
+
+      setValidationResult(enhancedResult)
+
+      // Show toast based on validation result with detailed messages
       if (result.return_code === 0) {
         toast({
           title: "Validation Successful",
           description: "The XRechnung XML is valid.",
         })
       } else {
+        // Display validation messages in the toast
         toast({
           title: "Validation Failed",
-          description: result.description || "The XRechnung XML is not valid.",
+          description: (
+            <div className="mt-2 space-y-2 max-h-[300px] overflow-auto text-sm">
+              <div>{result.description || "The XRechnung XML is not valid."}</div>
+
+              {validationMessages.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
+                  <ValidationMessageDisplay messages={validationMessages} maxHeight="200px" showLocations={false} />
+                </div>
+              )}
+            </div>
+          ),
           variant: "destructive",
+          duration: 10000, // Longer duration to give time to read
         })
       }
     } catch (error) {
@@ -169,6 +212,40 @@ export default function XRechnungGenerator() {
     } finally {
       setIsValidating(false)
     }
+  }
+
+  // Add a function to parse the XML validation report
+  const parseValidationReport = (xmlString: string): ValidationMessage[] => {
+    const parser = new DOMParser()
+    const xmlDoc = parser.parseFromString(xmlString, "text/xml")
+
+    // Handle parsing errors
+    if (xmlDoc.getElementsByTagName("parsererror").length > 0) {
+      console.error("Error parsing XML report")
+      return []
+    }
+
+    const messages: ValidationMessage[] = []
+
+    // Find all message elements in the report
+    // Note: We need to handle namespaces in the XML
+    const messageElements = xmlDoc.getElementsByTagName("rep:message")
+
+    for (let i = 0; i < messageElements.length; i++) {
+      const element = messageElements[i]
+
+      const message: ValidationMessage = {
+        id: element.getAttribute("id") || `msg-${i}`,
+        level: (element.getAttribute("level") as "error" | "warning") || "warning",
+        code: element.getAttribute("code") || "",
+        message: element.textContent || "",
+        xpathLocation: element.getAttribute("xpathLocation") || undefined,
+      }
+
+      messages.push(message)
+    }
+
+    return messages
   }
 
   const handleDownloadValidationReport = () => {
@@ -288,6 +365,18 @@ export default function XRechnungGenerator() {
                           {validationResult.return_code})
                         </div>
                         <div className="mt-1">{validationResult.description}</div>
+
+                        {/* Display validation messages */}
+                        {validationResult.validationMessages && validationResult.validationMessages.length > 0 && (
+                          <div className="mt-3 pt-3 border-t border-white/20">
+                            <div className="font-medium mb-1">Validation Messages:</div>
+                            <ValidationMessageDisplay
+                              messages={validationResult.validationMessages}
+                              className="text-white"
+                              showLocations={true}
+                            />
+                          </div>
+                        )}
                       </AlertDescription>
                     </Alert>
 
