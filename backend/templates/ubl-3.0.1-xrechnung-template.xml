@@ -4,18 +4,13 @@
     <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
     <cbc:ID>{{ data.invoiceNumber }}</cbc:ID>
     <cbc:IssueDate>{{ data.invoiceDate }}</cbc:IssueDate>
-    {% if data.dueDate != "" %}
+    {% if data.dueDate != "" -%}
     <cbc:DueDate>{{ data.dueDate }}</cbc:DueDate>
     {% endif -%}
     <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
-    <cac:OrderReference>
-        <cbc:ID>{{ data.customerOrderNumber }}</cbc:ID>
-    </cac:OrderReference>
-    {% if data.leitwegID is not none %}
-    <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
-    {% endif -%}
+    <cbc:BuyerReference>{{ data.customerOrderNumber }}</cbc:BuyerReference>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.ownCompanyID }}</cbc:EndpointID>
@@ -119,7 +114,6 @@
             <cac:SellersItemIdentification>
                 <cbc:ID>{{ item.lineID }}</cbc:ID>
             </cac:SellersItemIdentification>
-            <cac:CommodityClassification/>
             <cac:ClassifiedTaxCategory>
                 <cbc:ID>S</cbc:ID>
                 <cbc:Percent>{{ item.taxPercent }}</cbc:Percent>

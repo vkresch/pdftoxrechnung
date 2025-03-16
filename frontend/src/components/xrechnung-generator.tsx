@@ -6,10 +6,19 @@ import { FileUploader } from "./file-uploader"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/components/ui/use-toast"
 import { StepIndicator } from "./step-indicator"
-import { Download, ArrowLeft, ArrowRight } from "lucide-react"
+import { Download, ArrowLeft, ArrowRight, CheckCircle, AlertCircle, FileCheck } from "lucide-react"
 import { PDFPreview } from "./pdf-preview"
+import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Card, CardContent } from "@/components/ui/card"
 
 type Step = "upload" | "validate" | "download"
+
+interface ValidationResult {
+  return_code: number
+  message: string
+  description: string
+  error?: string
+}
 
 export default function XRechnungGenerator() {
   const [currentStep, setCurrentStep] = useState<Step>("upload")
@@ -17,6 +26,8 @@ export default function XRechnungGenerator() {
   const [extractedData, setExtractedData] = useState<any | null>(null)
   const [xmlBlob, setXmlBlob] = useState<Blob | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isValidating, setIsValidating] = useState(false)
+  const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
   const { toast } = useToast()
 
   const handleFileSelect = (file: File | null) => {
@@ -48,19 +59,20 @@ export default function XRechnungGenerator() {
         throw new Error(`Server responded with status: ${response.status}`)
       }
 
-      const extractedData = await response.json()
-      setExtractedData(extractedData)
-
+      // The upload endpoint now directly returns the extracted data
+      const data = await response.json()
+      setExtractedData(data)
       setCurrentStep("validate")
+
       toast({
         title: "Success",
         description: "Data extracted successfully from PDF",
       })
     } catch (error) {
-      console.error("Error extracting data:", error)
+      console.error("Error uploading PDF:", error)
       toast({
         title: "Error",
-        description: "Failed to extract data from PDF. Please try again.",
+        description: "Failed to upload PDF. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -100,6 +112,8 @@ export default function XRechnungGenerator() {
       const blob = await response.blob()
       setXmlBlob(blob)
       setCurrentStep("download")
+      // Reset validation result when generating new XML
+      setValidationResult(null)
 
       toast({
         title: "Success",
@@ -117,11 +131,67 @@ export default function XRechnungGenerator() {
     }
   }
 
+  const handleValidateXML = async () => {
+    setIsValidating(true)
+
+    try {
+      const response = await fetch("http://localhost:8000/validate/", {
+        method: "POST",
+      })
+
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`)
+      }
+
+      const result = await response.json()
+      setValidationResult(result)
+
+      // Show toast based on validation result
+      if (result.return_code === 0) {
+        toast({
+          title: "Validation Successful",
+          description: "The XRechnung XML is valid.",
+        })
+      } else {
+        toast({
+          title: "Validation Failed",
+          description: result.description || "The XRechnung XML is not valid.",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error("Error validating XML:", error)
+      toast({
+        title: "Error",
+        description: "Failed to validate XRechnung XML. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsValidating(false)
+    }
+  }
+
+  const handleDownloadValidationReport = () => {
+    // Create a link to download the validation report from the FastAPI backend
+    const link = document.createElement("a")
+    link.href = "http://localhost:8000/validation-report/"
+    link.download = "validation-report.xml"
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+
+    toast({
+      title: "Download Started",
+      description: "Validation report is being downloaded",
+    })
+  }
+
   const handleClear = () => {
     setPdfFile(null)
     setExtractedData(null)
     setXmlBlob(null)
     setCurrentStep("upload")
+    setValidationResult(null)
     toast({
       title: "Form Cleared",
       description: "All data has been reset",
@@ -190,6 +260,48 @@ export default function XRechnungGenerator() {
                 Download XRechnung XML
               </Button>
 
+              <Button onClick={handleValidateXML} className="w-full mb-4" variant="outline" disabled={isValidating}>
+                <FileCheck className="mr-2 h-4 w-4" />
+                {isValidating ? "Validating..." : "Validate XRechnung"}
+              </Button>
+
+              {validationResult && (
+                <Card className="mt-6 mb-6">
+                  <CardContent className="pt-6">
+                    <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
+                    <Alert
+                      variant={validationResult.return_code === 0 ? "default" : "destructive"}
+                      className={validationResult.return_code === 0 ? "bg-green-50 border-green-200" : ""}
+                    >
+                      {validationResult.return_code === 0 ? (
+                        <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                      ) : (
+                        <AlertCircle className="h-4 w-4 mr-2" />
+                      )}
+                      <AlertDescription>
+                        <div className="font-medium">
+                          {validationResult.return_code === 0 ? "Valid" : "Invalid"} (Code:{" "}
+                          {validationResult.return_code})
+                        </div>
+                        <div className="mt-1">{validationResult.description}</div>
+                      </AlertDescription>
+                    </Alert>
+
+                    {validationResult.return_code !== 0 && (
+                      <Button
+                        onClick={handleDownloadValidationReport}
+                        className="w-full mt-4"
+                        variant="secondary"
+                        size="sm"
+                      >
+                        <Download className="mr-2 h-4 w-4" />
+                        Download Validation Report
+                      </Button>
+                    )}
+                  </CardContent>
+                </Card>
+              )}
+
               {pdfFile && (
                 <div className="mt-8 p-4 border rounded-lg">
                   <h3 className="font-medium mb-2">Original PDF</h3>
@@ -207,7 +319,7 @@ export default function XRechnungGenerator() {
   const renderButtons = () => {
     return (
       <div className="flex justify-between items-center">
-        <Button variant="outline" onClick={handleClear} disabled={isLoading}>
+        <Button variant="outline" onClick={handleClear} disabled={isLoading || isValidating}>
           Clear
         </Button>
 
@@ -216,7 +328,7 @@ export default function XRechnungGenerator() {
             <Button
               variant="outline"
               onClick={() => setCurrentStep(currentStep === "validate" ? "upload" : "validate")}
-              disabled={isLoading}
+              disabled={isLoading || isValidating}
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back

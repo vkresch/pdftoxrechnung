@@ -1,5 +1,6 @@
 import os
 import uvicorn
+import subprocess
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
@@ -76,6 +77,56 @@ async def convert_to_xrechnung(invoice_data: dict):
         filename="invoice_xrechnung.xml",
     )
 
+@app.get("/validation-report/")
+async def download_report():
+    output_file_path = UPLOAD_FOLDER / "invoice_xrechnung-report.html"
+    return FileResponse(
+        output_file_path,
+        media_type="application/html",
+        filename="invoice_xrechnung-report.html",
+    )
+
+@app.post("/validate/")
+async def validate_xml():
+    jar_path = "backend/validator/validationtool-1.5.0-standalone.jar"
+    scenarios_file = "backend/validator/scenarios.xml"
+    output_directory = Path.cwd() / "backend/validator/"
+    xml_file = UPLOAD_FOLDER / "invoice_xrechnung.xml"
+    validation_report = UPLOAD_FOLDER / "invoice_xrechnung-report.xml"
+    
+    command = [
+        "java", "-jar", jar_path,
+        "-s", scenarios_file,
+        "-r", str(output_directory),
+        "--output-directory", 
+        str(UPLOAD_FOLDER),
+        "-h",
+        xml_file
+    ]
+    
+    try:
+        result = subprocess.run(command, capture_output=True, text=True)
+        return_code = result.returncode
+        
+        response = {
+            "return_code": return_code,
+            "message": "Validation completed"
+        }
+        
+        if return_code == 0:
+            response["description"] = "All validated XML files are acceptable."
+        elif return_code > 0:
+            response["description"] = f"XML file was rejected."
+        elif return_code == -1:
+            response["description"] = "Parsing error: Incorrect command-line arguments."
+        elif return_code == -2:
+            response["description"] = "Configuration error: Issues with loading configuration/validation targets."
+        else:
+            response["description"] = "Unknown error."
+        
+        return response
+    except Exception as e:
+        return {"return_code": -99, "description": str(e)}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

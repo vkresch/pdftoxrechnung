@@ -53,3 +53,4 @@ downloaded_files/
 .env
 *.pyc
 backend/deepseek_chat.png
+validator/
