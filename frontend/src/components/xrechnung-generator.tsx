@@ -271,12 +271,16 @@ export default function XRechnungGenerator() {
                     <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
                     <Alert
                       variant={validationResult.return_code === 0 ? "default" : "destructive"}
-                      className={validationResult.return_code === 0 ? "bg-green-50 border-green-200" : ""}
+                      className={
+                        validationResult.return_code === 0
+                          ? "bg-green-700 border-green-800 text-white"
+                          : "bg-red-700 border-red-800 text-white"
+                      }
                     >
                       {validationResult.return_code === 0 ? (
-                        <CheckCircle className="h-4 w-4 mr-2 text-green-500" />
+                        <CheckCircle className="h-4 w-4 mr-2 text-white" />
                       ) : (
-                        <AlertCircle className="h-4 w-4 mr-2" />
+                        <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       )}
                       <AlertDescription>
                         <div className="font-medium">

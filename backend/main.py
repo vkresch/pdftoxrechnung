@@ -114,9 +114,9 @@ async def validate_xml():
         }
         
         if return_code == 0:
-            response["description"] = "All validated XML files are acceptable."
+            response["description"] = "Validated XML file is acceptable."
         elif return_code > 0:
-            response["description"] = f"XML file was rejected."
+            response["description"] = "Validated XML file was rejected."
         elif return_code == -1:
             response["description"] = "Parsing error: Incorrect command-line arguments."
         elif return_code == -2:
