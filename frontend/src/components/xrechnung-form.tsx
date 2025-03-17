@@ -45,11 +45,6 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         path.includes("items") &&
         (path.includes("quantity") || path.includes("agreement_net_price") || path.includes("settlement_tax.rate"))
       ) {
-        const itemIndex = Number.parseInt(path.split(".")[2])
-        const item = newState.trade.items[itemIndex]
-        item.total_amount = Number.parseFloat((item.quantity * item.agreement_net_price).toFixed(2))
-        item.delivery_details = item.total_amount
-
         // Update all totals including tax calculations
         updateTotals(newState)
       }
@@ -60,20 +55,30 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
   // Update the totals for the invoice
   const updateTotals = (state: any) => {
-    // First update each line item's tax amount
+    // First calculate each line item's net amount (before tax)
     state.trade.items.forEach((item: any) => {
+      // Calculate net amount for this line item (quantity * unit price)
+      const netAmount = Number(item.quantity) * Number(item.agreement_net_price)
+      item.delivery_details = Number.parseFloat(netAmount.toFixed(2))
+
       if (item.settlement_tax && item.settlement_tax.rate !== undefined) {
         // Calculate tax amount for this line item
         const taxRate = Number(item.settlement_tax.rate) / 100 // Convert percentage to decimal
-        const taxAmount = Number(item.total_amount) * taxRate
+        const taxAmount = netAmount * taxRate
 
         // Update the tax amount in the item
         item.settlement_tax.amount = Number.parseFloat(taxAmount.toFixed(2))
+
+        // Update the total amount (net + tax)
+        item.total_amount = Number.parseFloat((netAmount + taxAmount).toFixed(2))
+      } else {
+        // If no tax information, total equals net
+        item.total_amount = item.delivery_details
       }
     })
 
-    // Calculate total amount from items
-    const totalAmount = state.trade.items.reduce((sum: number, item: any) => sum + Number(item.total_amount || 0), 0)
+    // Calculate net total from items (sum of all net amounts before tax)
+    const netTotal = state.trade.items.reduce((sum: number, item: any) => sum + Number(item.delivery_details || 0), 0)
 
     // Calculate tax total by summing up all individual tax amounts
     const taxTotal = state.trade.items.reduce(
@@ -83,11 +88,11 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
     // Update monetary summation
     if (state.trade.settlement && state.trade.settlement.monetary_summation) {
-      state.trade.settlement.monetary_summation.net_total = Number.parseFloat(totalAmount.toFixed(2))
+      state.trade.settlement.monetary_summation.net_total = Number.parseFloat(netTotal.toFixed(2))
       state.trade.settlement.monetary_summation.tax_total = Number.parseFloat(taxTotal.toFixed(2))
 
       // Calculate and update the grand total (including tax)
-      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((totalAmount + taxTotal).toFixed(2))
+      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((netTotal + taxTotal).toFixed(2))
     }
 
     // Update trade tax if it exists
@@ -630,44 +635,57 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <SelectTrigger id={`item-${index}-tax-category`}>
                         <SelectValue placeholder="Select tax category" />
                       </SelectTrigger>
-                      <SelectContent className="bg-gray-700 text-white">
+                      <SelectContent className="bg-black text-white">
                         {[
                           {
                             code: "AE",
                             name: "Vat Reverse Charge",
+                            description: "Code specifying that the standard VAT rate is levied from the invoicee.",
                           },
                           {
                             code: "E",
                             name: "Exempt from Tax",
+                            description: "Code specifying that taxes are not applicable.",
                           },
-                          { code: "S", name: "Standard rate"},
+                          { code: "S", name: "Standard rate", description: "Code specifying the standard rate." },
                           {
                             code: "Z",
                             name: "Zero rated goods",
+                            description: "Code specifying that the goods are at a zero rate.",
                           },
                           {
                             code: "G",
                             name: "Free export item, VAT not charged",
+                            description: "Code specifying that the item is free export and taxes are not charged.",
                           },
                           {
                             code: "O",
                             name: "Services outside scope of tax",
+                            description: "Code specifying that taxes are not applicable to the services.",
                           },
                           {
                             code: "K",
                             name: "VAT exempt for EEA intra-community supply of goods and services",
+                            description:
+                              "A tax category code indicating the item is VAT exempt due to an intra-community supply in the European Economic Area.",
                           },
                           {
                             code: "L",
                             name: "Canary Islands general indirect tax",
+                            description:
+                              "Impuesto General Indirecto Canario (IGIC) is an indirect tax levied on goods and services supplied in the Canary Islands (Spain) by traders and professionals, as well as on import of goods.",
                           },
                           {
                             code: "M",
                             name: "Tax for production, services and importation in Ceuta and Melilla",
+                            description:
+                              "Impuesto sobre la Producción, los Servicios y la Importación (IPSI) is an indirect municipal tax, levied on the production, processing and import of all kinds of movable tangible property, the supply of services and the transfer of immovable property located in the cities of Ceuta and Melilla.",
                           },
                           {
                             code: "B",
                             name: "Transferred (VAT), In Italy",
+                            description:
+                              "VAT not to be paid to the issuer of the invoice but directly to relevant tax authority. This code is allowed in the EN 16931 for Italy only based on the Italian A-deviation.",
                           },
                         ].map((tax) => (
                           <SelectItem key={tax.code} value={tax.code} className="focus:bg-black hover:bg-gray-900">
@@ -703,7 +721,18 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     />
                   </div>
                   <div>
-                    <Label htmlFor={`item-${index}-total`}>Total Price (€)</Label>
+                    <Label htmlFor={`item-${index}-net-total`}>Net Total (€)</Label>
+                    <Input
+                      id={`item-${index}-net-total`}
+                      type="number"
+                      step="0.01"
+                      value={item.delivery_details}
+                      disabled
+                      className="bg-muted/30"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor={`item-${index}-total`}>Total Price (with tax) (€)</Label>
                     <Input id={`item-${index}-total`} type="number" step="0.01" value={item.total_amount} disabled />
                   </div>
                 </div>
@@ -721,20 +750,30 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <Label htmlFor="taxTotal">Tax Amount (€)</Label>
-                <Input id="taxTotal" value={formState.trade.settlement.monetary_summation.tax_total} disabled />
-              </div>
-              <div>
                 <Label htmlFor="netTotal">Net Amount (€)</Label>
-                <Input id="netTotal" value={formState.trade.settlement.monetary_summation.net_total} disabled />
+                <Input
+                  id="netTotal"
+                  value={formState.trade.settlement.monetary_summation.net_total}
+                  disabled
+                  className="bg-muted/30"
+                />
               </div>
               <div>
-                <Label htmlFor="grandTotal">Grand Total (€)</Label>
+                <Label htmlFor="taxTotal">Tax Amount (€)</Label>
+                <Input
+                  id="taxTotal"
+                  value={formState.trade.settlement.monetary_summation.tax_total}
+                  disabled
+                  className="bg-muted/30"
+                />
+              </div>
+              <div>
+                <Label htmlFor="grandTotal">Grand Total (with tax) (€)</Label>
                 <Input
                   id="grandTotal"
                   value={formState.trade.settlement.monetary_summation.grand_total}
                   disabled
-                  className="font-bold"
+                  className="font-bold bg-muted/30"
                 />
               </div>
             </div>
