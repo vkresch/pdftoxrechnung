@@ -2,12 +2,15 @@ import os
 import re
 import logging
 import time
+import numpy as np
 from backend.chatgpt_integration import process_with_chatgpt
 from backend.deepseek_integration import process_with_deepseek
 from backend.ollama_integration import process_with_ollama
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 from decimal import Decimal
+import easyocr
+from pdf2image import convert_from_path
 from drafthorse.models.accounting import ApplicableTradeTax
 from drafthorse.models.document import Document
 from drafthorse.models.note import IncludedNote
@@ -134,12 +137,31 @@ def preprocess_invoice_text(text):
     return text
 
 
-def extract_text_from_pdf(pdf_file_path: str) -> str:
+def extract_text_from_pdf(pdf_file_path: str, language: str = "de") -> str:
     # Extract text from the PDF using pdfplumber
     with open_pdf(pdf_file_path) as pdf:
         pdf_text = ""
         for page in pdf.pages:
             pdf_text += page.extract_text()
+
+    if not pdf_text:
+        # Convert PDF to images
+        images = convert_from_path(pdf_file_path)
+
+        # Initialize EasyOCR reader (English and numbers)
+        reader = easyocr.Reader([language])
+
+        # Extract text from each image
+        extracted_text = []
+        for img in images:
+            results = reader.readtext(
+                np.array(img), detail=0
+            )  # Extract text (detail=0 returns only text)
+            extracted_text.extend(results)  # Add extracted text to the list
+
+        # Join extracted text into a single string
+        pdf_text = "\n".join(extracted_text)
+
     return preprocess_invoice_text(pdf_text)
 
 
