@@ -113,7 +113,30 @@ def generate_xrechnung(invoice_data):
     if invoice.dueDate != "":
         dueDateObject = datetime.strptime(invoice.dueDate, "%Y-%m-%d")
         invoice.dueDays = (dueDateObject - invoiceDateObject).days
+
+    # Delivery
+    delivery = invoice_data["trade"].get("delivery")
+    if delivery:
+        invoice.locationID = delivery.get("location_id")
+        invoice.recipientName = delivery.get("recipient_name")
+        invoice.deliveryStreetName = delivery.get("address").get("street_name")
+        invoice.deliveryCityName = delivery.get("address").get("city_name")
+        invoice.deliveryPostalZone = delivery.get("address").get("postal_zone")
+        invoice.deliveryRegion = delivery.get("address").get("region")
+        invoice.deliveryCountryCode = delivery.get("address").get("country_code")
+        invoice.deliveryReceiptName = delivery.get("address").get("recipient_name")
+
+    # Allowances
+    allowances = invoice_data["trade"].get("allowances")
+    if allowances:
+        invoice.allowances = allowances
+
+    # Charges
+    charges = invoice_data["trade"].get("charges")
+    if charges:
+        invoice.charges = charges
     
+    # Line Items
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({
             "lineID": item["line_id"],

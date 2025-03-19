@@ -31,9 +31,15 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     }
   }, [data])
 
+  // Optimize the form rendering to reduce re-renders
+  // Add debounce to the useEffect that passes data to parent
   useEffect(() => {
-    // Pass the updated form state to the parent component
-    onChange(formState)
+    // Use a timeout to debounce the updates to the parent component
+    const timeoutId = setTimeout(() => {
+      onChange(formState)
+    }, 300) // 300ms debounce
+
+    return () => clearTimeout(timeoutId)
   }, [formState, onChange])
 
   // Initialize form data with default values
@@ -109,7 +115,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     }
   }
 
-  // Handle input changes for any field in the form
+  // Update the handleInputChange function to calculate amount based on percentage
   const handleInputChange = (path: string, value: any) => {
     const keys = path.split(".")
     setFormState((prevState: any) => {
@@ -124,6 +130,23 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       }
 
       current[keys[keys.length - 1]] = value
+
+      // If changing allowance or charge percentage, calculate the amount automatically
+      if (path.includes("allowances") && path.includes("percent")) {
+        const index = Number.parseInt(path.split(".")[2])
+        const allowance = newState.trade.allowances[index]
+        const basisAmount = allowance.basis_amount || 0
+        const percent = value || 0
+        allowance.amount = Number.parseFloat((basisAmount * (percent / 100)).toFixed(2))
+      }
+
+      if (path.includes("charges") && path.includes("percent")) {
+        const index = Number.parseInt(path.split(".")[2])
+        const charge = newState.trade.charges[index]
+        const basisAmount = charge.basis_amount || 0
+        const percent = value || 0
+        charge.amount = Number.parseFloat((basisAmount * (percent / 100)).toFixed(2))
+      }
 
       // If changing item quantity, price, or tax rate, update the total price and tax
       if (
@@ -143,7 +166,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
   }
 
-  // Update the totals for the invoice
+  // Optimize the updateTotals function to reduce unnecessary calculations
   const updateTotals = (state: any) => {
     // First calculate each line item's net amount (before tax)
     state.trade.items.forEach((item: any) => {
@@ -168,18 +191,33 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
 
     // Calculate items net total first (sum of all net amounts before tax)
-    const itemsNetTotal = state.trade.items.reduce((sum: number, item: any) => sum + Number(item.delivery_details || 0), 0)
-    
+    const itemsNetTotal = state.trade.items.reduce(
+      (sum: number, item: any) => sum + Number(item.delivery_details || 0),
+      0,
+    )
+
     // Update basis amount for all allowances and charges to the items net total
     if (state.trade.allowances && state.trade.allowances.length > 0) {
       state.trade.allowances.forEach((allowance: any) => {
+        const oldBasisAmount = allowance.basis_amount || 0
         allowance.basis_amount = Number.parseFloat(itemsNetTotal.toFixed(2))
+
+        // If percent is set, recalculate amount when basis amount changes
+        if (allowance.percent) {
+          allowance.amount = Number.parseFloat((allowance.basis_amount * (allowance.percent / 100)).toFixed(2))
+        }
       })
     }
-    
+
     if (state.trade.charges && state.trade.charges.length > 0) {
       state.trade.charges.forEach((charge: any) => {
+        const oldBasisAmount = charge.basis_amount || 0
         charge.basis_amount = Number.parseFloat(itemsNetTotal.toFixed(2))
+
+        // If percent is set, recalculate amount when basis amount changes
+        if (charge.percent) {
+          charge.amount = Number.parseFloat((charge.basis_amount * (charge.percent / 100)).toFixed(2))
+        }
       })
     }
 
@@ -204,7 +242,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         }
       })
     }
-    
+
     // Calculate the final net total (items - allowances + charges)
     const netTotal = itemsNetTotal - allowancesTotal + chargesTotal
 
@@ -224,11 +262,13 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
       // Calculate and update the grand total (including tax)
       state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((netTotal + taxTotal).toFixed(2))
-      
+
       // Calculate due amount (grand total - paid amount + rounding amount)
       const paidAmount = Number(state.trade.settlement.monetary_summation.paid_amount || 0)
       const roundingAmount = Number(state.trade.settlement.monetary_summation.rounding_amount || 0)
-      state.trade.settlement.monetary_summation.due_amount = Number.parseFloat((netTotal + taxTotal - paidAmount + roundingAmount).toFixed(2))
+      state.trade.settlement.monetary_summation.due_amount = Number.parseFloat(
+        (netTotal + taxTotal - paidAmount + roundingAmount).toFixed(2),
+      )
     }
 
     // Update trade tax if it exists
@@ -288,9 +328,10 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
-      const items = newState.trade.items
-      // Swap items
-      [items[index], items[index - 1]] = [items[index - 1], items[index]]
+      const items = (newState.trade.items[
+        // Swap items
+        (items[index], items[index - 1])
+      ] = [items[index - 1], items[index]])
 
       // Update line_ids
       items.forEach((item: any, idx: number) => {
@@ -307,10 +348,11 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       const newState = JSON.parse(JSON.stringify(prevState))
       const items = newState.trade.items
 
-      if (index >= items.length - 1) return newState
-
-      // Swap items
-      [items[index], items[index + 1]] = [items[index + 1], items[index]]
+      if (index >= items.length - 1)
+        return (newState[
+          // Swap items
+          (items[index], items[index + 1])
+        ] = [items[index + 1], items[index]])
 
       // Update line_ids
       items.forEach((item: any, idx: number) => {
@@ -321,18 +363,18 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
   }
 
-  // Add a new allowance
+  // Update the addAllowance function to set initial percent to 0
   const addAllowance = () => {
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
-      
+
       if (!newState.trade.allowances) {
         newState.trade.allowances = []
       }
-      
+
       // Get the current items net total for the basis amount
       const itemsNetTotal = newState.trade.settlement.monetary_summation?.items_net_total || 0
-      
+
       newState.trade.allowances.push({
         type: "Allowance",
         amount: 0,
@@ -358,18 +400,18 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     })
   }
 
-  // Add a new charge
+  // Update the addCharge function to set initial percent to 0
   const addCharge = () => {
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
-      
+
       if (!newState.trade.charges) {
         newState.trade.charges = []
       }
-      
+
       // Get the current items net total for the basis amount
       const itemsNetTotal = newState.trade.settlement.monetary_summation?.items_net_total || 0
-      
+
       newState.trade.charges.push({
         type: "Charge",
         amount: 0,
@@ -1845,26 +1887,35 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+  </div>
+              ))
+}
 
-              {formState.trade.items.length === 0 && (
-                <Alert variant="warning">
-                  <AlertDescription>Mindestens eine Rechnungsposition ist erforderlich.</AlertDescription>
-                </Alert>
-              )}
-            </div>
-          </CardContent>
-          <CardFooter className="flex justify-between">
-            <Button variant="secondary" onClick={addItem} className="flex items-center gap-2">
-              <PlusCircle className="h-4 w-4" />
-              Position hinzufügen
-            </Button>
-          </CardFooter>
-        </Card>
+        {
+          formState.trade.items.length === 0 && (
+            <Alert variant="warning">
+              <AlertDescription>Mindestens eine Rechnungsposition ist erforderlich.</AlertDescription>
+            </Alert>
+          )
+        }
+        </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <Button variant="secondary" onClick=
+        {
+          addItem
+        }
+        className = "flex items-center gap-2" > <PlusCircle className="h-4 w-4" />
+        Position
+        hinzufügen
+        </Button>
+                  </CardFooter>
+                </Card>
 
-        {/* Allowances Section */}
-        <Card>
+        {
+          /* Allowances Section */
+        }
+        ;<Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="text-muted-foreground">⬇️</span>
@@ -1875,12 +1926,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             <div id="invoice-allowances" className="space-y-6">
               {formState.trade.allowances?.map((allowance: any, index: number) => (
                 <div key={index} className="mb-4 p-4 border rounded relative">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => removeAllowance(index)}
-                  >
+                  <Button variant="outline" size="sm" className="absolute top-2 right-2" onClick={() => removeAllowance(index)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
 
@@ -1914,9 +1960,10 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           type="number"
                           step="any"
                           value={allowance.percent || 0}
-                          onChange={(e) =>
-                            handleInputChange(`trade.allowances.${index}.percent`, Number(e.target.value))
-                          }
+                          onChange={(e) => {
+                            const value = Number(e.target.value)
+                            handleInputChange(`trade.allowances.${index}.percent`, value)
+                          }}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
@@ -1933,9 +1980,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
                           value={allowance.amount || 0}
-                          onChange={(e) =>
-                            handleInputChange(`trade.allowances.${index}.amount`, Number(e.target.value))
-                          }
+                          onChange={(e) => handleInputChange(`trade.allowances.${index}.amount`, Number(e.target.value))}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">
                           {formState.trade.settlement.currency_code || "€"}
@@ -1961,9 +2006,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           <SelectItem value="Z">Z - Nach dem Nullsatz zu versteuernde Waren</SelectItem>
                           <SelectItem value="E">E - Steuerbefreit</SelectItem>
                           <SelectItem value="AE">AE - Umkehrung der Steuerschuldnerschaft</SelectItem>
-                          <SelectItem value="K">
-                            K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen
-                          </SelectItem>
+                          <SelectItem value="K">K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen</SelectItem>
                           <SelectItem value="G">G - Freier Ausfuhrartikel, Steuer nicht erhoben</SelectItem>
                           <SelectItem value="O">O - Dienstleistungen außerhalb des Steueranwendungsbereichs</SelectItem>
                         </SelectContent>
@@ -1981,9 +2024,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
                           value={allowance.tax_rate || 19}
-                          onChange={(e) =>
-                            handleInputChange(`trade.allowances.${index}.tax_rate`, Number(e.target.value))
-                          }
+                          onChange={(e) => handleInputChange(`trade.allowances.${index}.tax_rate`, Number(e.target.value))}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
@@ -2020,7 +2061,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           </CardFooter>
         </Card>
 
-        {/* Charges Section */}
+        {
+          /* Charges Section */
+        }
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -2032,12 +2075,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             <div id="invoice-charges" className="space-y-6">
               {formState.trade.charges?.map((charge: any, index: number) => (
                 <div key={index} className="mb-4 p-4 border rounded relative">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="absolute top-2 right-2"
-                    onClick={() => removeCharge(index)}
-                  >
+                  <Button variant="outline" size="sm" className="absolute top-2 right-2" onClick={() => removeCharge(index)}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
 
@@ -2071,7 +2109,10 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           type="number"
                           step="any"
                           value={charge.percent || 0}
-                          onChange={(e) => handleInputChange(`trade.charges.${index}.percent`, Number(e.target.value))}
+                          onChange={(e) => {
+                            const value = Number(e.target.value)
+                            handleInputChange(`trade.charges.${index}.percent`, value)
+                          }}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
@@ -2114,9 +2155,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           <SelectItem value="Z">Z - Nach dem Nullsatz zu versteuernde Waren</SelectItem>
                           <SelectItem value="E">E - Steuerbefreit</SelectItem>
                           <SelectItem value="AE">AE - Umkehrung der Steuerschuldnerschaft</SelectItem>
-                          <SelectItem value="K">
-                            K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen
-                          </SelectItem>
+                          <SelectItem value="K">K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen</SelectItem>
                           <SelectItem value="G">G - Freier Ausfuhrartikel, Steuer nicht erhoben</SelectItem>
                           <SelectItem value="O">O - Dienstleistungen außerhalb des Steueranwendungsbereichs</SelectItem>
                         </SelectContent>

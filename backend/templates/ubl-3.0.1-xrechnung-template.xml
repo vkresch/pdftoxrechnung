@@ -43,6 +43,25 @@
             </cac:Contact>
         </cac:Party>
     </cac:AccountingSupplierParty>
+    <cac:Delivery>
+		<cac:DeliveryLocation>
+			<cbc:ID>{{ data.locationID }}</cbc:ID>
+			<cac:Address>
+				<cbc:StreetName>{{ data.deliveryStreetName }}</cbc:StreetName>
+				<cbc:CityName>{{ data.deliveryCityName }}</cbc:CityName>
+				<cbc:PostalZone>{{ data.deliveryPostalZone }}</cbc:PostalZone>
+				<cbc:CountrySubentity>{{ data.deliveryRegion }}</cbc:CountrySubentity>
+				<cac:Country>
+					<cbc:IdentificationCode>{{ data.deliveryCountryCode }}</cbc:IdentificationCode>
+				</cac:Country>
+			</cac:Address>
+		</cac:DeliveryLocation>
+		<cac:DeliveryParty>
+			<cac:PartyName>
+				<cbc:Name>{{ data.deliveryReceiptName }}</cbc:Name>
+			</cac:PartyName>
+		</cac:DeliveryParty>
+	</cac:Delivery>
     <cac:AccountingCustomerParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.customerID }}</cbc:EndpointID>
@@ -72,11 +91,44 @@
         <cbc:PaymentID>{{ data.invoiceNumber }}</cbc:PaymentID>
         <cac:PayeeFinancialAccount>
             <cbc:ID>{{ data.ownIban }}</cbc:ID>
+            <cbc:Name>{{ data.payeeName }}</cbc:Name>
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     <cac:PaymentTerms>
         <cbc:Note>Zahlung innerhalb von {{ data.dueDays }} Tagen ab Rechnungseingang ohne Abzüge</cbc:Note>
     </cac:PaymentTerms>
+    {% for charge in data.charges -%}
+    <cac:AllowanceCharge>
+		<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
+		<cbc:AllowanceChargeReason>{{ charge.reason }}</cbc:AllowanceChargeReason>
+		<cbc:MultiplierFactorNumeric>{{ charge.percent }}</cbc:MultiplierFactorNumeric>
+		<cbc:Amount currencyID="EUR">{{ charge.amount }}</cbc:Amount>
+		<cbc:BaseAmount currencyID="EUR">{{ charge.basis_amount }}</cbc:BaseAmount>
+		<cac:TaxCategory>
+			<cbc:ID>{{ charge.tax_category }}</cbc:ID>
+			<cbc:Percent>{{ charge.tax_rate }}</cbc:Percent>
+			<cac:TaxScheme>
+				<cbc:ID>VAT</cbc:ID>
+			</cac:TaxScheme>
+		</cac:TaxCategory>
+	</cac:AllowanceCharge>
+    {% endfor -%}
+    {% for allowance in data.allowances -%}
+	<cac:AllowanceCharge>
+		<cbc:ChargeIndicator>false</cbc:ChargeIndicator>
+		<cbc:AllowanceChargeReason>{{ allowance.reason }}</cbc:AllowanceChargeReason>
+		<cbc:MultiplierFactorNumeric>{{ allowance.percent }}</cbc:MultiplierFactorNumeric>
+		<cbc:Amount currencyID="EUR">{{ allowance.amount }}</cbc:Amount>
+		<cbc:BaseAmount currencyID="EUR">{{ allowance.basis_amount }}</cbc:BaseAmount>
+		<cac:TaxCategory>
+			<cbc:ID>{{ allowance.tax_category }}</cbc:ID>
+			<cbc:Percent>{{ allowance.tax_rate }}</cbc:Percent>
+			<cac:TaxScheme>
+				<cbc:ID>VAT</cbc:ID>
+			</cac:TaxScheme>
+		</cac:TaxCategory>
+	</cac:AllowanceCharge>
+    {% endfor -%}
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="EUR">{{ data.priceTax }}</cbc:TaxAmount>
         <cac:TaxSubtotal>
