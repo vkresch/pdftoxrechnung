@@ -104,7 +104,10 @@ def generate_xrechnung(invoice_data):
     invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["net_total"]
     invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
     invoice.priceFull = invoice.priceNet + invoice.priceTax
-    invoice.taxPercent = invoice_data["trade"]["settlement"]["trade_tax"][0]["rate"]
+
+    tax_rates = invoice_data["trade"]["settlement"]["trade_tax"]
+    if tax_rates:
+        invoice.taxPercent = tax_rates[0]["rate"] 
     
     invoiceDateObject = datetime.strptime(invoice.invoiceDate, "%Y-%m-%d")
     if invoice.dueDate != "":

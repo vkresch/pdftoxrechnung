@@ -82,6 +82,7 @@
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="EUR">{{ data.priceNet }}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="EUR">{{ data.priceTax }}</cbc:TaxAmount>
+            {% if data.taxPercent is not none -%}
             <cac:TaxCategory>
                 <cbc:ID>S</cbc:ID>
                 <cbc:Percent>{{ data.taxPercent }}</cbc:Percent>
@@ -89,6 +90,7 @@
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:TaxCategory>
+            {% endif -%}
         </cac:TaxSubtotal>
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
