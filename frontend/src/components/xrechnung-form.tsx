@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { useToast } from "@/components/ui/use-toast"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 
 interface XRechnungFormProps {
   data: any
@@ -76,7 +77,20 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             },
           },
         },
-        delivery: {},
+        delivery: {
+          date: "",
+          recipient_name: "",
+          location_id: "",
+          address: {
+            street_name: "",
+            street_name2: "",
+            additional_info: "",
+            postal_zone: "",
+            city_name: "",
+            country_code: "",
+            region: "",
+          },
+        },
         settlement: {
           currency_code: "EUR",
           payment_means: {
@@ -89,6 +103,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           },
         },
         items: [],
+        allowances: [],
+        charges: [],
       },
     }
   }
@@ -115,6 +131,11 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         (path.includes("quantity") || path.includes("agreement_net_price") || path.includes("settlement_tax.rate"))
       ) {
         // Update all totals including tax calculations
+        updateTotals(newState)
+      }
+
+      // If changing allowance or charge values, update totals
+      if (path.includes("allowances") || path.includes("charges")) {
         updateTotals(newState)
       }
 
@@ -146,8 +167,46 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       }
     })
 
-    // Calculate net total from items (sum of all net amounts before tax)
-    const netTotal = state.trade.items.reduce((sum: number, item: any) => sum + Number(item.delivery_details || 0), 0)
+    // Calculate items net total first (sum of all net amounts before tax)
+    const itemsNetTotal = state.trade.items.reduce((sum: number, item: any) => sum + Number(item.delivery_details || 0), 0)
+    
+    // Update basis amount for all allowances and charges to the items net total
+    if (state.trade.allowances && state.trade.allowances.length > 0) {
+      state.trade.allowances.forEach((allowance: any) => {
+        allowance.basis_amount = Number.parseFloat(itemsNetTotal.toFixed(2))
+      })
+    }
+    
+    if (state.trade.charges && state.trade.charges.length > 0) {
+      state.trade.charges.forEach((charge: any) => {
+        charge.basis_amount = Number.parseFloat(itemsNetTotal.toFixed(2))
+      })
+    }
+
+    // Calculate allowances and charges
+    let allowancesTotal = 0
+    let chargesTotal = 0
+
+    // Calculate allowances total
+    if (state.trade.allowances && state.trade.allowances.length > 0) {
+      state.trade.allowances.forEach((allowance: any) => {
+        if (allowance.amount) {
+          allowancesTotal += Number(allowance.amount)
+        }
+      })
+    }
+
+    // Calculate charges total
+    if (state.trade.charges && state.trade.charges.length > 0) {
+      state.trade.charges.forEach((charge: any) => {
+        if (charge.amount) {
+          chargesTotal += Number(charge.amount)
+        }
+      })
+    }
+    
+    // Calculate the final net total (items - allowances + charges)
+    const netTotal = itemsNetTotal - allowancesTotal + chargesTotal
 
     // Calculate tax total by summing up all individual tax amounts
     const taxTotal = state.trade.items.reduce(
@@ -157,11 +216,19 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
     // Update monetary summation
     if (state.trade.settlement && state.trade.settlement.monetary_summation) {
+      state.trade.settlement.monetary_summation.items_net_total = Number.parseFloat(itemsNetTotal.toFixed(2))
+      state.trade.settlement.monetary_summation.allowances_net_total = Number.parseFloat(allowancesTotal.toFixed(2))
+      state.trade.settlement.monetary_summation.charges_net_total = Number.parseFloat(chargesTotal.toFixed(2))
       state.trade.settlement.monetary_summation.net_total = Number.parseFloat(netTotal.toFixed(2))
       state.trade.settlement.monetary_summation.tax_total = Number.parseFloat(taxTotal.toFixed(2))
 
       // Calculate and update the grand total (including tax)
       state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((netTotal + taxTotal).toFixed(2))
+      
+      // Calculate due amount (grand total - paid amount + rounding amount)
+      const paidAmount = Number(state.trade.settlement.monetary_summation.paid_amount || 0)
+      const roundingAmount = Number(state.trade.settlement.monetary_summation.rounding_amount || 0)
+      state.trade.settlement.monetary_summation.due_amount = Number.parseFloat((netTotal + taxTotal - paidAmount + roundingAmount).toFixed(2))
     }
 
     // Update trade tax if it exists
@@ -221,10 +288,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
-      const items = (newState.trade.items[
-        // Swap items
-        (items[index], items[index - 1])
-      ] = [items[index - 1], items[index]])
+      const items = newState.trade.items
+      // Swap items
+      [items[index], items[index - 1]] = [items[index - 1], items[index]]
 
       // Update line_ids
       items.forEach((item: any, idx: number) => {
@@ -241,17 +307,90 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       const newState = JSON.parse(JSON.stringify(prevState))
       const items = newState.trade.items
 
-      if (index >= items.length - 1)
-        return (newState[
-          // Swap items
-          (items[index], items[index + 1])
-        ] = [items[index + 1], items[index]])
+      if (index >= items.length - 1) return newState
+
+      // Swap items
+      [items[index], items[index + 1]] = [items[index + 1], items[index]]
 
       // Update line_ids
       items.forEach((item: any, idx: number) => {
         item.line_id = (idx + 1).toString()
       })
 
+      return newState
+    })
+  }
+
+  // Add a new allowance
+  const addAllowance = () => {
+    setFormState((prevState: any) => {
+      const newState = JSON.parse(JSON.stringify(prevState))
+      
+      if (!newState.trade.allowances) {
+        newState.trade.allowances = []
+      }
+      
+      // Get the current items net total for the basis amount
+      const itemsNetTotal = newState.trade.settlement.monetary_summation?.items_net_total || 0
+      
+      newState.trade.allowances.push({
+        type: "Allowance",
+        amount: 0,
+        basis_amount: itemsNetTotal,
+        percent: 0,
+        tax_category: "S",
+        tax_rate: 19,
+        reason: "",
+      })
+
+      updateTotals(newState)
+      return newState
+    })
+  }
+
+  // Remove an allowance
+  const removeAllowance = (index: number) => {
+    setFormState((prevState: any) => {
+      const newState = JSON.parse(JSON.stringify(prevState))
+      newState.trade.allowances.splice(index, 1)
+      updateTotals(newState)
+      return newState
+    })
+  }
+
+  // Add a new charge
+  const addCharge = () => {
+    setFormState((prevState: any) => {
+      const newState = JSON.parse(JSON.stringify(prevState))
+      
+      if (!newState.trade.charges) {
+        newState.trade.charges = []
+      }
+      
+      // Get the current items net total for the basis amount
+      const itemsNetTotal = newState.trade.settlement.monetary_summation?.items_net_total || 0
+      
+      newState.trade.charges.push({
+        type: "Charge",
+        amount: 0,
+        basis_amount: itemsNetTotal,
+        percent: 0,
+        tax_category: "S",
+        tax_rate: 19,
+        reason: "",
+      })
+
+      updateTotals(newState)
+      return newState
+    })
+  }
+
+  // Remove a charge
+  const removeCharge = (index: number) => {
+    setFormState((prevState: any) => {
+      const newState = JSON.parse(JSON.stringify(prevState))
+      newState.trade.charges.splice(index, 1)
+      updateTotals(newState)
       return newState
     })
   }
@@ -476,12 +615,18 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Label htmlFor="invoice-buyer-reference" className="flex items-center">
                   Käuferreferenz
                   <span className="text-xs text-muted-foreground ml-1">(BT-10)</span>
-                  <span
-                    className="inline-flex items-center ml-1"
-                    title="Pflichtangabe bei Rechnungen für Behörden, optional bei Rechnungen für Firmen"
-                  >
-                    <HelpCircle className="h-4 w-4 text-muted-foreground" />
-                  </span>
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <span className="inline-flex items-center ml-1">
+                          <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                        </span>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Pflichtangabe bei Rechnungen für Behörden, optional bei Rechnungen für Firmen</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 </Label>
                 <div className="flex gap-2">
                   <div className="flex items-center gap-2 border px-2 rounded-md">
@@ -564,9 +709,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   Dokumentreferenz
                   <span className="text-xs text-muted-foreground ml-1">(BT-17)</span>
                 </Label>
-                <div id="invoice-document-references" className="space-y-2">
+                <div id="invoice-document-references">
                   {formState.document_references?.map((ref: string, index: number) => (
-                    <div key={index} className="flex gap-2">
+                    <div key={index} className="flex gap-2 mt-1">
                       <Input
                         type="text"
                         placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
@@ -590,7 +735,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   ))}
 
                   {(!formState.document_references || formState.document_references.length === 0) && (
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 mt-1">
                       <Input
                         type="text"
                         placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
@@ -643,8 +788,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="invoice-seller-name" className="flex items-center">
-                  Unternehmen
-                  <span className="text-xs text-muted-foreground ml-1">(BT-27)</span>
+                  Unternehmen<span className="text-xs text-muted-foreground ml-1">(BT-27)</span>
                 </Label>
                 <Input
                   id="invoice-seller-name"
@@ -657,8 +801,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-trade-name" className="flex items-center">
-                  Handelsname
-                  <span className="text-xs text-muted-foreground ml-1">(BT-28)</span>
+                  Handelsname<span className="text-xs text-muted-foreground ml-1">(BT-28)</span>
                 </Label>
                 <Input
                   id="invoice-seller-trade-name"
@@ -670,8 +813,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-id" className="flex items-center">
-                  Verkäuferkennung
-                  <span className="text-xs text-muted-foreground ml-1">(BT-29)</span>
+                  Verkäuferkennung<span className="text-xs text-muted-foreground ml-1">(BT-29)</span>
                 </Label>
                 <Input
                   id="invoice-seller-id"
@@ -684,8 +826,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-trade-id" className="flex items-center">
-                  Registernummer
-                  <span className="text-xs text-muted-foreground ml-1">(BT-30)</span>
+                  Registernummer<span className="text-xs text-muted-foreground ml-1">(BT-30)</span>
                 </Label>
                 <Input
                   id="invoice-seller-trade-id"
@@ -698,8 +839,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-vat-id" className="flex items-center">
-                  Umsatzsteuer-ID
-                  <span className="text-xs text-muted-foreground ml-1">(BT-31)</span>
+                  Umsatzsteuer-ID<span className="text-xs text-muted-foreground ml-1">(BT-31)</span>
                 </Label>
                 <Input
                   id="invoice-seller-vat-id"
@@ -712,8 +852,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-tax-id" className="flex items-center">
-                  Steuernummer
-                  <span className="text-xs text-muted-foreground ml-1">(BT-32)</span>
+                  Steuernummer<span className="text-xs text-muted-foreground ml-1">(BT-32)</span>
                 </Label>
                 <Input
                   id="invoice-seller-tax-id"
@@ -725,8 +864,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-legal-info" className="flex items-center">
-                  Rechtliche Informationen
-                  <span className="text-xs text-muted-foreground ml-1">(BT-33)</span>
+                  Rechtliche Informationen<span className="text-xs text-muted-foreground ml-1">(BT-33)</span>
                 </Label>
                 <Textarea
                   id="invoice-seller-legal-info"
@@ -739,8 +877,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-seller-electronic-address" className="flex items-center">
-                  Elektronische Adresse
-                  <span className="text-xs text-muted-foreground ml-1">(BT-34)</span>
+                  Elektronische Adresse<span className="text-xs text-muted-foreground ml-1">(BT-34)</span>
                 </Label>
                 <div className="flex gap-2">
                   <Input
@@ -809,7 +946,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="12345"
                   value={formState.trade.agreement.seller.address?.postal_zone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address", e.target.value)}
+                  onChange={(e) => handleInputChange("trade.agreement.seller.address.postal_zone", e.target.value)}
                 />
               </div>
 
@@ -917,8 +1054,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="invoice-buyer-name" className="flex items-center">
-                  Unternehmen
-                  <span className="text-xs text-muted-foreground ml-1">(BT-44)</span>
+                  Unternehmen<span className="text-xs text-muted-foreground ml-1">(BT-44)</span>
                 </Label>
                 <Input
                   id="invoice-buyer-name"
@@ -931,8 +1067,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-buyer-trade-name" className="flex items-center">
-                  Handelsname
-                  <span className="text-xs text-muted-foreground ml-1">(BT-45)</span>
+                  Handelsname<span className="text-xs text-muted-foreground ml-1">(BT-45)</span>
                 </Label>
                 <Input
                   id="invoice-buyer-trade-name"
@@ -944,8 +1079,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-buyer-id" className="flex items-center">
-                  Käuferkennung
-                  <span className="text-xs text-muted-foreground ml-1">(BT-46)</span>
+                  Käuferkennung<span className="text-xs text-muted-foreground ml-1">(BT-46)</span>
                 </Label>
                 <div className="flex gap-2">
                   <Input
@@ -972,8 +1106,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-buyer-vat-id" className="flex items-center">
-                  Umsatzsteuer-ID
-                  <span className="text-xs text-muted-foreground ml-1">(BT-48)</span>
+                  Umsatzsteuer-ID<span className="text-xs text-muted-foreground ml-1">(BT-48)</span>
                 </Label>
                 <Input
                   id="invoice-buyer-vat-id"
@@ -985,8 +1118,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-buyer-electronic-address" className="flex items-center">
-                  Elektronische Adresse
-                  <span className="text-xs text-muted-foreground ml-1">(BT-49)</span>
+                  Elektronische Adresse<span className="text-xs text-muted-foreground ml-1">(BT-49)</span>
                 </Label>
                 <div className="flex gap-2">
                   <Input
@@ -1272,6 +1404,141 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           </CardContent>
         </Card>
 
+        {/* Delivery Details Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-muted-foreground">🚚</span>
+              Lieferdetails
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="invoice-delivery-recipient-name" className="flex items-center">
+                  Name des Empfängers<span className="text-xs text-muted-foreground ml-1">(BT-70)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-recipient-name"
+                  placeholder="Name des Empfängers"
+                  value={formState.trade.delivery?.recipient_name || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.recipient_name", e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="invoice-delivery-location-id" className="flex items-center">
+                  Kennung des Lieferorts<span className="text-xs text-muted-foreground ml-1">(BT-71)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-location-id"
+                  placeholder="Kennung des Lieferorts"
+                  value={formState.trade.delivery?.location_id || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.location_id", e.target.value)}
+                />
+              </div>
+            </div>
+
+            <h3 className="text-lg font-semibold mt-6 mb-4">Lieferadresse</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="invoice-delivery-address-line1" className="flex items-center">
+                  Straße 1<span className="text-xs text-muted-foreground ml-1">(BT-75)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-address-line1"
+                  placeholder="Straße 1"
+                  value={formState.trade.delivery?.address?.street_name || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.address.street_name", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-delivery-address-line2" className="flex items-center">
+                  Straße 2<span className="text-xs text-muted-foreground ml-1">(BT-76)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-address-line2"
+                  placeholder="Straße 2"
+                  value={formState.trade.delivery?.address?.street_name2 || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.address.street_name2", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-delivery-address-line3" className="flex items-center">
+                  Zusatz<span className="text-xs text-muted-foreground ml-1">(BT-165)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-address-line3"
+                  placeholder="Zusatz"
+                  value={formState.trade.delivery?.address?.additional_info || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.address.additional_info", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-delivery-address-post-code" className="flex items-center">
+                  PLZ<span className="text-xs text-muted-foreground ml-1">(BT-78)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-address-post-code"
+                  placeholder="12345"
+                  value={formState.trade.delivery?.address?.postal_zone || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.address.postal_zone", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-delivery-address-city" className="flex items-center">
+                  Ort<span className="text-xs text-muted-foreground ml-1">(BT-77)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-address-city"
+                  placeholder="Ort"
+                  value={formState.trade.delivery?.address?.city_name || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.address.city_name", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-delivery-address-country-code" className="flex items-center">
+                  Land<span className="text-xs text-muted-foreground ml-1">(BT-80)</span>
+                </Label>
+                <Select
+                  value={formState.trade.delivery?.address?.country_code || ""}
+                  onValueChange={(value) => handleInputChange("trade.delivery.address.country_code", value)}
+                >
+                  <SelectTrigger id="invoice-delivery-address-country-code">
+                    <SelectValue placeholder="Land auswählen" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="DE">DE - Germany</SelectItem>
+                    <SelectItem value="AT">AT - Austria</SelectItem>
+                    <SelectItem value="CH">CH - Switzerland</SelectItem>
+                    <SelectItem value="FR">FR - France</SelectItem>
+                    <SelectItem value="IT">IT - Italy</SelectItem>
+                    <SelectItem value="ES">ES - Spain</SelectItem>
+                    <SelectItem value="GB">GB - United Kingdom</SelectItem>
+                    <SelectItem value="US">US - United States</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-delivery-address-region" className="flex items-center">
+                  Region<span className="text-xs text-muted-foreground ml-1">(BT-79)</span>
+                </Label>
+                <Input
+                  id="invoice-delivery-address-region"
+                  placeholder="Region / Bundesland"
+                  value={formState.trade.delivery?.address?.region || ""}
+                  onChange={(e) => handleInputChange("trade.delivery.address.region", e.target.value)}
+                />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Line Items Section */}
         <Card>
           <CardHeader>
@@ -1283,8 +1550,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           <CardContent>
             <div id="invoice-items" className="space-y-6">
               {formState.trade.items.map((item: any, index: number) => (
-                <div key={index} className="border rounded-md p-4 relative">
-                  <div className="flex justify-between items-center mb-4">
+                <div key={index} className="mb-4 p-4 border rounded">
+                  <div className="flex justify-between items-center mb-2">
                     <div className="flex items-center gap-2">
                       <Label htmlFor={`invoice-item-lineId-${index}`} className="text-sm m-0">
                         Position
@@ -1596,6 +1863,314 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           </CardFooter>
         </Card>
 
+        {/* Allowances Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-muted-foreground">⬇️</span>
+              Nachlässe
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div id="invoice-allowances" className="space-y-6">
+              {formState.trade.allowances?.map((allowance: any, index: number) => (
+                <div key={index} className="mb-4 p-4 border rounded relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeAllowance(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <Label htmlFor={`invoice-allowance-basis-amount-${index}`} className="flex items-center">
+                        Grundbetrag<span className="text-xs text-muted-foreground ml-1">(BT-93)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-allowance-basis-amount-${index}`}
+                          type="number"
+                          step="any"
+                          value={allowance.basis_amount || 0}
+                          readOnly
+                          disabled
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-allowance-percent-${index}`} className="flex items-center">
+                        Prozent<span className="text-xs text-muted-foreground ml-1">(BT-94)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-allowance-percent-${index}`}
+                          type="number"
+                          step="any"
+                          value={allowance.percent || 0}
+                          onChange={(e) =>
+                            handleInputChange(`trade.allowances.${index}.percent`, Number(e.target.value))
+                          }
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-allowance-amount-${index}`} className="flex items-center">
+                        Betrag (Netto)<span className="text-xs text-muted-foreground ml-1">(BT-92)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-allowance-amount-${index}`}
+                          type="number"
+                          step="any"
+                          className="bg-[var(--required-field-bg-color)]"
+                          value={allowance.amount || 0}
+                          onChange={(e) =>
+                            handleInputChange(`trade.allowances.${index}.amount`, Number(e.target.value))
+                          }
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <Label htmlFor={`invoice-allowance-tax-category-${index}`} className="flex items-center">
+                        Steuerkategorie<span className="text-xs text-muted-foreground ml-1">(BT-95)</span>
+                      </Label>
+                      <Select
+                        value={allowance.tax_category || "S"}
+                        onValueChange={(value) => handleInputChange(`trade.allowances.${index}.tax_category`, value)}
+                      >
+                        <SelectTrigger id={`invoice-allowance-tax-category-${index}`}>
+                          <SelectValue placeholder="Steuerkategorie" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="S">S - Standard Rate</SelectItem>
+                          <SelectItem value="Z">Z - Nach dem Nullsatz zu versteuernde Waren</SelectItem>
+                          <SelectItem value="E">E - Steuerbefreit</SelectItem>
+                          <SelectItem value="AE">AE - Umkehrung der Steuerschuldnerschaft</SelectItem>
+                          <SelectItem value="K">
+                            K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen
+                          </SelectItem>
+                          <SelectItem value="G">G - Freier Ausfuhrartikel, Steuer nicht erhoben</SelectItem>
+                          <SelectItem value="O">O - Dienstleistungen außerhalb des Steueranwendungsbereichs</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-allowance-tax-rate-${index}`} className="flex items-center">
+                        Steuersatz<span className="text-xs text-muted-foreground ml-1">(BT-96)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-allowance-tax-rate-${index}`}
+                          type="number"
+                          step="any"
+                          className="bg-[var(--required-field-bg-color)]"
+                          value={allowance.tax_rate || 19}
+                          onChange={(e) =>
+                            handleInputChange(`trade.allowances.${index}.tax_rate`, Number(e.target.value))
+                          }
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <Label htmlFor={`invoice-allowance-reason-${index}`} className="flex items-center">
+                      Grund<span className="text-xs text-muted-foreground ml-1">(BT-97)</span>
+                    </Label>
+                    <Input
+                      id={`invoice-allowance-reason-${index}`}
+                      className="bg-[var(--required-field-bg-color)]"
+                      placeholder="Grund"
+                      value={allowance.reason || ""}
+                      onChange={(e) => handleInputChange(`trade.allowances.${index}.reason`, e.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {(!formState.trade.allowances || formState.trade.allowances.length === 0) && (
+                <div className="text-center p-4 border border-dashed rounded">
+                  <p className="text-muted-foreground">Keine Nachlässe vorhanden</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button variant="secondary" onClick={addAllowance} className="flex items-center gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Nachlass hinzufügen
+            </Button>
+          </CardFooter>
+        </Card>
+
+        {/* Charges Section */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <span className="text-muted-foreground">⬆️</span>
+              Zuschläge
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div id="invoice-charges" className="space-y-6">
+              {formState.trade.charges?.map((charge: any, index: number) => (
+                <div key={index} className="mb-4 p-4 border rounded relative">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeCharge(index)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                    <div>
+                      <Label htmlFor={`invoice-charge-basis-amount-${index}`} className="flex items-center">
+                        Grundbetrag<span className="text-xs text-muted-foreground ml-1">(BT-93)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-charge-basis-amount-${index}`}
+                          type="number"
+                          step="any"
+                          value={charge.basis_amount || 0}
+                          readOnly
+                          disabled
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-charge-percent-${index}`} className="flex items-center">
+                        Prozent<span className="text-xs text-muted-foreground ml-1">(BT-94)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-charge-percent-${index}`}
+                          type="number"
+                          step="any"
+                          value={charge.percent || 0}
+                          onChange={(e) => handleInputChange(`trade.charges.${index}.percent`, Number(e.target.value))}
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-charge-amount-${index}`} className="flex items-center">
+                        Betrag (Netto)<span className="text-xs text-muted-foreground ml-1">(BT-92)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-charge-amount-${index}`}
+                          type="number"
+                          step="any"
+                          className="bg-[var(--required-field-bg-color)]"
+                          value={charge.amount || 0}
+                          onChange={(e) => handleInputChange(`trade.charges.${index}.amount`, Number(e.target.value))}
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                    <div>
+                      <Label htmlFor={`invoice-charge-tax-category-${index}`} className="flex items-center">
+                        Steuerkategorie<span className="text-xs text-muted-foreground ml-1">(BT-95)</span>
+                      </Label>
+                      <Select
+                        value={charge.tax_category || "S"}
+                        onValueChange={(value) => handleInputChange(`trade.charges.${index}.tax_category`, value)}
+                      >
+                        <SelectTrigger id={`invoice-charge-tax-category-${index}`}>
+                          <SelectValue placeholder="Steuerkategorie" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="S">S - Standard Rate</SelectItem>
+                          <SelectItem value="Z">Z - Nach dem Nullsatz zu versteuernde Waren</SelectItem>
+                          <SelectItem value="E">E - Steuerbefreit</SelectItem>
+                          <SelectItem value="AE">AE - Umkehrung der Steuerschuldnerschaft</SelectItem>
+                          <SelectItem value="K">
+                            K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen
+                          </SelectItem>
+                          <SelectItem value="G">G - Freier Ausfuhrartikel, Steuer nicht erhoben</SelectItem>
+                          <SelectItem value="O">O - Dienstleistungen außerhalb des Steueranwendungsbereichs</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-charge-tax-rate-${index}`} className="flex items-center">
+                        Steuersatz<span className="text-xs text-muted-foreground ml-1">(BT-96)</span>
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-charge-tax-rate-${index}`}
+                          type="number"
+                          step="any"
+                          className="bg-[var(--required-field-bg-color)]"
+                          value={charge.tax_rate || 19}
+                          onChange={(e) => handleInputChange(`trade.charges.${index}.tax_rate`, Number(e.target.value))}
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="mt-4">
+                    <Label htmlFor={`invoice-charge-reason-${index}`} className="flex items-center">
+                      Grund<span className="text-xs text-muted-foreground ml-1">(BT-97)</span>
+                    </Label>
+                    <Input
+                      id={`invoice-charge-reason-${index}`}
+                      className="bg-[var(--required-field-bg-color)]"
+                      placeholder="Grund"
+                      value={charge.reason || ""}
+                      onChange={(e) => handleInputChange(`trade.charges.${index}.reason`, e.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
+
+              {(!formState.trade.charges || formState.trade.charges.length === 0) && (
+                <div className="text-center p-4 border border-dashed rounded">
+                  <p className="text-muted-foreground">Keine Zuschläge vorhanden</p>
+                </div>
+              )}
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button variant="secondary" onClick={addCharge} className="flex items-center gap-2">
+              <PlusCircle className="h-4 w-4" />
+              Zuschlag hinzufügen
+            </Button>
+          </CardFooter>
+        </Card>
+
         {/* Totals Section */}
         <Card>
           <CardHeader>
@@ -1607,9 +2182,70 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
+                <Label htmlFor="invoice-totals-items-net-amount" className="flex items-center">
+                  Summe Positionen (Netto)<span className="text-xs text-muted-foreground ml-1">(BT-106)</span>
+                </Label>
+                <div className="flex">
+                  <Input
+                    id="invoice-totals-items-net-amount"
+                    type="number"
+                    step="any"
+                    value={formState.trade.settlement.monetary_summation?.items_net_total || 0}
+                    readOnly
+                    disabled
+                    className="bg-muted/30"
+                  />
+                  <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                    {formState.trade.settlement.currency_code || "€"}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-totals-allowances-net-amount" className="flex items-center">
+                  Summe Nachlässe (Netto)<span className="text-xs text-muted-foreground ml-1">(BT-107)</span>
+                </Label>
+                <div className="flex">
+                  <Input
+                    id="invoice-totals-allowances-net-amount"
+                    type="number"
+                    step="any"
+                    value={formState.trade.settlement.monetary_summation?.allowances_net_total || 0}
+                    readOnly
+                    disabled
+                    className="bg-muted/30"
+                  />
+                  <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                    {formState.trade.settlement.currency_code || "€"}
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-totals-charges-net-amount" className="flex items-center">
+                  Summe Zuschläge (Netto)<span className="text-xs text-muted-foreground ml-1">(BT-108)</span>
+                </Label>
+                <div className="flex">
+                  <Input
+                    id="invoice-totals-charges-net-amount"
+                    type="number"
+                    step="any"
+                    value={formState.trade.settlement.monetary_summation?.charges_net_total || 0}
+                    readOnly
+                    disabled
+                    className="bg-muted/30"
+                  />
+                  <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                    {formState.trade.settlement.currency_code || "€"}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+              <div>
                 <Label htmlFor="invoice-totals-net-amount" className="flex items-center">
-                  Gesamt (Netto)
-                  <span className="text-xs text-muted-foreground ml-1">(BT-109)</span>
+                  Gesamt (Netto)<span className="text-xs text-muted-foreground ml-1">(BT-109)</span>
                 </Label>
                 <div className="flex">
                   <Input
@@ -1629,8 +2265,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-totals-vat-amount" className="flex items-center">
-                  Summe Umsatzsteuer
-                  <span className="text-xs text-muted-foreground ml-1">(BT-110)</span>
+                  Summe Umsatzsteuer<span className="text-xs text-muted-foreground ml-1">(BT-110)</span>
                 </Label>
                 <div className="flex">
                   <Input
@@ -1650,8 +2285,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-totals-gross-amount" className="flex items-center">
-                  Gesamt (Brutto)
-                  <span className="text-xs text-muted-foreground ml-1">(BT-112)</span>
+                  Gesamt (Brutto)<span className="text-xs text-muted-foreground ml-1">(BT-112)</span>
                 </Label>
                 <div className="flex">
                   <Input
@@ -1668,11 +2302,12 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   </div>
                 </div>
               </div>
+            </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
               <div>
                 <Label htmlFor="invoice-totals-paid-amount" className="flex items-center">
-                  Gezahlter Betrag
-                  <span className="text-xs text-muted-foreground ml-1">(BT-113)</span>
+                  Gezahlter Betrag<span className="text-xs text-muted-foreground ml-1">(BT-113)</span>
                 </Label>
                 <div className="flex">
                   <Input
@@ -1692,8 +2327,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-totals-rounding-amount" className="flex items-center">
-                  Rundungsbetrag
-                  <span className="text-xs text-muted-foreground ml-1">(BT-114)</span>
+                  Rundungsbetrag<span className="text-xs text-muted-foreground ml-1">(BT-114)</span>
                 </Label>
                 <div className="flex">
                   <Input
@@ -1713,19 +2347,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
               <div>
                 <Label htmlFor="invoice-totals-due-amount" className="flex items-center">
-                  Fälliger Betrag
-                  <span className="text-xs text-muted-foreground ml-1">(BT-115)</span>
+                  Fälliger Betrag<span className="text-xs text-muted-foreground ml-1">(BT-115)</span>
                 </Label>
                 <div className="flex">
                   <Input
                     id="invoice-totals-due-amount"
                     type="number"
                     step="any"
-                    value={
-                      (formState.trade.settlement.monetary_summation?.grand_total || 0) -
-                      (formState.trade.settlement.monetary_summation?.paid_amount || 0) +
-                      (formState.trade.settlement.monetary_summation?.rounding_amount || 0)
-                    }
+                    value={formState.trade.settlement.monetary_summation?.due_amount || 0}
                     readOnly
                     disabled
                   />
