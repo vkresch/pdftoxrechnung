@@ -101,6 +101,7 @@ def generate_xrechnung(invoice_data):
     invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
     
     invoice.paymentMeansCode = invoice_data["trade"]["settlement"]["payment_means"]["type_code"] # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
+    invoice.currencyCode = invoice_data["trade"]["settlement"].get("currency_code", "EUR")
     invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["net_total"]
     invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
     invoice.priceFull = invoice.priceNet + invoice.priceTax
@@ -117,14 +118,16 @@ def generate_xrechnung(invoice_data):
     # Delivery
     delivery = invoice_data["trade"].get("delivery")
     if delivery:
-        invoice.locationID = delivery.get("location_id")
-        invoice.recipientName = delivery.get("recipient_name")
-        invoice.deliveryStreetName = delivery.get("address").get("street_name")
-        invoice.deliveryCityName = delivery.get("address").get("city_name")
-        invoice.deliveryPostalZone = delivery.get("address").get("postal_zone")
-        invoice.deliveryRegion = delivery.get("address").get("region")
-        invoice.deliveryCountryCode = delivery.get("address").get("country_code")
-        invoice.deliveryReceiptName = delivery.get("address").get("recipient_name")
+        invoice.locationID = delivery.get("location_id", "")
+        invoice.recipientName = delivery.get("recipient_name", "")
+        address = delivery.get("address", "")
+        if address:
+            invoice.deliveryStreetName = address.get("street_name", "")
+            invoice.deliveryCityName = address.get("city_name", "")
+            invoice.deliveryPostalZone = address.get("postal_zone", "")
+            invoice.deliveryRegion = address.get("region", "")
+            invoice.deliveryCountryCode = address.get("country_code", "")
+            invoice.deliveryReceiptName = address.get("recipient_name", "")
 
     # Allowances
     allowances = invoice_data["trade"].get("allowances")

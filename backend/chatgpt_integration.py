@@ -15,10 +15,18 @@ logging.basicConfig(
 )
 
 
-def process_with_chatgpt(pdf_text):
+def process_with_chatgpt(pdf_text, test=False):
     """Main function to automate chat while caching login"""
     logging.info(f"Starting ChatGPT extraction process ...")
-    with SB(uc=True, xvfb=True, headed=True, ad_block=True, incognito=True) as sb:
+    with SB(
+        uc=True,
+        xvfb=True,
+        headed=True,
+        ad_block=True,
+        incognito=True,
+        test=test,
+        # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
+    ) as sb:
         url = "https://chatgpt.com/"
         sb.uc_open_with_reconnect(url)
         sb.click_if_visible('button[aria-label="Close dialog"]')

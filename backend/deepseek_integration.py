@@ -18,7 +18,7 @@ MAIL = os.environ.get("DEEPSEEK_MAIL", "your_email@example.com")
 PASSWORD = os.environ.get("DEEPSEEK_PASSWORD", "your_password")
 
 
-def process_with_deepseek(pdf_text):
+def process_with_deepseek(pdf_text, test=False):
     """Main function to automate chat while caching login"""
     logging.info(f"Starting deepseek extraction process ...")
     with SB(
@@ -27,6 +27,7 @@ def process_with_deepseek(pdf_text):
         headed=True,
         ad_block=True,
         incognito=True,
+        test=test,
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
         sb.uc_open_with_reconnect("https://chat.deepseek.com/sign_in", 4)

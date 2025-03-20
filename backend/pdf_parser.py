@@ -24,15 +24,15 @@ logging.basicConfig(
 )
 
 
-def process(pdf_text, model="chatgpt"):
+def process(pdf_text, model="chatgpt", test=False):
 
     if model == "ollama":
         return process_with_ollama(pdf_text)
     elif model == "deepseek":
-        return process_with_deepseek(pdf_text)
+        return process_with_deepseek(pdf_text, test)
     elif model == "chatgpt":
-        return process_with_chatgpt(pdf_text)
-    return process_with_chatgpt(pdf_text)
+        return process_with_chatgpt(pdf_text, test)
+    return process_with_chatgpt(pdf_text, test)
 
 
 def parse_iso_datetime(value):
