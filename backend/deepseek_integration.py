@@ -50,7 +50,7 @@ def process_with_deepseek(pdf_text, test=False):
             sb.send_keys(
                 "//input[@class='ds-input__input'][@type='password']", PASSWORD
             )
-            sb.click(".ds-checkbox-align-wrapper")
+            # sb.click(".ds-checkbox-align-wrapper")
             sb.click(".ds-button--primary")
             sb.wait_for_element_visible("#chat-input", timeout=10)
         else:
@@ -70,7 +70,7 @@ def process_with_deepseek(pdf_text, test=False):
 
         # Wait for response elements to load
         logging.info("Extracting pdf data into json ...")
-        sb.wait_for_element_visible("//div[@class='ds-flex abe97156']", timeout=180)
+        sb.wait_for_element_visible("//div[@class='ds-flex _965abe9']", timeout=180)
 
         # response = sb.find_element(".ds-markdown--block p").text
         response = sb.find_element(".md-code-block pre").text
