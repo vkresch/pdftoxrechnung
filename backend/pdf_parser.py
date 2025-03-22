@@ -8,7 +8,6 @@ from backend.deepseek_integration import process_with_deepseek
 from backend.ollama_integration import process_with_ollama
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
-from decimal import Decimal
 import easyocr
 from pdf2image import convert_from_path
 from drafthorse.models.accounting import ApplicableTradeTax
@@ -60,22 +59,22 @@ def generate_invoice_xml(invoice_data):
     # Notes
     for note_data in invoice_data["header"].get("notes", []):
         note = IncludedNote()
-        note.content.add(note_data.get("content", ""))
+        note.content.add(note_data)
         doc.header.notes.add(note)
     
     # Trade Agreement
     doc.trade.agreement.seller.name = invoice_data["trade"]["agreement"]["seller"].get("name", "")
     doc.trade.agreement.seller.address.country_id = invoice_data["trade"]["agreement"]["seller"]["address"].get("country_code", "")
     doc.trade.agreement.seller.address.country_subdivision = invoice_data["trade"]["agreement"]["seller"]["address"].get("region", "")
-    doc.trade.agreement.seller_order.issue_date_time = datetime.now(timezone.utc)
+    doc.trade.agreement.seller_order.issue_date_time = datetime.strptime(invoice_data["header"].get("issue_date_time", "2025-01-01"), "%Y-%m-%d").date()
     
     tax_id = invoice_data["trade"]["agreement"]["seller"].get("tax_id", "")
     if tax_id:
         doc.trade.agreement.seller.tax_registrations.add(TaxRegistration(id=("VA", tax_id)))
     
     doc.trade.agreement.buyer.name = invoice_data["trade"]["agreement"]["buyer"].get("name", "")
-    doc.trade.agreement.buyer_order.issue_date_time = datetime.now(timezone.utc)
-    doc.trade.agreement.customer_order.issue_date_time = datetime.now(timezone.utc)
+    doc.trade.agreement.buyer_order.issue_date_time = datetime.strptime(invoice_data["header"].get("issue_date_time", "2025-01-01"), "%Y-%m-%d").date()
+    doc.trade.agreement.customer_order.issue_date_time = datetime.strptime(invoice_data["header"].get("issue_date_time", "2025-01-01"), "%Y-%m-%d").date()
     
     # Trade Settlement
     doc.trade.settlement.payee.name = invoice_data["trade"]["settlement"]["payee"].get("name", "")
@@ -90,38 +89,38 @@ def generate_invoice_xml(invoice_data):
     # Trade Tax
     for tax in invoice_data["trade"]["settlement"].get("trade_tax", []):
         trade_tax = ApplicableTradeTax()
-        trade_tax.calculated_amount = Decimal(tax.get("amount", 0))
-        trade_tax.basis_amount = Decimal(invoice_data["trade"]["settlement"]["monetary_summation"].get("total", 0))
+        trade_tax.calculated_amount = round(tax.get("amount", 0), 2)
+        trade_tax.basis_amount = round(invoice_data["trade"]["settlement"]["monetary_summation"].get("total", 0), 2)
         trade_tax.type_code = "VAT"
         trade_tax.category_code = tax.get("category", "")
         trade_tax.exemption_reason_code = "VATEX-EU-AE"
-        trade_tax.rate_applicable_percent = Decimal(tax.get("rate", 0))
+        trade_tax.rate_applicable_percent = round(tax.get("rate", 0), 2)
         doc.trade.settlement.trade_tax.add(trade_tax)
     
     # Monetary Summation
     summation = invoice_data["trade"]["settlement"]["monetary_summation"]
-    doc.trade.settlement.monetary_summation.line_total = Decimal(summation.get("total", 0))
-    doc.trade.settlement.monetary_summation.charge_total = Decimal("0.00")
-    doc.trade.settlement.monetary_summation.allowance_total = Decimal("0.00")
-    doc.trade.settlement.monetary_summation.tax_basis_total = Decimal(summation.get("total", 0))
-    doc.trade.settlement.monetary_summation.tax_total = (Decimal(summation.get("tax_total", 0)), "EUR")
-    doc.trade.settlement.monetary_summation.grand_total = Decimal(summation.get("total", 0))
-    doc.trade.settlement.monetary_summation.due_amount = Decimal(summation.get("total", 0))
+    doc.trade.settlement.monetary_summation.line_total = round(summation.get("total", 0), 2)
+    doc.trade.settlement.monetary_summation.charge_total = round(0.0, 2)
+    doc.trade.settlement.monetary_summation.allowance_total = round(0.0, 2)
+    doc.trade.settlement.monetary_summation.tax_basis_total = round(summation.get("total", 0), 2)
+    doc.trade.settlement.monetary_summation.tax_total = (round(summation.get("tax_total", 0), 2), "EUR")
+    doc.trade.settlement.monetary_summation.grand_total = round(summation.get("total", 0), 2)
+    doc.trade.settlement.monetary_summation.due_amount = round(summation.get("total", 0), 2)
     
     # Line Items
     for item in invoice_data["trade"].get("items", []):
         li = LineItem()
         li.document.line_id = item.get("line_id", "")
         li.product.name = item.get("product_name", "")
-        li.agreement.gross.amount = Decimal(item.get("agreement_net_price", 0))
-        li.agreement.gross.basis_quantity = (Decimal("1.0000"), "C62")
-        li.agreement.net.amount = Decimal(item.get("agreement_net_price", 0))
-        li.agreement.net.basis_quantity = (Decimal(item.get("agreement_net_price", 0)), "EUR")
-        li.delivery.billed_quantity = (Decimal(item.get("quantity", 0)), "C62")
+        li.agreement.gross.amount = round(item.get("agreement_net_price", 0), 2)
+        li.agreement.gross.basis_quantity = (round(item.get("quantity", 0)), "C62", 2)
+        li.agreement.net.amount = round(item.get("agreement_net_price", 0), 2)
+        li.agreement.net.basis_quantity = (round(item.get("agreement_net_price", 0)), "EUR", 2)
+        li.delivery.billed_quantity = (round(item.get("quantity", 0)), "C62", 2)
         li.settlement.trade_tax.type_code = "VAT"
         li.settlement.trade_tax.category_code = item["settlement_tax"].get("category", "")
-        li.settlement.trade_tax.rate_applicable_percent = Decimal(item["settlement_tax"].get("rate", 0))
-        li.settlement.monetary_summation.total_amount = Decimal(item.get("total_amount", 0))
+        li.settlement.trade_tax.rate_applicable_percent = round(item["settlement_tax"].get("rate", 0), 2)
+        li.settlement.monetary_summation.total_amount = round(item.get("total_amount", 0), 2)
         doc.trade.items.add(li)
 
     xml = doc.serialize(schema="FACTUR-X_EXTENDED")

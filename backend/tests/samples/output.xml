@@ -5,15 +5,15 @@
     </ram:GuidelineSpecifiedDocumentContextParameter>
   </rsm:ExchangedDocumentContext>
   <rsm:ExchangedDocument>
-    <ram:ID>RE1337</ram:ID>
-    <ram:Name>RECHNUNG</ram:Name>
+    <ram:ID>2019-03</ram:ID>
+    <ram:Name>E-Rechnung</ram:Name>
     <ram:TypeCode>380</ram:TypeCode>
     <ram:IssueDateTime>
-      <udt:DateTimeString format="102">20250225</udt:DateTimeString>
+      <udt:DateTimeString format="102">20190508</udt:DateTimeString>
     </ram:IssueDateTime>
     <ram:LanguageID>de</ram:LanguageID>
     <ram:IncludedNote>
-      <ram:Content>Test Node 1</ram:Content>
+      <ram:Content>Zahlbar innerhalb von 30 Tagen netto auf unser Konto. Bitte geben Sie dabei die Rechnungsnummer an. Skontoabzüge werden nicht akzeptiert.</ram:Content>
     </ram:IncludedNote>
   </rsm:ExchangedDocument>
   <rsm:SupplyChainTradeTransaction>
@@ -22,59 +22,244 @@
         <ram:LineID>1</ram:LineID>
       </ram:AssociatedDocumentLineDocument>
       <ram:SpecifiedTradeProduct>
-        <ram:Name>Rainbow</ram:Name>
+        <ram:Name>Superdrachen</ram:Name>
       </ram:SpecifiedTradeProduct>
       <ram:SpecifiedLineTradeAgreement>
         <ram:GrossPriceProductTradePrice>
-          <ram:ChargeAmount>999.00</ram:ChargeAmount>
-          <ram:BasisQuantity unitCode="C62">1.0000</ram:BasisQuantity>
+          <ram:ChargeAmount>20</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">2</ram:BasisQuantity>
         </ram:GrossPriceProductTradePrice>
         <ram:NetPriceProductTradePrice>
-          <ram:ChargeAmount>999.00</ram:ChargeAmount>
-          <ram:BasisQuantity unitCode="EUR">999.00</ram:BasisQuantity>
+          <ram:ChargeAmount>20</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">20</ram:BasisQuantity>
         </ram:NetPriceProductTradePrice>
       </ram:SpecifiedLineTradeAgreement>
       <ram:SpecifiedLineTradeDelivery>
-        <ram:BilledQuantity unitCode="C62">1.0000</ram:BilledQuantity>
+        <ram:BilledQuantity unitCode="C62">2</ram:BilledQuantity>
       </ram:SpecifiedLineTradeDelivery>
       <ram:SpecifiedLineTradeSettlement>
         <ram:ApplicableTradeTax>
           <ram:TypeCode>VAT</ram:TypeCode>
-          <ram:CategoryCode>E</ram:CategoryCode>
-          <ram:RateApplicablePercent>0.00</ram:RateApplicablePercent>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
         </ram:ApplicableTradeTax>
         <ram:SpecifiedTradeSettlementLineMonetarySummation>
-          <ram:LineTotalAmount>999.00</ram:LineTotalAmount>
+          <ram:LineTotalAmount>47.6</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>2</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Turbo Flyer</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>40</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">5</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>40</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">40</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">5</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>238</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>3</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Sturzflug-Geier</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>180</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>180</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">180</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">1</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>214.2</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>4</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Eisvogel</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>50</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">3</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>50</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">50</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">3</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>178.5</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>5</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Storch</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>20</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">10</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>20</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">20</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">10</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>238</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>6</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Adler</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>75</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>75</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">75</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">1</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>89.25</ram:LineTotalAmount>
+        </ram:SpecifiedTradeSettlementLineMonetarySummation>
+      </ram:SpecifiedLineTradeSettlement>
+    </ram:IncludedSupplyChainTradeLineItem>
+    <ram:IncludedSupplyChainTradeLineItem>
+      <ram:AssociatedDocumentLineDocument>
+        <ram:LineID>7</ram:LineID>
+      </ram:AssociatedDocumentLineDocument>
+      <ram:SpecifiedTradeProduct>
+        <ram:Name>Kostenlose Zugabe</ram:Name>
+      </ram:SpecifiedTradeProduct>
+      <ram:SpecifiedLineTradeAgreement>
+        <ram:GrossPriceProductTradePrice>
+          <ram:ChargeAmount>0</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="C62">1</ram:BasisQuantity>
+        </ram:GrossPriceProductTradePrice>
+        <ram:NetPriceProductTradePrice>
+          <ram:ChargeAmount>0</ram:ChargeAmount>
+          <ram:BasisQuantity unitCode="EUR">0</ram:BasisQuantity>
+        </ram:NetPriceProductTradePrice>
+      </ram:SpecifiedLineTradeAgreement>
+      <ram:SpecifiedLineTradeDelivery>
+        <ram:BilledQuantity unitCode="C62">1</ram:BilledQuantity>
+      </ram:SpecifiedLineTradeDelivery>
+      <ram:SpecifiedLineTradeSettlement>
+        <ram:ApplicableTradeTax>
+          <ram:TypeCode>VAT</ram:TypeCode>
+          <ram:CategoryCode>S</ram:CategoryCode>
+          <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
+        </ram:ApplicableTradeTax>
+        <ram:SpecifiedTradeSettlementLineMonetarySummation>
+          <ram:LineTotalAmount>0</ram:LineTotalAmount>
         </ram:SpecifiedTradeSettlementLineMonetarySummation>
       </ram:SpecifiedLineTradeSettlement>
     </ram:IncludedSupplyChainTradeLineItem>
     <ram:ApplicableHeaderTradeAgreement>
       <ram:SellerTradeParty>
-        <ram:Name>Lieferant GmbH</ram:Name>
+        <ram:Name>Kraxi GmbH</ram:Name>
         <ram:PostalTradeAddress>
           <ram:CountryID>DE</ram:CountryID>
-          <ram:CountrySubDivisionName>Bayern</ram:CountrySubDivisionName>
         </ram:PostalTradeAddress>
         <ram:SpecifiedTaxRegistration>
-          <ram:ID schemeID="VA">DE000000000</ram:ID>
+          <ram:ID schemeID="VA">DE123456789</ram:ID>
         </ram:SpecifiedTaxRegistration>
       </ram:SellerTradeParty>
       <ram:BuyerTradeParty>
-        <ram:Name>Kunde GmbH</ram:Name>
+        <ram:Name>Papierflieger-Vertriebs-GmbH</ram:Name>
       </ram:BuyerTradeParty>
       <ram:SellerOrderReferencedDocument>
         <ram:FormattedIssueDateTime>
-          <qdt:DateTimeString format="102">20250225</qdt:DateTimeString>
+          <qdt:DateTimeString format="102">20190508</qdt:DateTimeString>
         </ram:FormattedIssueDateTime>
       </ram:SellerOrderReferencedDocument>
       <ram:BuyerOrderReferencedDocument>
         <ram:FormattedIssueDateTime>
-          <qdt:DateTimeString format="102">20250225</qdt:DateTimeString>
+          <qdt:DateTimeString format="102">20190508</qdt:DateTimeString>
         </ram:FormattedIssueDateTime>
       </ram:BuyerOrderReferencedDocument>
       <ram:UltimateCustomerOrderReferencedDocument>
         <ram:FormattedIssueDateTime>
-          <qdt:DateTimeString format="102">20250225</qdt:DateTimeString>
+          <qdt:DateTimeString format="102">20190508</qdt:DateTimeString>
         </ram:FormattedIssueDateTime>
       </ram:UltimateCustomerOrderReferencedDocument>
     </ram:ApplicableHeaderTradeAgreement>
@@ -82,30 +267,30 @@
     <ram:ApplicableHeaderTradeSettlement>
       <ram:InvoiceCurrencyCode>EUR</ram:InvoiceCurrencyCode>
       <ram:InvoiceeTradeParty>
-        <ram:Name>Kunde GmbH</ram:Name>
+        <ram:Name>Papierflieger-Vertriebs-GmbH</ram:Name>
       </ram:InvoiceeTradeParty>
       <ram:PayeeTradeParty>
-        <ram:Name>Lieferant GmbH</ram:Name>
+        <ram:Name>Kraxi GmbH</ram:Name>
       </ram:PayeeTradeParty>
       <ram:SpecifiedTradeSettlementPaymentMeans>
-        <ram:TypeCode>ZZZ</ram:TypeCode>
+        <ram:TypeCode>58</ram:TypeCode>
       </ram:SpecifiedTradeSettlementPaymentMeans>
       <ram:ApplicableTradeTax>
-        <ram:CalculatedAmount>0.00</ram:CalculatedAmount>
+        <ram:CalculatedAmount>160.55</ram:CalculatedAmount>
         <ram:TypeCode>VAT</ram:TypeCode>
-        <ram:BasisAmount>999.00</ram:BasisAmount>
-        <ram:CategoryCode>AE</ram:CategoryCode>
+        <ram:BasisAmount>0</ram:BasisAmount>
+        <ram:CategoryCode>S</ram:CategoryCode>
         <ram:ExemptionReasonCode>VATEX-EU-AE</ram:ExemptionReasonCode>
-        <ram:RateApplicablePercent>0.00</ram:RateApplicablePercent>
+        <ram:RateApplicablePercent>19</ram:RateApplicablePercent>
       </ram:ApplicableTradeTax>
       <ram:SpecifiedTradeSettlementHeaderMonetarySummation>
-        <ram:LineTotalAmount>999.00</ram:LineTotalAmount>
-        <ram:ChargeTotalAmount>0.00</ram:ChargeTotalAmount>
-        <ram:AllowanceTotalAmount>0.00</ram:AllowanceTotalAmount>
-        <ram:TaxBasisTotalAmount>999.00</ram:TaxBasisTotalAmount>
-        <ram:TaxTotalAmount currencyID="EUR">0.00</ram:TaxTotalAmount>
-        <ram:GrandTotalAmount>999.00</ram:GrandTotalAmount>
-        <ram:DuePayableAmount>999.00</ram:DuePayableAmount>
+        <ram:LineTotalAmount>0</ram:LineTotalAmount>
+        <ram:ChargeTotalAmount>0.0</ram:ChargeTotalAmount>
+        <ram:AllowanceTotalAmount>0.0</ram:AllowanceTotalAmount>
+        <ram:TaxBasisTotalAmount>0</ram:TaxBasisTotalAmount>
+        <ram:TaxTotalAmount currencyID="EUR">160.55</ram:TaxTotalAmount>
+        <ram:GrandTotalAmount>0</ram:GrandTotalAmount>
+        <ram:DuePayableAmount>0</ram:DuePayableAmount>
       </ram:SpecifiedTradeSettlementHeaderMonetarySummation>
     </ram:ApplicableHeaderTradeSettlement>
   </rsm:SupplyChainTradeTransaction>

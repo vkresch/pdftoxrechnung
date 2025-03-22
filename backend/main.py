@@ -10,6 +10,7 @@ from pydantic import BaseModel
 from typing import List
 from pathlib import Path
 from pdf_parser import extract_invoice_data, generate_invoice_xml
+from backend.validate import validate
 from backend.xrechnung_generator import generate_xrechnung
 
 app = FastAPI()
@@ -123,53 +124,9 @@ async def download_report():
 
 @app.post("/validate/")
 async def validate_xml():
-    jar_path = "backend/validator/validationtool-1.5.0-standalone.jar"
-    scenarios_file = "backend/validator/scenarios.xml"
-    output_directory = Path.cwd() / "backend/validator/"
     xml_filename = file_registry.get("xrechnung", "invoice_xrechnung.xml")
     xml_file = UPLOAD_FOLDER / xml_filename
-    validation_report = UPLOAD_FOLDER / xml_filename.replace(".xml", "-report.xml")
-
-    command = [
-        "java",
-        "-jar",
-        jar_path,
-        "-s",
-        scenarios_file,
-        "-r",
-        str(output_directory),
-        "--output-directory",
-        str(UPLOAD_FOLDER),
-        "-h",
-        xml_file,
-    ]
-
-    try:
-        result = subprocess.run(command, capture_output=True, text=True)
-        return_code = result.returncode
-
-        response = {"return_code": return_code, "message": "Validation completed"}
-
-        if return_code == 0:
-            response["description"] = (
-                "XRechnung is valid according to KoSIT Validator 1.5.0."
-            )
-        elif return_code > 0:
-            response["description"] = (
-                "XRechnung file is invalid according to KoSIT Validator 1.5.0."
-            )
-        elif return_code == -1:
-            response["description"] = "Parsing error: Incorrect command-line arguments."
-        elif return_code == -2:
-            response["description"] = (
-                "Configuration error: Issues with loading configuration/validation targets."
-            )
-        else:
-            response["description"] = "Unknown error."
-
-        return response
-    except Exception as e:
-        return {"return_code": -99, "description": str(e)}
+    return validate(xml_file, UPLOAD_FOLDER)
 
 
 if __name__ == "__main__":
