@@ -11,7 +11,7 @@ models = [
 
 
 @pytest.mark.parametrize("model", models)
-def test_json_creation_output_deepseek(model):
+def test_json_creation_output(model):
     # Extract text from the PDF using pdfplumber
     with open_pdf("backend/tests/samples/zugferd1_invoice_pdfa3b.pdf") as pdf:
         pdf_text = ""
