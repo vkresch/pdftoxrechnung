@@ -23,7 +23,7 @@ def process_with_deepseek(pdf_text, test=False):
     logging.info(f"Starting deepseek extraction process ...")
     with SB(
         uc=True,
-        headless=True,
+        ad_block=True,
         test=test,
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
