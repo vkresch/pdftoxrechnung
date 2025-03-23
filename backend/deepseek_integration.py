@@ -56,7 +56,7 @@ def process_with_deepseek(pdf_text, test=False):
             )
             # sb.click(".ds-checkbox-align-wrapper")
             sb.click(".ds-button--primary")
-            sb.wait_for_element_visible("#chat-input", timeout=60)
+            sb.wait_for_element_visible("#chat-input", timeout=20)
         else:
             logging.info("Already logged in, proceeding to chat.")
 
