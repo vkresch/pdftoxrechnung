@@ -101,16 +101,45 @@ def generate_xrechnung(invoice_data):
     invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
     
     invoice.paymentMeansCode = invoice_data["trade"]["settlement"]["payment_means"]["type_code"] # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
+    invoice.currencyCode = invoice_data["trade"]["settlement"].get("currency_code", "EUR")
     invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["net_total"]
     invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
     invoice.priceFull = invoice.priceNet + invoice.priceTax
-    invoice.taxPercent = invoice_data["trade"]["settlement"]["trade_tax"][0]["rate"]
+
+    tax_rates = invoice_data["trade"]["settlement"]["trade_tax"]
+    if tax_rates:
+        invoice.taxPercent = tax_rates[0]["rate"] 
     
     invoiceDateObject = datetime.strptime(invoice.invoiceDate, "%Y-%m-%d")
     if invoice.dueDate != "":
         dueDateObject = datetime.strptime(invoice.dueDate, "%Y-%m-%d")
         invoice.dueDays = (dueDateObject - invoiceDateObject).days
+
+    # Delivery
+    delivery = invoice_data["trade"].get("delivery")
+    if delivery:
+        invoice.locationID = delivery.get("location_id", "")
+        invoice.recipientName = delivery.get("recipient_name", "")
+        address = delivery.get("address", "")
+        if address:
+            invoice.deliveryStreetName = address.get("street_name", "")
+            invoice.deliveryCityName = address.get("city_name", "")
+            invoice.deliveryPostalZone = address.get("postal_zone", "")
+            invoice.deliveryRegion = address.get("region", "")
+            invoice.deliveryCountryCode = address.get("country_code", "")
+            invoice.deliveryReceiptName = address.get("recipient_name", "")
+
+    # Allowances
+    allowances = invoice_data["trade"].get("allowances")
+    if allowances:
+        invoice.allowances = allowances
+
+    # Charges
+    charges = invoice_data["trade"].get("charges")
+    if charges:
+        invoice.charges = charges
     
+    # Line Items
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({
             "lineID": item["line_id"],

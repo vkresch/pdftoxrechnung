@@ -2,74 +2,67 @@ import pytest
 from pdfplumber import open as open_pdf
 from decimal import Decimal
 from datetime import datetime, timezone
-from backend.ollama_integration import process_with_ollama
+from backend.pdf_parser import process
+
+models = [
+    "deepseek",
+    # "chatgpt", # FIXME: There seems to be an issue right now
+]
 
 
-def test_json_creation_output():
+@pytest.mark.parametrize("model", models)
+def test_json_creation_output(model):
     # Extract text from the PDF using pdfplumber
-    with open_pdf("backend/tests/samples/output.pdf") as pdf:
+    with open_pdf("backend/tests/samples/zugferd1_invoice_pdfa3b.pdf") as pdf:
         pdf_text = ""
         for page in pdf.pages:
             pdf_text += page.extract_text()
 
-    assert process_with_ollama(pdf_text) == {
-        "context": {
-            "type": "Invoice",
-            "guideline_parameter": "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extant",
-        },
-        "header": {
-            "id": "RE1337",
-            "type_code": "380",
-            "name": "Kunde GmbH",
-            "issue_date_time": "2025-02-24",
-            "languages": "de",
-            "notes": [
-                {
-                    "content_code": "Test Node 1",
-                    "content": "Bemerkung: Test Node 1",
-                    "subject_code": "REM",
-                }
-            ],
-            "type": "InvoiceHeader",
-        },
-        "trade": {
-            "agreement": {
-                "seller": {
-                    "name": "Lieferant GmbH",
-                    "address": {"country_code": "DE", "state_code": "Bayern"},
-                    "tax_id": "DE000000000",
-                },
-                "buyer": {
-                    "name": "Kunde GmbH",
-                    "address": {"country_code": "DE", "state_code": "Bayern"},
-                    "tax_id": "",
-                },
-                "orders": [],
-            },
-            "settlement": {
-                "payee": {"name": "Lieferant GmbH"},
-                "invoicee": {"name": "Kunde GmbH"},
-                "currency_code": "EUR",
-                "payment_means": {"type_code": "ZZZ"},
-                "advance_payment_date": "2025-02-24",
-                "trade_tax": [{"category": "AE", "rate": 0, "amount": 0}],
-                "monetary_summation": {
-                    "total": 999,
-                    "tax_total": 0,
-                    "type": "MonetarySummation",
-                },
-            },
-            "items": [
-                {
-                    "line_id": "1",
-                    "product_name": "Rainbow",
-                    "agreement_net_price": 999,
-                    "quantity": 1,
-                    "delivery_details": 999,
-                    "settlement_tax": {"category": "E", "rate": 0, "amount": 0},
-                    "total_amount": 999,
-                    "type": "Item",
-                }
-            ],
-        },
-    }
+    result = process(pdf_text, model=model, test=True)
+    assert (
+        result.get("context").get("guideline_parameter")
+        == "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
+    )
+    assert result.get("header").get("id") == "2019-03"
+    assert result.get("header").get("issue_date_time") == "2019-05-08"
+    assert result.get("header").get("languages") == "de"
+
+    seller = result.get("trade").get("agreement").get("seller")
+    assert seller.get("name") == "Kraxi GmbH"
+    assert seller.get("contact_name") == "Paul Kraxi"
+
+    seller_address = seller.get("address")
+    assert seller_address.get("street_name") == "Flugzeugallee 17"
+    assert seller_address.get("city_name") == "Papierfeld"
+    assert seller_address.get("postal_zone") == "12345"
+
+    buyer = result.get("trade").get("agreement").get("buyer")
+    assert buyer.get("id") == "987-654"
+    assert buyer.get("name") == "Papierflieger-Vertriebs-GmbH"
+    assert buyer.get("contact_name") == "Helga Musterfrau"
+    assert buyer.get("order_number") == "ABC-123"
+
+    buyer_address = buyer.get("address")
+    assert buyer_address.get("street_name") == "Rabattstr. 25"
+    assert buyer_address.get("city_name") == "Osterhausen"
+    assert buyer_address.get("postal_zone") == "34567"
+
+    settlement = result.get("trade").get("settlement")
+    assert settlement.get("payment_means").get("iban") == "DE28700100809999999999"
+
+    assert settlement.get("monetary_summation").get("net_total") == 845
+    assert settlement.get("monetary_summation").get("tax_total") == 160.55
+    assert settlement.get("monetary_summation").get("grand_total") == 1005.55
+    assert settlement.get("monetary_summation").get("due_amount") == 1005.55
+
+    items = result.get("trade").get("items")
+    assert len(items) == 7
+
+    net_total = 0
+    grand_total = 0
+    for item in items:
+        net_total += item.get("agreement_net_price") * item.get("quantity")
+        grand_total += item.get("total_amount")
+
+    assert grand_total == settlement.get("monetary_summation").get("grand_total")
+    assert net_total == settlement.get("monetary_summation").get("net_total")

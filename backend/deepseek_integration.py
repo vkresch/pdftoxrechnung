@@ -18,19 +18,24 @@ MAIL = os.environ.get("DEEPSEEK_MAIL", "your_email@example.com")
 PASSWORD = os.environ.get("DEEPSEEK_PASSWORD", "your_password")
 
 
-def process_with_deepseek(pdf_text):
+def process_with_deepseek(pdf_text, test=False):
     """Main function to automate chat while caching login"""
     logging.info(f"Starting deepseek extraction process ...")
     with SB(
         uc=True,
-        xvfb=True,
-        headed=True,
         ad_block=True,
-        incognito=True,
+        test=test,
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
-        sb.uc_open_with_reconnect("https://chat.deepseek.com/sign_in", 4)
-        # sb.uc_gui_click_captcha()
+        url = "https://chat.deepseek.com/sign_in"
+        sb.uc_open_with_reconnect(url, 4)
+        if test:
+            sb.uc_gui_click_captcha()
+            sb.sleep(1)
+            sb.uc_gui_click_captcha()
+            sb.sleep(1)
+            sb.uc_gui_handle_captcha()
+            sb.sleep(1)
         logged_in = False
 
         # TODO: Readd this once headless mode works with user_data_dir to avoid login for every request
@@ -49,9 +54,9 @@ def process_with_deepseek(pdf_text):
             sb.send_keys(
                 "//input[@class='ds-input__input'][@type='password']", PASSWORD
             )
-            sb.click(".ds-checkbox-align-wrapper")
+            # sb.click(".ds-checkbox-align-wrapper")
             sb.click(".ds-button--primary")
-            sb.wait_for_element_visible("#chat-input", timeout=10)
+            sb.wait_for_element_visible("#chat-input", timeout=20)
         else:
             logging.info("Already logged in, proceeding to chat.")
 
@@ -69,7 +74,7 @@ def process_with_deepseek(pdf_text):
 
         # Wait for response elements to load
         logging.info("Extracting pdf data into json ...")
-        sb.wait_for_element_visible("//div[@class='ds-flex abe97156']", timeout=180)
+        sb.wait_for_element_visible("//div[@class='ds-flex _965abe9']", timeout=240)
 
         # response = sb.find_element(".ds-markdown--block p").text
         response = sb.find_element(".md-code-block pre").text

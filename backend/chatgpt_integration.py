@@ -15,14 +15,23 @@ logging.basicConfig(
 )
 
 
-def process_with_chatgpt(pdf_text):
+def process_with_chatgpt(pdf_text, test=False):
     """Main function to automate chat while caching login"""
     logging.info(f"Starting ChatGPT extraction process ...")
-    with SB(uc=True, xvfb=True, headed=True, ad_block=True, incognito=True) as sb:
+    with SB(
+        uc=True,
+        test=test,
+        # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
+    ) as sb:
         url = "https://chatgpt.com/"
-        sb.uc_open_with_reconnect(url)
+        sb.activate_cdp_mode(url)
+        sb.sleep(1)
+        sb.uc_gui_click_captcha()
+        sb.sleep(1)
+        sb.uc_gui_handle_captcha()
+        sb.sleep(1)
         sb.click_if_visible('button[aria-label="Close dialog"]')
-        sb.wait_for_element_visible("#prompt-textarea", timeout=10)
+        sb.wait_for_element_visible("#prompt-textarea", timeout=60)
         chat_text_area = sb.find_element("id", "prompt-textarea")
         sb.execute_script(
             "arguments[0].innerHTML=arguments[1]",
