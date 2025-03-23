@@ -85,7 +85,9 @@ jobs:
       env:
         DEEPSEEK_MAIL: ${{ secrets.DEEPSEEK_MAIL }}
         DEEPSEEK_PASSWORD: ${{ secrets.DEEPSEEK_PASSWORD }}
-      run: python -m pytest backend/ -vv
+      run: |
+        mkdir screenshots
+        python -m pytest backend/ -vv
 
     - name: Upload Screenshots
       if: always()

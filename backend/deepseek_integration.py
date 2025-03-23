@@ -50,7 +50,7 @@ def process_with_deepseek(pdf_text, test=False):
             logging.info("Login required, proceeding with login.")
 
             if test:
-                sb.save_screenshot("screenshots/01_deepseek_chat_before_login.png")
+                sb.save_screenshot("screenshots/01_deepseek_before_login.png")
 
             # Enter credentials only if login is needed
             sb.send_keys("//input[@class='ds-input__input'][@type='text']", MAIL)
@@ -62,6 +62,9 @@ def process_with_deepseek(pdf_text, test=False):
             sb.wait_for_element_visible("#chat-input", timeout=20)
         else:
             logging.info("Already logged in, proceeding to chat.")
+
+        if test:
+            sb.save_screenshot("screenshots/02_deepseek_logged_in.png")
 
         chat_text_area = sb.find_element("id", "chat-input")
         sb.execute_script(
@@ -76,7 +79,7 @@ def process_with_deepseek(pdf_text, test=False):
         chat_text_area.send_keys(Keys.ENTER)
 
         if test:
-            sb.save_screenshot("screenshots/02_deepseek_chat_started_extraction.png")
+            sb.save_screenshot("screenshots/03_deepseek_started_extraction.png")
 
         # Wait for response elements to load
         logging.info("Extracting pdf data into json ...")
@@ -87,7 +90,7 @@ def process_with_deepseek(pdf_text, test=False):
 
         # Save a screenshot
         if test:
-            sb.save_screenshot("screenshots/03_deepseek_chat_after_extraction.png")
+            sb.save_screenshot("screenshots/04_deepseek_after_extraction.png")
 
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)

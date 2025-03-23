@@ -49,6 +49,7 @@ uploads/
 user_data/
 latest_logs/
 downloaded_files/
+screenshots/
 
 .env
 *.pyc
