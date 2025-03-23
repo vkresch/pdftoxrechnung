@@ -41,7 +41,8 @@ def process_with_chatgpt(pdf_text, test=False):
         chat_text_area.send_keys(Keys.ENTER)
 
         # Save a screenshot for debugging issues
-        # sb.save_screenshot("backend/chatgpt_chat.png")
+        if test:
+            sb.save_screenshot("screenshots/01_chatgpt_started_extraction.png")
 
         logging.info("Extracting pdf data into json ...")
         sb.wait_for_element_visible(

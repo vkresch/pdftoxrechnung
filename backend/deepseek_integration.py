@@ -49,6 +49,9 @@ def process_with_deepseek(pdf_text, test=False):
         if not logged_in:
             logging.info("Login required, proceeding with login.")
 
+            if test:
+                sb.save_screenshot("screenshots/01_deepseek_chat_before_login.png")
+
             # Enter credentials only if login is needed
             sb.send_keys("//input[@class='ds-input__input'][@type='text']", MAIL)
             sb.send_keys(
@@ -72,6 +75,9 @@ def process_with_deepseek(pdf_text, test=False):
         )
         chat_text_area.send_keys(Keys.ENTER)
 
+        if test:
+            sb.save_screenshot("screenshots/02_deepseek_chat_started_extraction.png")
+
         # Wait for response elements to load
         logging.info("Extracting pdf data into json ...")
         sb.wait_for_element_visible("//div[@class='ds-flex _965abe9']", timeout=240)
@@ -80,7 +86,8 @@ def process_with_deepseek(pdf_text, test=False):
         response = sb.find_element(".md-code-block pre").text
 
         # Save a screenshot
-        # sb.save_screenshot("backend/deepseek_chat.png")
+        if test:
+            sb.save_screenshot("screenshots/03_deepseek_chat_after_extraction.png")
 
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)
