@@ -76,9 +76,8 @@ def process_with_deepseek(pdf_text, test=False):
             chat_text_area,
             f"{PROMPT} {pdf_text}",
         )
-        sb.sleep(1)
         sb.wait_for_element_visible("//div[@class='_7436101'][@aria-disabled='false']")
-        chat_text_area.send_keys(Keys.ENTER)
+        sb.click("//div[@class='_7436101'][@aria-disabled='false']")
 
         if test:
             sb.sleep(20)
