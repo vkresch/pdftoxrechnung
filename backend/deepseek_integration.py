@@ -79,6 +79,7 @@ def process_with_deepseek(pdf_text, test=False):
         chat_text_area.send_keys(Keys.ENTER)
 
         if test:
+            sb.sleep(20)
             sb.save_screenshot("screenshots/03_deepseek_started_extraction.png")
 
         # Wait for response elements to load
