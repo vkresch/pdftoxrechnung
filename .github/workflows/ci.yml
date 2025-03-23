@@ -83,3 +83,6 @@ jobs:
 
     - name: Run tests
       run: python -m pytest backend/ -vv
+      env:
+        DEEPSEEK_MAIL: ${{ secrets.DEEPSEEK_MAIL }}
+        DEEPSEEK_PASSWORD: ${{ secrets.DEEPSEEK_PASSWORD }}
