@@ -83,7 +83,7 @@ def process_with_deepseek(pdf_text, test=False):
 
         # Wait for response elements to load
         logging.info("Extracting pdf data into json ...")
-        sb.wait_for_element_visible("//div[@class='ds-flex _965abe9']", timeout=240)
+        sb.wait_for_element_visible("//div[@class='ds-flex _965abe9']", timeout=300)
 
         # response = sb.find_element(".ds-markdown--block p").text
         response = sb.find_element(".md-code-block pre").text
