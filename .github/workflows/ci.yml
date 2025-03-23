@@ -82,7 +82,7 @@ jobs:
         python -c "from seleniumbase import undetected; print(undetected.find_chrome_executable())"
 
     - name: Run tests
-      run: python -m pytest backend/ -vv
       env:
         DEEPSEEK_MAIL: ${{ secrets.DEEPSEEK_MAIL }}
         DEEPSEEK_PASSWORD: ${{ secrets.DEEPSEEK_PASSWORD }}
+      run: python -m pytest backend/ -vv
