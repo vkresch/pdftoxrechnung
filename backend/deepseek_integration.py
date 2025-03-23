@@ -27,15 +27,15 @@ def process_with_deepseek(pdf_text, test=False):
         test=test,
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
-        # sb.uc_open_with_reconnect("https://chat.deepseek.com/sign_in", 4)
-        # sb.uc_gui_click_captcha()
         url = "https://chat.deepseek.com/sign_in"
-        sb.activate_cdp_mode(url)
-        sb.sleep(1)
-        sb.uc_gui_click_captcha()
-        sb.sleep(1)
-        sb.uc_gui_handle_captcha()
-        sb.sleep(1)
+        sb.uc_open_with_reconnect(url, 4)
+        if test:
+            sb.uc_gui_click_captcha()
+            sb.sleep(1)
+            sb.uc_gui_click_captcha()
+            sb.sleep(1)
+            sb.uc_gui_handle_captcha()
+            sb.sleep(1)
         logged_in = False
 
         # TODO: Readd this once headless mode works with user_data_dir to avoid login for every request

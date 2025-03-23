@@ -6,7 +6,7 @@ from backend.pdf_parser import process
 
 models = [
     "deepseek",
-    "chatgpt",
+    # "chatgpt", # FIXME: There seems to be an issue right now
 ]
 
 
