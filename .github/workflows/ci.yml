@@ -87,7 +87,8 @@ jobs:
         DEEPSEEK_PASSWORD: ${{ secrets.DEEPSEEK_PASSWORD }}
       run: python -m pytest backend/ -vv
 
-    - name: Upload Logs
+    - name: Upload Screenshots
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: screenshots
