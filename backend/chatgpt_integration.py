@@ -31,7 +31,7 @@ def process_with_chatgpt(pdf_text, test=False):
         sb.uc_gui_handle_captcha()
         sb.sleep(1)
         sb.click_if_visible('button[aria-label="Close dialog"]')
-        sb.wait_for_element_visible("#prompt-textarea", timeout=10)
+        sb.wait_for_element_visible("#prompt-textarea", timeout=60)
         chat_text_area = sb.find_element("id", "prompt-textarea")
         sb.execute_script(
             "arguments[0].innerHTML=arguments[1]",
