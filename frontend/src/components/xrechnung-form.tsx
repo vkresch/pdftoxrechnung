@@ -2419,19 +2419,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
               <div>
                 <Label htmlFor="invoice-output-format">Format</Label>
                 <Select
-                  value={formState.output_format || "zugferd:xrechnung"}
+                  value={formState.output_format || "xrechnung:ubl"}
                   onValueChange={(value) => handleInputChange("output_format", value)}
                 >
                   <SelectTrigger id="invoice-output-format" className="border-primary">
                     <SelectValue placeholder="Format" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="zugferd:xrechnung">PDF / ZUGFeRD / XRechnung</SelectItem>
-                    <SelectItem value="zugferd:en16931">PDF / ZUGFeRD / EN16931</SelectItem>
-                    <SelectItem value="xrechnung:cii">XML / XRechnung / CII</SelectItem>
                     <SelectItem value="xrechnung:ubl">XML / XRechnung / UBL</SelectItem>
-                    <SelectItem value="en16931:cii">XML / EN16931 / CII</SelectItem>
-                    <SelectItem value="en16931:ubl">XML / EN16931 / UBL</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

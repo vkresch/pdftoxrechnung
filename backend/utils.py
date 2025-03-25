@@ -12,6 +12,7 @@ EXAMPLE_JSON = """
     "type": "Header",
     "type_code": "380",
     "name": "E-Rechnung",
+    "buyer_reference": "04011000-12345ABCXYZ-86",
     "issue_date_time": "2019-05-08",
     "languages": "de",
     "notes": [

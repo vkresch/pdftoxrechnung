@@ -9,44 +9,65 @@ from jinja2 import Template
 
 class Invoice:
     def __init__(self):
-        self.invoiceNumber = None
-        self.leitwegID = None
-        self.invoiceDate = None
-        self.dueDate = None
-        self.note = None
-        self.dueDays = None  # Berechnen
-        self.periodStart = None
-        self.periodEnd = None
-        self.customerCompanyID = None  # UmstID
-        self.customerStreetname = None
-        self.customerPostalZone = None
-        self.customerCityname = None
-        self.customerEmail = None
-        self.customerCompanyName = None
 
-        # Zusatzadresse
-        self.priceNet = None
-        self.priceFull = None
-        self.priceTax = None  # Berechnen
-        self.positionName = None
-        self.taxPercent = None
-        self.ownStreetname = None
-        self.ownPostalCode = None
-        self.ownCityname = None
-        self.ownCompanyName = None
-        self.ownCompanyID = None  # UmstID
-        self.ownTaxNo = None  # Steuernummer
+        # HEADER
+        self.leitwegID = 0
+        self.invoiceNumber = ""
+        self.invoiceDate = ""
+        self.dueDate = ""
+        self.note = ""
+        self.dueDays = ""  # Berechnen
+        self.periodStart = ""
+        self.periodEnd = ""
 
-        # ownContactCompanyName
-        self.ownContactName = None
-        self.ownContactPhone = None
-        self.ownContactEmail = None
-        self.ownIban = None
-        self.ownBic = None
-        self.ownAccountOwner = None
-        self.ownHraNo = None  # Handelsregisternummer
-        self.ownHraName = None  # Handelsregister Name
+        # SELLER
+        self.ownContactName = ""
+        self.ownContactPhone = ""
+        self.ownContactEmail = ""
+        self.ownIban = ""
+        self.ownBic = ""
+        self.ownAccountOwner = ""
+        self.ownHraNo = ""  # Handelsregisternummer
+        self.ownHraName = ""  # Handelsregister Name
+        self.ownStreetname = ""
+        self.ownPostalCode = ""
+        self.ownCityname = ""
+        self.ownCompanyName = ""
+        self.ownCompanyID = ""  # UmstID
+        self.ownTaxNo = ""  # Steuernummer
 
+        # BUYER
+        self.customerCompanyID = ""  # UmstID
+        self.customerStreetname = ""
+        self.customerPostalZone = ""
+        self.customerCityname = ""
+        self.customerEmail = ""
+        self.customerCompanyName = ""
+
+        # SETTLEMENT
+        self.priceNet = ""
+        self.priceFull = ""
+        self.priceTax = ""  # Berechnen
+        self.positionName = ""
+        self.taxPercent = ""
+
+        # DELIVERY
+        self.locationID = ""
+        self.recipientName = ""
+        self.deliveryStreetName = ""
+        self.deliveryCityName = ""
+        self.deliveryPostalZone = ""
+        self.deliveryRegion = ""
+        self.deliveryCountryCode = ""
+        self.deliveryReceiptName = ""
+
+        # ALLOWANCES
+        self.allowances = ""
+
+        # CHARGES
+        self.charges = ""
+
+        # LINE ITEMS
         self.items = []
 
 
@@ -71,42 +92,52 @@ def validate_xml_file(fileName):
 def generate_xrechnung(invoice_data):
     invoice = Invoice()
     
-    invoice.invoiceNumber = invoice_data["header"]["id"]
-    invoice.invoiceDate = invoice_data["header"]["issue_date_time"]
-    invoice.dueDate = invoice_data["trade"]["settlement"].get("advance_payment_date", "")
-    invoice.leitwegID = invoice_data["header"].get("leitweg_id")
-    invoice.note = " ".join(invoice_data["header"].get("notes", []))
+    # HEADER ------------------------------------------------------------
+    header = invoice_data["header"]
+    invoice.invoiceNumber = header["id"]
+    invoice.invoiceDate = header["issue_date_time"]    
+    invoice.leitwegID = header.get("buyer_reference", 0)
+    invoice.note = " ".join(header.get("notes", []))
     
-    invoice.ownCompanyName = invoice_data["trade"]["agreement"]["seller"]["name"]
-    invoice.ownContactName = invoice_data["trade"]["agreement"]["seller"]["contact_name"]
-    invoice.ownStreetname = invoice_data["trade"]["agreement"]["seller"]["address"]["street_name"]
-    invoice.ownCityname = invoice_data["trade"]["agreement"]["seller"]["address"]["city_name"]
-    invoice.ownPostalCode = invoice_data["trade"]["agreement"]["seller"]["address"]["postal_zone"]
-    invoice.ownCompanyID = invoice_data["trade"]["agreement"]["seller"].get("tax_id", "")
-    invoice.ownContactEmail = invoice_data["trade"]["agreement"]["seller"].get("email")
-    invoice.ownContactPhone = invoice_data["trade"]["agreement"]["seller"].get("phone")
-    invoice.ownIban = invoice_data["trade"]["agreement"]["seller"]["iban"]
-    invoice.ownLegalForm = invoice_data["trade"]["agreement"]["seller"]["legal_form"]
-    invoice.ownHraNo = invoice_data["trade"]["agreement"]["seller"]["handels_register_number"]
-    invoice.ownHraName = invoice_data["trade"]["agreement"]["seller"]["handels_register_name"]
+    # SELLER ------------------------------------------------------------
+    seller = invoice_data["trade"]["agreement"]["seller"]
+    invoice.ownCompanyName = seller.get("name", "")
+    invoice.ownContactName = seller.get("contact_name", "")
+    seller_address = seller["address"]
+    invoice.ownStreetname = seller_address.get("street_name", "")
+    invoice.ownCityname = seller_address.get("city_name", "")
+    invoice.ownPostalCode = seller_address.get("postal_zone", "")
+    invoice.ownCompanyID = seller.get("tax_id", "")
+    invoice.ownContactEmail = seller.get("email", "")
+    invoice.ownContactPhone = seller.get("phone", "")
     
-    invoice.customerID = invoice_data["trade"]["agreement"]["buyer"]["id"]
-    invoice.customerCompanyName = invoice_data["trade"]["agreement"]["buyer"]["name"]
-    invoice.customerContactName = invoice_data["trade"]["agreement"]["buyer"]["contact_name"]
-    invoice.customerOrderNumber = invoice_data["trade"]["agreement"]["buyer"]["order_number"]
-    invoice.customerStreetname = invoice_data["trade"]["agreement"]["buyer"]["address"]["street_name"]
-    invoice.customerCityname = invoice_data["trade"]["agreement"]["buyer"]["address"]["city_name"]
-    invoice.customerPostalZone = invoice_data["trade"]["agreement"]["buyer"]["address"]["postal_zone"]
-    invoice.customerCompanyID = invoice_data["trade"]["agreement"]["buyer"].get("tax_id", "")
-    invoice.customerContactEmail = invoice_data["trade"]["agreement"]["buyer"].get("email")
+    invoice.ownLegalForm = seller.get("legal_form", "")
+    invoice.ownHraNo = seller.get("handels_register_number", "")
+    invoice.ownHraName = seller.get("handels_register_name", "")
     
-    invoice.paymentMeansCode = invoice_data["trade"]["settlement"]["payment_means"]["type_code"] # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
-    invoice.currencyCode = invoice_data["trade"]["settlement"].get("currency_code", "EUR")
-    invoice.priceNet = invoice_data["trade"]["settlement"]["monetary_summation"]["net_total"]
-    invoice.priceTax = invoice_data["trade"]["settlement"]["monetary_summation"]["tax_total"]
+    # BUYER ------------------------------------------------------------
+    buyer = invoice_data["trade"]["agreement"]["buyer"]
+    invoice.customerID = buyer.get("id", "")
+    invoice.customerCompanyName = buyer.get("name", "")
+    invoice.customerContactName = buyer.get("contact_name", "")
+    invoice.customerOrderNumber = buyer.get("order_number", "")
+    buyer_address = buyer["address"]
+    invoice.customerStreetname = buyer_address.get("street_name", "")
+    invoice.customerCityname = buyer_address.get("city_name", "")
+    invoice.customerPostalZone = buyer_address.get("postal_zone", "")
+    invoice.customerCompanyID = buyer.get("tax_id", "")
+    invoice.customerContactEmail = buyer.get("email", "")
+    
+    # SETTLEMENT -------------------------------------------------------
+    settlement = invoice_data["trade"]["settlement"]
+    invoice.dueDate = settlement.get("advance_payment_date", "")
+    invoice.paymentMeansCode = settlement["payment_means"]["type_code"] # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
+    invoice.ownIban = settlement.get("payment_means").get("iban", "")
+    invoice.currencyCode = settlement.get("currency_code", "EUR")
+    invoice.priceNet = settlement["monetary_summation"]["net_total"]
+    invoice.priceTax = settlement["monetary_summation"]["tax_total"]
     invoice.priceFull = invoice.priceNet + invoice.priceTax
-
-    tax_rates = invoice_data["trade"]["settlement"]["trade_tax"]
+    tax_rates = settlement["trade_tax"]
     if tax_rates:
         invoice.taxPercent = tax_rates[0]["rate"] 
     
@@ -115,7 +146,7 @@ def generate_xrechnung(invoice_data):
         dueDateObject = datetime.strptime(invoice.dueDate, "%Y-%m-%d")
         invoice.dueDays = (dueDateObject - invoiceDateObject).days
 
-    # Delivery
+    # DELIVERY ------------------------------------------------------------
     delivery = invoice_data["trade"].get("delivery")
     if delivery:
         invoice.locationID = delivery.get("location_id", "")
@@ -129,28 +160,28 @@ def generate_xrechnung(invoice_data):
             invoice.deliveryCountryCode = address.get("country_code", "")
             invoice.deliveryReceiptName = address.get("recipient_name", "")
 
-    # Allowances
+    # ALLOWANCES ------------------------------------------------------------
     allowances = invoice_data["trade"].get("allowances")
     if allowances:
         invoice.allowances = allowances
 
-    # Charges
+    # CHARGES ------------------------------------------------------------
     charges = invoice_data["trade"].get("charges")
     if charges:
         invoice.charges = charges
     
-    # Line Items
+    # LINE ITEMS ------------------------------------------------------------
     for item in invoice_data["trade"]["items"]:
         invoice.items.append({
-            "lineID": item["line_id"],
-            "periodStart": item.get("period_start"),
-            "periodEnd": item.get("period_end"),
-            "positionName": item["product_name"],
-            "quantity": item["quantity"],
-            "deliveryDetails": item["delivery_details"],
-            "priceNet": item["agreement_net_price"],
-            "taxPercent": item["settlement_tax"]["rate"],
-            "taxCategory": item["settlement_tax"]["category"],
+            "lineID": item.get("line_id", ""),
+            "periodStart": item.get("period_start", ""),
+            "periodEnd": item.get("period_end", ""),
+            "positionName": item.get("product_name", ""),
+            "quantity": item.get("quantity", ""),
+            "deliveryDetails": item.get("delivery_details", ""),
+            "priceNet": item.get("agreement_net_price", ""),
+            "taxPercent": item["settlement_tax"].get("rate", ""),
+            "taxCategory": item["settlement_tax"].get("category", ""),
         })
     
     template = Template(open("./backend/templates/ubl-3.0.1-xrechnung-template.xml").read())

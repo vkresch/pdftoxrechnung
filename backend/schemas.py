@@ -178,6 +178,7 @@ class Trade(BaseModel):
 class Header(BaseModel):
     id: str
     type: str = "Header"
+    buyer_reference: str
     type_code: str
     name: str
     issue_date_time: date

@@ -10,7 +10,12 @@
     <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>{{ data.currencyCode }}</cbc:DocumentCurrencyCode>
-    <cbc:BuyerReference>{{ data.customerOrderNumber }}</cbc:BuyerReference>
+    <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
+    {% if data.customerOrderNumber != "" -%}
+    <cac:OrderReference>
+		<cbc:SalesOrderID>{{ data.customerOrderNumber }}</cbc:SalesOrderID>
+	</cac:OrderReference>
+    {% endif -%}
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.ownCompanyID }}</cbc:EndpointID>
@@ -73,7 +78,7 @@
     <cac:AccountingCustomerParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.customerID }}</cbc:EndpointID>
-            {% if data.customerCompanyID is not none and data.customerCompanyID != "" %}
+            {% if data.customerCompanyID != "" %}
             <cac:PartyIdentification>
                 <cbc:ID>{{ data.customerCompanyID }}</cbc:ID>
             </cac:PartyIdentification>
@@ -102,8 +107,8 @@
         {% if data.paymentMeansCode != "" -%}<cbc:PaymentMeansCode>{{ data.paymentMeansCode }}</cbc:PaymentMeansCode>{% endif %}
         {% if data.invoiceNumber != "" -%}<cbc:PaymentID>{{ data.invoiceNumber }}</cbc:PaymentID>{% endif %}
         <cac:PayeeFinancialAccount>
-            {% if data.ownIban != "" %}<cbc:ID>{{ data.ownIban }}</cbc:ID>{% endif %}
-            {% if data.ownCompanyName != "" %}<cbc:Name>{{ data.ownCompanyName }}</cbc:Name>{% endif %}
+            {% if data.ownIban != "" -%}<cbc:ID>{{ data.ownIban }}</cbc:ID>{% endif %}
+            {% if data.ownCompanyName != "" -%}<cbc:Name>{{ data.ownCompanyName }}</cbc:Name>{% endif %}
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     <cac:PaymentTerms>
@@ -146,7 +151,7 @@
         <cac:TaxSubtotal>
             <cbc:TaxableAmount currencyID="{{ data.currencyCode }}">{{ data.priceNet }}</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="{{ data.currencyCode }}">{{ data.priceTax }}</cbc:TaxAmount>
-            {% if data.taxPercent is not none -%}
+            {% if data.taxPercent != "" -%}
             <cac:TaxCategory>
                 <cbc:ID>S</cbc:ID>
                 <cbc:Percent>{{ data.taxPercent }}</cbc:Percent>
