@@ -48,7 +48,9 @@ class Buyer(BaseModel):
     id: Optional[str] = None
     name: str
     contact_name: Optional[str] = None
-    order_number: Optional[str] = None
+    order_id: Optional[str] = None
+    sales_order_number: Optional[str] = None
+    contract_document_reference: Optional[str] = None
     legal_form: Optional[str] = None
     address: Address
     trade_name: Optional[str] = None

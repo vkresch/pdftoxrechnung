@@ -120,7 +120,9 @@ def generate_xrechnung(invoice_data):
     invoice.customerID = buyer.get("id", "")
     invoice.customerCompanyName = buyer.get("name", "")
     invoice.customerContactName = buyer.get("contact_name", "")
-    invoice.customerOrderNumber = buyer.get("order_number", "")
+    invoice.customerOrderID = buyer.get("order_id", "")
+    invoice.customerSalesOrderNumber = buyer.get("sales_order_number", "")
+    invoice.customerContractDocumentReference = buyer.get("contract_document_reference", "")
     buyer_address = buyer["address"]
     invoice.customerStreetname = buyer_address.get("street_name", "")
     invoice.customerCityname = buyer_address.get("city_name", "")

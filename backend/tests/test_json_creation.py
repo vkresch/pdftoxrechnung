@@ -40,7 +40,7 @@ def test_json_creation_output(model):
     assert buyer.get("id") == "987-654"
     assert buyer.get("name") == "Papierflieger-Vertriebs-GmbH"
     assert buyer.get("contact_name") == "Helga Musterfrau"
-    assert buyer.get("order_number") == "ABC-123"
+    assert buyer.get("sales_order_number") == "ABC-123"
 
     buyer_address = buyer.get("address")
     assert buyer_address.get("street_name") == "Rabattstr. 25"

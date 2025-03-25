@@ -11,10 +11,17 @@
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>{{ data.currencyCode }}</cbc:DocumentCurrencyCode>
     <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
-    {% if data.customerOrderNumber != "" -%}
+    {% if data.customerOrderID != "" or data.customerSalesOrderNumber != "" -%}
     <cac:OrderReference>
-		<cbc:SalesOrderID>{{ data.customerOrderNumber }}</cbc:SalesOrderID>
+        {% if data.customerOrderID != "" -%}<cbc:SalesOrderID>{{ data.customerOrderID }}</cbc:SalesOrderID>{% endif %}
+        <cbc:ID>Bestellnummer</cbc:ID>
+		{% if data.customerSalesOrderNumber != "" -%}<cbc:SalesOrderID>{{ data.customerSalesOrderNumber }}</cbc:SalesOrderID>{% endif %}
 	</cac:OrderReference>
+    {% endif -%}
+    {% if data.contractDocumentReference != "" -%}
+    <cac:ContractDocumentReference>
+		<cbc:ID>{{ data.contractDocumentReference }}</cbc:ID>
+	</cac:ContractDocumentReference>
     {% endif -%}
     <cac:AccountingSupplierParty>
         <cac:Party>

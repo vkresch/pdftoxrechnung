@@ -60,7 +60,9 @@ invoice_data = {
                 "id": "987-654",
                 "name": "Papierflieger-Vertriebs-GmbH",
                 "contact_name": "Helga Musterfrau",
-                "order_number": "ABC-123",
+                "order_id": "123453322",
+                "sales_order_number": "ABC-123",
+                "contract_document_reference": "COSNTR-XXX",
                 "legal_form": "GmbH",
                 "address": {
                     "type": "Address",
