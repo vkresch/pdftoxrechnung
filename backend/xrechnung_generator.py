@@ -99,8 +99,14 @@ def generate_xrechnung(invoice_data):
     invoice.leitwegID = header.get("buyer_reference", 0)
     invoice.note = " ".join(header.get("notes", []))
     
+    agreement = invoice_data["trade"]["agreement"]
+    invoice.contractDocumentReference = agreement.get("contract_reference", "")
+    invoice.contractDocumentReference = agreement.get("project_reference", "")
+    invoice.contractDocumentReference = agreement.get("purchase_order_reference", "")
+    invoice.contractDocumentReference = agreement.get("sales_order_reference", "")
+    
     # SELLER ------------------------------------------------------------
-    seller = invoice_data["trade"]["agreement"]["seller"]
+    seller = agreement["seller"]
     invoice.ownCompanyName = seller.get("name", "")
     invoice.ownContactName = seller.get("contact_name", "")
     seller_address = seller["address"]
@@ -116,7 +122,7 @@ def generate_xrechnung(invoice_data):
     invoice.ownHraName = seller.get("handels_register_name", "")
     
     # BUYER ------------------------------------------------------------
-    buyer = invoice_data["trade"]["agreement"]["buyer"]
+    buyer = agreement["buyer"]
     invoice.customerID = buyer.get("id", "")
     invoice.customerCompanyName = buyer.get("name", "")
     invoice.customerContactName = buyer.get("contact_name", "")

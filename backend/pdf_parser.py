@@ -6,6 +6,8 @@ import numpy as np
 from backend.chatgpt_integration import process_with_chatgpt
 from backend.deepseek_integration import process_with_deepseek
 from backend.ollama_integration import process_with_ollama
+
+# from backend.gemini_integration import process_with_gemini
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 import easyocr
@@ -31,6 +33,8 @@ def process(pdf_text, model="chatgpt", test=False):
         return process_with_deepseek(pdf_text, test)
     elif model == "chatgpt":
         return process_with_chatgpt(pdf_text, test)
+    # elif model == "gemini":
+    #     return process_with_gemini(pdf_text)
     return process_with_chatgpt(pdf_text, test)
 
 

@@ -13,8 +13,7 @@
     <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
     {% if data.customerOrderID != "" or data.customerSalesOrderNumber != "" -%}
     <cac:OrderReference>
-        {% if data.customerOrderID != "" -%}<cbc:SalesOrderID>{{ data.customerOrderID }}</cbc:SalesOrderID>{% endif %}
-        <cbc:ID>Bestellnummer</cbc:ID>
+        {% if data.customerOrderID != "" -%}<cbc:ID>{{ data.customerOrderID }}</cbc:ID>{% endif %}
 		{% if data.customerSalesOrderNumber != "" -%}<cbc:SalesOrderID>{{ data.customerSalesOrderNumber }}</cbc:SalesOrderID>{% endif %}
 	</cac:OrderReference>
     {% endif -%}
