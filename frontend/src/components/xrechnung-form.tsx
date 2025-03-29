@@ -497,8 +497,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Label htmlFor="invoice-title">Rechnungstitel</Label>
                 <Input
                   id="invoice-title"
-                  value={formState.header.name}
-                  onChange={(e) => handleInputChange("header.name", e.target.value)}
+                  defaultValue={formState.header.name}
+                  onBlur={(e) => handleInputChange("header.name", e.target.value)}
                 />
               </div>
 
@@ -511,8 +511,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-number"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Rechnungsnummer"
-                  value={formState.header.id}
-                  onChange={(e) => handleInputChange("header.id", e.target.value)}
+                  defaultValue={formState.header.id}
+                  onBlur={(e) => handleInputChange("header.id", e.target.value)}
                 />
               </div>
 
@@ -525,8 +525,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-issue-date"
                   type="date"
                   className="bg-[var(--required-field-bg-color)]"
-                  value={formState.header.issue_date_time}
-                  onChange={(e) => handleInputChange("header.issue_date_time", e.target.value)}
+                  defaultValue={formState.header.issue_date_time}
+                  onBlur={(e) => handleInputChange("header.issue_date_time", e.target.value)}
                 />
               </div>
 
@@ -600,8 +600,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-due-date"
                     type="date"
-                    value={formState.trade.settlement.advance_payment_date || ""}
-                    onChange={(e) => handleInputChange("trade.settlement.advance_payment_date", e.target.value)}
+                    defaultValue={formState.trade.settlement.advance_payment_date || ""}
+                    onBlur={(e) => handleInputChange("trade.settlement.advance_payment_date", e.target.value)}
                     className="flex-grow"
                   />
                   <Input
@@ -610,7 +610,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     className="w-20 text-center"
                     placeholder="Tage"
                     aria-label="Anzahl Tage, bis die Zahlung fällig wird"
-                    onChange={(e) => handleDueDateDaysChange(Number.parseInt(e.target.value) || 0)}
+                    onBlur={(e) => handleDueDateDaysChange(Number.parseInt(e.target.value) || 0)}
                   />
                   <span className="flex items-center px-3 border rounded-md bg-muted">Tage</span>
                 </div>
@@ -624,8 +624,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-date"
                   type="date"
-                  value={formState.trade.delivery?.date || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.date", e.target.value)}
+                  defaultValue={formState.trade.delivery?.date || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.date", e.target.value)}
                 />
               </div>
 
@@ -638,16 +638,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-billing-period-start-date"
                     type="date"
-                    value={formState.trade.billing_period?.start_date || ""}
-                    onChange={(e) => handleInputChange("trade.billing_period.start_date", e.target.value)}
+                    defaultValue={formState.trade.billing_period?.start_date || ""}
+                    onBlur={(e) => handleInputChange("trade.billing_period.start_date", e.target.value)}
                     className="flex-grow"
                   />
                   <span className="px-3">bis</span>
                   <Input
                     id="invoice-billing-period-end-date"
                     type="date"
-                    value={formState.trade.billing_period?.end_date || ""}
-                    onChange={(e) => handleInputChange("trade.billing_period.end_date", e.target.value)}
+                    defaultValue={formState.trade.billing_period?.end_date || ""}
+                    onBlur={(e) => handleInputChange("trade.billing_period.end_date", e.target.value)}
                     className="flex-grow"
                   />
                 </div>
@@ -676,7 +676,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       id="invoice-buyer-reference-disabled"
                       type="checkbox"
                       className="form-checkbox h-4 w-4"
-                      onChange={(e) => {
+                      onBlur={(e) => {
                         if (e.target.checked) {
                           handleInputChange("trade.agreement.buyer.reference", "")
                         }
@@ -688,8 +688,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     id="invoice-buyer-reference"
                     className="bg-[var(--maybe-required-field-bg-color)] flex-grow"
                     placeholder="Käuferreferenz (Leitweg-ID, ...)"
-                    value={formState.trade.agreement.buyer.reference || ""}
-                    onChange={(e) => handleInputChange("trade.agreement.buyer.reference", e.target.value)}
+                    defaultValue={formState.trade.agreement.buyer.reference || ""}
+                    onBlur={(e) => handleInputChange("trade.agreement.buyer.reference", e.target.value)}
                   />
                 </div>
               </div>
@@ -702,8 +702,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-project-reference"
                   placeholder="Projektnummer"
-                  value={formState.trade.agreement.project_reference || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.project_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.project_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.project_reference", e.target.value)}
                 />
               </div>
 
@@ -715,8 +715,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-contract-reference"
                   placeholder="Vertragsnummer"
-                  value={formState.trade.agreement.contract_reference || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.contract_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.contract_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.contract_reference", e.target.value)}
                 />
               </div>
 
@@ -728,8 +728,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-purchase-order-reference"
                   placeholder="Bestellnummer"
-                  value={formState.trade.agreement.purchase_order_reference || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.purchase_order_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.purchase_order_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.purchase_order_reference", e.target.value)}
                 />
               </div>
 
@@ -741,8 +741,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-sales-order-reference"
                   placeholder="Auftragsnummer"
-                  value={formState.trade.agreement.sales_order_reference || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.sales_order_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.sales_order_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.sales_order_reference", e.target.value)}
                 />
               </div>
 
@@ -757,8 +757,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <Input
                         type="text"
                         placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
-                        value={ref}
-                        onChange={(e) => {
+                        defaultValue={ref}
+                        onBlur={(e) => {
                           const newRefs = [...formState.document_references]
                           newRefs[index] = e.target.value
                           handleInputChange("document_references", newRefs)
@@ -800,8 +800,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-note"
                   rows={2}
                   placeholder="Zusätzliche Hinweise und Bemerkungen"
-                  value={formState.header.notes ? formState.header.notes.join("\n") : ""}
-                  onChange={(e) => handleInputChange("header.notes", e.target.value.split("\n"))}
+                  defaultValue={formState.header.notes ? formState.header.notes.join("\n") : ""}
+                  onBlur={(e) => handleInputChange("header.notes", e.target.value.split("\n"))}
                 />
               </div>
 
@@ -810,8 +810,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Textarea
                   id="invoice-intro-text"
                   rows={3}
-                  value={formState.intro_text || ""}
-                  onChange={(e) => handleInputChange("intro_text", e.target.value)}
+                  defaultValue={formState.intro_text || ""}
+                  onBlur={(e) => handleInputChange("intro_text", e.target.value)}
                 />
               </div>
             </div>
@@ -836,8 +836,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-name"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Name"
-                  value={formState.trade.agreement.seller.name}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.name", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.name}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.name", e.target.value)}
                 />
               </div>
 
@@ -848,8 +848,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-seller-trade-name"
                   placeholder="Handelsname"
-                  value={formState.trade.agreement.seller.trade_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.trade_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.trade_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.trade_name", e.target.value)}
                 />
               </div>
 
@@ -861,8 +861,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-id"
                   className="bg-[var(--maybe-required-field-bg-color)]"
                   placeholder="Verkäuferkennung"
-                  value={formState.trade.agreement.seller.id || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.id", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.id", e.target.value)}
                 />
               </div>
 
@@ -874,8 +874,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-trade-id"
                   className="bg-[var(--maybe-required-field-bg-color)]"
                   placeholder="Registernummer"
-                  value={formState.trade.agreement.seller.trade_id || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.trade_id", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.trade_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.trade_id", e.target.value)}
                 />
               </div>
 
@@ -887,8 +887,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-vat-id"
                   className="bg-[var(--maybe-required-field-bg-color)]"
                   placeholder="DE123456789"
-                  value={formState.trade.agreement.seller.vat_id || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.vat_id", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.vat_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.vat_id", e.target.value)}
                 />
               </div>
 
@@ -899,8 +899,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-seller-tax-id"
                   placeholder="Steuernummer"
-                  value={formState.trade.agreement.seller.tax_id || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.tax_id", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.tax_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.tax_id", e.target.value)}
                 />
               </div>
 
@@ -912,8 +912,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-legal-info"
                   rows={2}
                   placeholder="z.B. Kein Ausweis von Umsatzsteuer, da Kleinunternehmer gemäß §19 UStG."
-                  value={formState.trade.agreement.seller.legal_info || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.legal_info", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.legal_info || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.legal_info", e.target.value)}
                 />
               </div>
 
@@ -925,8 +925,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-seller-electronic-address"
                     className="bg-[var(--required-field-bg-color)] flex-grow"
-                    value={formState.trade.agreement.seller.electronic_address || ""}
-                    onChange={(e) => handleInputChange("trade.agreement.seller.electronic_address", e.target.value)}
+                    defaultValue={formState.trade.agreement.seller.electronic_address || ""}
+                    onBlur={(e) => handleInputChange("trade.agreement.seller.electronic_address", e.target.value)}
                   />
                   <Select
                     value={formState.trade.agreement.seller.electronic_address_type_code || "EM"}
@@ -961,8 +961,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-address-line1"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Straße 1"
-                  value={formState.trade.agreement.seller.address?.street_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.street_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.address?.street_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.address.street_name", e.target.value)}
                 />
               </div>
 
@@ -973,8 +973,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-seller-address-line2"
                   placeholder="Straße 2"
-                  value={formState.trade.agreement.seller.address?.street_name2 || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.street_name2", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.address?.street_name2 || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.address.street_name2", e.target.value)}
                 />
               </div>
 
@@ -987,8 +987,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-address-post-code"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="12345"
-                  value={formState.trade.agreement.seller.address?.postal_zone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.postal_zone", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.address?.postal_zone || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.address.postal_zone", e.target.value)}
                 />
               </div>
 
@@ -1001,8 +1001,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-address-city"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Ort"
-                  value={formState.trade.agreement.seller.address?.city_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.address.city_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.address?.city_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.address.city_name", e.target.value)}
                 />
               </div>
 
@@ -1048,8 +1048,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-contact-name"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Name"
-                  value={formState.trade.agreement.seller.contact_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.contact_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.contact_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.contact_name", e.target.value)}
                 />
               </div>
 
@@ -1062,8 +1062,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-contact-email"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="max.mustermann@beispiel.de"
-                  value={formState.trade.agreement.seller.contact_email || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.contact_email", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.contact_email || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.contact_email", e.target.value)}
                 />
               </div>
 
@@ -1076,8 +1076,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-seller-contact-phone"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="+49 30 1234567"
-                  value={formState.trade.agreement.seller.contact_phone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.seller.contact_phone", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.contact_phone || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.contact_phone", e.target.value)}
                 />
               </div>
             </div>
@@ -1102,8 +1102,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-buyer-name"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Name"
-                  value={formState.trade.agreement.buyer.name}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.name", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.name}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.name", e.target.value)}
                 />
               </div>
 
@@ -1114,8 +1114,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-buyer-trade-name"
                   placeholder="Handelsname"
-                  value={formState.trade.agreement.buyer.trade_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.trade_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.trade_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.trade_name", e.target.value)}
                 />
               </div>
 
@@ -1127,8 +1127,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-buyer-id"
                     placeholder="Käuferkennung (Kundennummer, ...)"
-                    value={formState.trade.agreement.buyer.id || ""}
-                    onChange={(e) => handleInputChange("trade.agreement.buyer.id", e.target.value)}
+                    defaultValue={formState.trade.agreement.buyer.id || ""}
+                    onBlur={(e) => handleInputChange("trade.agreement.buyer.id", e.target.value)}
                     className="flex-grow"
                   />
                   <Select
@@ -1153,8 +1153,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-buyer-vat-id"
                   placeholder="DE123456789"
-                  value={formState.trade.agreement.buyer.vat_id || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.vat_id", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.vat_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.vat_id", e.target.value)}
                 />
               </div>
 
@@ -1166,8 +1166,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-buyer-electronic-address"
                     className="bg-[var(--required-field-bg-color)] flex-grow"
-                    value={formState.trade.agreement.buyer.electronic_address || ""}
-                    onChange={(e) => handleInputChange("trade.agreement.buyer.electronic_address", e.target.value)}
+                    defaultValue={formState.trade.agreement.buyer.electronic_address || ""}
+                    onBlur={(e) => handleInputChange("trade.agreement.buyer.electronic_address", e.target.value)}
                   />
                   <Select
                     value={formState.trade.agreement.buyer.electronic_address_type_code || "EM"}
@@ -1202,8 +1202,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-buyer-address-line1"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Straße 1"
-                  value={formState.trade.agreement.buyer.address?.street_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.street_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.address?.street_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.address.street_name", e.target.value)}
                 />
               </div>
 
@@ -1214,8 +1214,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-buyer-address-line2"
                   placeholder="Straße 2"
-                  value={formState.trade.agreement.buyer.address?.street_name2 || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.street_name2", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.address?.street_name2 || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.address.street_name2", e.target.value)}
                 />
               </div>
 
@@ -1228,8 +1228,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-buyer-address-post-code"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="12345"
-                  value={formState.trade.agreement.buyer.address?.postal_zone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.postal_zone", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.address?.postal_zone || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.address.postal_zone", e.target.value)}
                 />
               </div>
 
@@ -1242,8 +1242,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   id="invoice-buyer-address-city"
                   className="bg-[var(--required-field-bg-color)]"
                   placeholder="Ort"
-                  value={formState.trade.agreement.buyer.address?.city_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.address.city_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.address?.city_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.address.city_name", e.target.value)}
                 />
               </div>
 
@@ -1288,8 +1288,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-buyer-contact-name"
                   placeholder="Name"
-                  value={formState.trade.agreement.buyer.contact_name || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.contact_name", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.contact_name || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.contact_name", e.target.value)}
                 />
               </div>
 
@@ -1301,8 +1301,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-buyer-contact-email"
                   placeholder="max.mustermann@beispiel.de"
-                  value={formState.trade.agreement.buyer.contact_email || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.contact_email", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.contact_email || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.contact_email", e.target.value)}
                 />
               </div>
 
@@ -1314,8 +1314,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-buyer-contact-phone"
                   placeholder="+49 30 1234567"
-                  value={formState.trade.agreement.buyer.contact_phone || ""}
-                  onChange={(e) => handleInputChange("trade.agreement.buyer.contact_phone", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.contact_phone || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.contact_phone", e.target.value)}
                 />
               </div>
             </div>
@@ -1370,8 +1370,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       id="invoice-payment-method-account-name"
                       className="bg-[var(--required-field-bg-color)]"
                       placeholder="Name"
-                      value={formState.trade.settlement.payment_means?.account_name || ""}
-                      onChange={(e) => handleInputChange("trade.settlement.payment_means.account_name", e.target.value)}
+                      defaultValue={formState.trade.settlement.payment_means?.account_name || ""}
+                      onBlur={(e) => handleInputChange("trade.settlement.payment_means.account_name", e.target.value)}
                     />
                   </div>
 
@@ -1384,8 +1384,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       id="invoice-payment-method-iban"
                       className="bg-[var(--required-field-bg-color)]"
                       placeholder="DE12345678901234567890"
-                      value={formState.trade.settlement.payment_means?.iban || ""}
-                      onChange={(e) => handleInputChange("trade.settlement.payment_means.iban", e.target.value)}
+                      defaultValue={formState.trade.settlement.payment_means?.iban || ""}
+                      onBlur={(e) => handleInputChange("trade.settlement.payment_means.iban", e.target.value)}
                     />
                   </div>
 
@@ -1397,8 +1397,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     <Input
                       id="invoice-payment-method-bic"
                       placeholder="ABCDEFGHIJK"
-                      value={formState.trade.settlement.payment_means?.bic || ""}
-                      onChange={(e) => handleInputChange("trade.settlement.payment_means.bic", e.target.value)}
+                      defaultValue={formState.trade.settlement.payment_means?.bic || ""}
+                      onBlur={(e) => handleInputChange("trade.settlement.payment_means.bic", e.target.value)}
                     />
                   </div>
 
@@ -1407,8 +1407,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     <Input
                       id="invoice-payment-method-bank-name"
                       placeholder="Name der Bank"
-                      value={formState.trade.settlement.payment_means?.bank_name || ""}
-                      onChange={(e) => handleInputChange("trade.settlement.payment_means.bank_name", e.target.value)}
+                      defaultValue={formState.trade.settlement.payment_means?.bank_name || ""}
+                      onBlur={(e) => handleInputChange("trade.settlement.payment_means.bank_name", e.target.value)}
                     />
                   </div>
                 </div>
@@ -1423,8 +1423,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-payment-reference"
                     placeholder="Verwendungszweck"
-                    value={formState.trade.settlement.payment_reference || ""}
-                    onChange={(e) => handleInputChange("trade.settlement.payment_reference", e.target.value)}
+                    defaultValue={formState.trade.settlement.payment_reference || ""}
+                    onBlur={(e) => handleInputChange("trade.settlement.payment_reference", e.target.value)}
                   />
                 </div>
 
@@ -1437,8 +1437,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     id="invoice-payment-terms"
                     rows={3}
                     placeholder="Zahlungsziel: 10 Tage nach Zugang der Rechnung"
-                    value={formState.trade.settlement.payment_terms || ""}
-                    onChange={(e) => handleInputChange("trade.settlement.payment_terms", e.target.value)}
+                    defaultValue={formState.trade.settlement.payment_terms || ""}
+                    onBlur={(e) => handleInputChange("trade.settlement.payment_terms", e.target.value)}
                   />
                 </div>
               </div>
@@ -1463,8 +1463,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-recipient-name"
                   placeholder="Name des Empfängers"
-                  value={formState.trade.delivery?.recipient_name || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.recipient_name", e.target.value)}
+                  defaultValue={formState.trade.delivery?.recipient_name || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.recipient_name", e.target.value)}
                 />
               </div>
               <div>
@@ -1474,8 +1474,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-location-id"
                   placeholder="Kennung des Lieferorts"
-                  value={formState.trade.delivery?.location_id || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.location_id", e.target.value)}
+                  defaultValue={formState.trade.delivery?.location_id || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.location_id", e.target.value)}
                 />
               </div>
             </div>
@@ -1489,8 +1489,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-address-line1"
                   placeholder="Straße 1"
-                  value={formState.trade.delivery?.address?.street_name || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.address.street_name", e.target.value)}
+                  defaultValue={formState.trade.delivery?.address?.street_name || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.address.street_name", e.target.value)}
                 />
               </div>
 
@@ -1501,8 +1501,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-address-line2"
                   placeholder="Straße 2"
-                  value={formState.trade.delivery?.address?.street_name2 || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.address.street_name2", e.target.value)}
+                  defaultValue={formState.trade.delivery?.address?.street_name2 || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.address.street_name2", e.target.value)}
                 />
               </div>
 
@@ -1513,8 +1513,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-address-line3"
                   placeholder="Zusatz"
-                  value={formState.trade.delivery?.address?.additional_info || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.address.additional_info", e.target.value)}
+                  defaultValue={formState.trade.delivery?.address?.additional_info || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.address.additional_info", e.target.value)}
                 />
               </div>
 
@@ -1525,8 +1525,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-address-post-code"
                   placeholder="12345"
-                  value={formState.trade.delivery?.address?.postal_zone || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.address.postal_zone", e.target.value)}
+                  defaultValue={formState.trade.delivery?.address?.postal_zone || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.address.postal_zone", e.target.value)}
                 />
               </div>
 
@@ -1537,8 +1537,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-address-city"
                   placeholder="Ort"
-                  value={formState.trade.delivery?.address?.city_name || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.address.city_name", e.target.value)}
+                  defaultValue={formState.trade.delivery?.address?.city_name || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.address.city_name", e.target.value)}
                 />
               </div>
 
@@ -1573,8 +1573,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-delivery-address-region"
                   placeholder="Region / Bundesland"
-                  value={formState.trade.delivery?.address?.region || ""}
-                  onChange={(e) => handleInputChange("trade.delivery.address.region", e.target.value)}
+                  defaultValue={formState.trade.delivery?.address?.region || ""}
+                  onBlur={(e) => handleInputChange("trade.delivery.address.region", e.target.value)}
                 />
               </div>
             </div>
@@ -1636,8 +1636,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                         id={`invoice-item-name-${index}`}
                         className="bg-[var(--required-field-bg-color)]"
                         placeholder="Name"
-                        value={item.product_name}
-                        onChange={(e) => handleInputChange(`trade.items.${index}.product_name`, e.target.value)}
+                        defaultValue={item.product_name}
+                        onBlur={(e) => handleInputChange(`trade.items.${index}.product_name`, e.target.value)}
                       />
                     </div>
 
@@ -1649,8 +1649,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <Input
                         id={`invoice-item-id-${index}`}
                         placeholder="Artikel-Nr."
-                        value={item.id || ""}
-                        onChange={(e) => handleInputChange(`trade.items.${index}.id`, e.target.value)}
+                        defaultValue={item.id || ""}
+                        onBlur={(e) => handleInputChange(`trade.items.${index}.id`, e.target.value)}
                       />
                     </div>
 
@@ -1662,8 +1662,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <Input
                         id={`invoice-item-order-position-${index}`}
                         placeholder="Auftragsposition"
-                        value={item.order_position || ""}
-                        onChange={(e) => handleInputChange(`trade.items.${index}.order_position`, e.target.value)}
+                        defaultValue={item.order_position || ""}
+                        onBlur={(e) => handleInputChange(`trade.items.${index}.order_position`, e.target.value)}
                       />
                     </div>
 
@@ -1676,8 +1676,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                         id={`invoice-item-description-${index}`}
                         rows={2}
                         placeholder="Beschreibung"
-                        value={item.description || ""}
-                        onChange={(e) => handleInputChange(`trade.items.${index}.description`, e.target.value)}
+                        defaultValue={item.description || ""}
+                        onBlur={(e) => handleInputChange(`trade.items.${index}.description`, e.target.value)}
                       />
                     </div>
 
@@ -1810,8 +1810,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <Input
                         id={`invoice-item-billing-period-start-${index}`}
                         type="date"
-                        value={item.period_start || ""}
-                        onChange={(e) => handleInputChange(`trade.items.${index}.period_start`, e.target.value)}
+                        defaultValue={item.period_start || ""}
+                        onBlur={(e) => handleInputChange(`trade.items.${index}.period_start`, e.target.value)}
                       />
                     </div>
 
@@ -1823,8 +1823,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <Input
                         id={`invoice-item-billing-period-end-${index}`}
                         type="date"
-                        value={item.period_end || ""}
-                        onChange={(e) => handleInputChange(`trade.items.${index}.period_end`, e.target.value)}
+                        defaultValue={item.period_end || ""}
+                        onBlur={(e) => handleInputChange(`trade.items.${index}.period_end`, e.target.value)}
                       />
                     </div>
 
@@ -1926,7 +1926,12 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             <div id="invoice-allowances" className="space-y-6">
               {formState.trade.allowances?.map((allowance: any, index: number) => (
                 <div key={index} className="mb-4 p-4 border rounded relative">
-                  <Button variant="outline" size="sm" className="absolute top-2 right-2" onClick={() => removeAllowance(index)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeAllowance(index)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
 
@@ -1959,10 +1964,11 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           id={`invoice-allowance-percent-${index}`}
                           type="number"
                           step="any"
-                          value={allowance.percent || 0}
-                          onChange={(e) => {
+                          defaultValue={allowance.percent || 0}
+                          onBlur={(e) => {
                             const value = Number(e.target.value)
                             handleInputChange(`trade.allowances.${index}.percent`, value)
+                            // Remove the immediate=true parameter to use the default behavior
                           }}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
@@ -1980,7 +1986,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
                           value={allowance.amount || 0}
-                          onChange={(e) => handleInputChange(`trade.allowances.${index}.amount`, Number(e.target.value))}
+                          readOnly
+                          disabled
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">
                           {formState.trade.settlement.currency_code || "€"}
@@ -2006,7 +2013,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           <SelectItem value="Z">Z - Nach dem Nullsatz zu versteuernde Waren</SelectItem>
                           <SelectItem value="E">E - Steuerbefreit</SelectItem>
                           <SelectItem value="AE">AE - Umkehrung der Steuerschuldnerschaft</SelectItem>
-                          <SelectItem value="K">K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen</SelectItem>
+                          <SelectItem value="K">
+                            K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen
+                          </SelectItem>
                           <SelectItem value="G">G - Freier Ausfuhrartikel, Steuer nicht erhoben</SelectItem>
                           <SelectItem value="O">O - Dienstleistungen außerhalb des Steueranwendungsbereichs</SelectItem>
                         </SelectContent>
@@ -2024,7 +2033,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
                           value={allowance.tax_rate || 19}
-                          onChange={(e) => handleInputChange(`trade.allowances.${index}.tax_rate`, Number(e.target.value))}
+                          onChange={(e) =>
+                            handleInputChange(`trade.allowances.${index}.tax_rate`, Number(e.target.value))
+                          }
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
@@ -2039,8 +2050,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       id={`invoice-allowance-reason-${index}`}
                       className="bg-[var(--required-field-bg-color)]"
                       placeholder="Grund"
-                      value={allowance.reason || ""}
-                      onChange={(e) => handleInputChange(`trade.allowances.${index}.reason`, e.target.value)}
+                      defaultValue={allowance.reason || ""}
+                      onBlur={(e) => handleInputChange(`trade.allowances.${index}.reason`, e.target.value)}
                     />
                   </div>
                 </div>
@@ -2061,9 +2072,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           </CardFooter>
         </Card>
 
-        {
-          /* Charges Section */
-        }
+        {/* Charges Section */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -2075,7 +2084,12 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
             <div id="invoice-charges" className="space-y-6">
               {formState.trade.charges?.map((charge: any, index: number) => (
                 <div key={index} className="mb-4 p-4 border rounded relative">
-                  <Button variant="outline" size="sm" className="absolute top-2 right-2" onClick={() => removeCharge(index)}>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="absolute top-2 right-2"
+                    onClick={() => removeCharge(index)}
+                  >
                     <Trash2 className="h-4 w-4" />
                   </Button>
 
@@ -2109,10 +2123,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           type="number"
                           step="any"
                           value={charge.percent || 0}
-                          onChange={(e) => {
-                            const value = Number(e.target.value)
-                            handleInputChange(`trade.charges.${index}.percent`, value)
-                          }}
+                          onChange={(e) => handleInputChange(`trade.charges.${index}.percent`, Number(e.target.value))}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
@@ -2129,7 +2140,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
                           value={charge.amount || 0}
-                          onChange={(e) => handleInputChange(`trade.charges.${index}.amount`, Number(e.target.value))}
+                          readOnly
+                          disabled
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">
                           {formState.trade.settlement.currency_code || "€"}
@@ -2155,7 +2167,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           <SelectItem value="Z">Z - Nach dem Nullsatz zu versteuernde Waren</SelectItem>
                           <SelectItem value="E">E - Steuerbefreit</SelectItem>
                           <SelectItem value="AE">AE - Umkehrung der Steuerschuldnerschaft</SelectItem>
-                          <SelectItem value="K">K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen</SelectItem>
+                          <SelectItem value="K">
+                            K - Umsatzsteuerbefreit für innergemeinschaftliche Warenlieferungen
+                          </SelectItem>
                           <SelectItem value="G">G - Freier Ausfuhrartikel, Steuer nicht erhoben</SelectItem>
                           <SelectItem value="O">O - Dienstleistungen außerhalb des Steueranwendungsbereichs</SelectItem>
                         </SelectContent>
@@ -2172,7 +2186,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           type="number"
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
-                          value={charge.tax_rate || 19}
+                          defaultValue={charge.tax_rate || 19}
                           onChange={(e) => handleInputChange(`trade.charges.${index}.tax_rate`, Number(e.target.value))}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
@@ -2188,8 +2202,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       id={`invoice-charge-reason-${index}`}
                       className="bg-[var(--required-field-bg-color)]"
                       placeholder="Grund"
-                      value={charge.reason || ""}
-                      onChange={(e) => handleInputChange(`trade.charges.${index}.reason`, e.target.value)}
+                      defaultValue={charge.reason || ""}
+                      onBlur={(e) => handleInputChange(`trade.charges.${index}.reason`, e.target.value)}
                     />
                   </div>
                 </div>
