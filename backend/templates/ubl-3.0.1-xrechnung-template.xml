@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
+<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
     <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</cbc:CustomizationID>
     <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
     <cbc:ID>{{ data.invoiceNumber }}</cbc:ID>
@@ -11,10 +11,10 @@
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>{{ data.currencyCode }}</cbc:DocumentCurrencyCode>
     <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
-    {% if data.customerOrderID != "" or data.customerSalesOrderNumber != "" -%}
+    {% if data.purchaseOrderReference != "" -%}
     <cac:OrderReference>
-        {% if data.customerOrderID != "" -%}<cbc:ID>{{ data.customerOrderID }}</cbc:ID>{% endif %}
-		{% if data.customerSalesOrderNumber != "" -%}<cbc:SalesOrderID>{{ data.customerSalesOrderNumber }}</cbc:SalesOrderID>{% endif %}
+        <cbc:ID>{{ data.purchaseOrderReference }}</cbc:ID>
+		{% if data.customerSalesOrderNumber != "" -%}<cbc:SalesOrderID>{{ data.customerSalesOrderNumber }}</cbc:SalesOrderID>{% endif -%}
 	</cac:OrderReference>
     {% endif -%}
     {% if data.contractDocumentReference != "" -%}
@@ -24,7 +24,7 @@
     {% endif -%}
     <cac:AccountingSupplierParty>
         <cac:Party>
-            <cbc:EndpointID schemeID="EM">{{ data.ownCompanyID }}</cbc:EndpointID>
+            <cbc:EndpointID schemeID="EM">{{ data.ownContactEmail }}</cbc:EndpointID>
             {% if data.ownCompanyName != "" -%}
             <cac:PartyName>
                 <cbc:Name>{{ data.ownCompanyName }}</cbc:Name>
@@ -56,8 +56,10 @@
             </cac:Contact>
         </cac:Party>
     </cac:AccountingSupplierParty>
-    {% if data.locationID != "" -%}
+    {% if data.invoiceDate != "" -%}
     <cac:Delivery>
+        {% if data.invoiceDate != "" -%}<cbc:ActualDeliveryDate>{{ data.invoiceDate }}</cbc:ActualDeliveryDate>{% endif %}
+        {% if data.locationID != "" -%}
 		<cac:DeliveryLocation>
 			<cbc:ID>{{ data.locationID }}</cbc:ID>
 			<cac:Address>
@@ -79,14 +81,14 @@
 			</cac:PartyName>
 		</cac:DeliveryParty>
         {% endif -%}
+        {% endif -%}
 	</cac:Delivery>
-    {% endif -%}
     <cac:AccountingCustomerParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.customerID }}</cbc:EndpointID>
-            {% if data.customerCompanyID != "" %}
+            {% if data.customerID != "" %}
             <cac:PartyIdentification>
-                <cbc:ID>{{ data.customerCompanyID }}</cbc:ID>
+                <cbc:ID>{{ data.customerID }}</cbc:ID>
             </cac:PartyIdentification>
             {% endif -%}
             <cac:PostalAddress>
@@ -118,7 +120,7 @@
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     <cac:PaymentTerms>
-        <cbc:Note>Zahlung innerhalb von {{ data.dueDays }} Tagen ab Rechnungseingang ohne Abzüge</cbc:Note>
+        <cbc:Note>{{ data.note }}</cbc:Note>
     </cac:PaymentTerms>
     {% for charge in data.charges -%}
     <cac:AllowanceCharge>
@@ -203,5 +205,5 @@
             <cbc:PriceAmount currencyID="{{ data.currencyCode }}">{{ item.priceNet }}</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
-    {% endfor %}
+    {% endfor -%}
 </ubl:Invoice>

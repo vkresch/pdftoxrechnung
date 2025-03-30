@@ -22,6 +22,8 @@ interface XRechnungFormProps {
 export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
   const [formState, setFormState] = useState(data)
   const { toast } = useToast()
+  // Add a state to track if the checkbox is checked
+  const [buyerReferenceDisabled, setBuyerReferenceDisabled] = useState(false)
 
   // Initialize form with default values if needed
   useEffect(() => {
@@ -676,9 +678,11 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       id="invoice-buyer-reference-disabled"
                       type="checkbox"
                       className="form-checkbox h-4 w-4"
-                      onBlur={(e) => {
+                      checked={buyerReferenceDisabled}
+                      onChange={(e) => {
+                        setBuyerReferenceDisabled(e.target.checked)
                         if (e.target.checked) {
-                          handleInputChange("trade.agreement.buyer.reference", "")
+                          handleInputChange("header.leitweg_id", 0)
                         }
                       }}
                     />
@@ -688,8 +692,13 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                     id="invoice-buyer-reference"
                     className="bg-[var(--maybe-required-field-bg-color)] flex-grow"
                     placeholder="Käuferreferenz (Leitweg-ID, ...)"
-                    defaultValue={formState.trade.agreement.buyer.reference || ""}
-                    onBlur={(e) => handleInputChange("trade.agreement.buyer.reference", e.target.value)}
+                    defaultValue={formState.header.leitweg_id || 0}
+                    disabled={buyerReferenceDisabled}
+                    onBlur={(e) => {
+                      if (!buyerReferenceDisabled) {
+                        handleInputChange("header.leitweg_id", e.target.value)
+                      }
+                    }}
                   />
                 </div>
               </div>
@@ -728,8 +737,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-purchase-order-reference"
                   placeholder="Bestellnummer"
-                  defaultValue={formState.trade.agreement.purchase_order_reference || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.purchase_order_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.order_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.order_id", e.target.value)}
                 />
               </div>
 
@@ -741,8 +750,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-sales-order-reference"
                   placeholder="Auftragsnummer"
-                  defaultValue={formState.trade.agreement.sales_order_reference || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.sales_order_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.buyer.sales_order_number || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.sales_order_number", e.target.value)}
                 />
               </div>
 

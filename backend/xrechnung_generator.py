@@ -23,6 +23,7 @@ class Invoice:
         # SELLER
         self.ownContactName = ""
         self.ownContactPhone = ""
+        self.ownContactFax = ""
         self.ownContactEmail = ""
         self.ownIban = ""
         self.ownBic = ""
@@ -96,14 +97,13 @@ def generate_xrechnung(invoice_data):
     header = invoice_data["header"]
     invoice.invoiceNumber = header["id"]
     invoice.invoiceDate = header["issue_date_time"]    
-    invoice.leitwegID = header.get("buyer_reference", 0)
+    invoice.leitwegID = header.get("leitweg_id", 0)
     invoice.note = " ".join(header.get("notes", []))
     
     agreement = invoice_data["trade"]["agreement"]
     invoice.contractDocumentReference = agreement.get("contract_reference", "")
-    invoice.contractDocumentReference = agreement.get("project_reference", "")
-    invoice.contractDocumentReference = agreement.get("purchase_order_reference", "")
-    invoice.contractDocumentReference = agreement.get("sales_order_reference", "")
+    invoice.projectReference = agreement.get("project_reference", "")
+    invoice.purchaseOrderReference = agreement.get("purchase_order_reference", "")
     
     # SELLER ------------------------------------------------------------
     seller = agreement["seller"]
@@ -116,6 +116,7 @@ def generate_xrechnung(invoice_data):
     invoice.ownCompanyID = seller.get("tax_id", "")
     invoice.ownContactEmail = seller.get("email", "")
     invoice.ownContactPhone = seller.get("phone", "")
+    invoice.ownContactFax = seller.get("fax", "")
     
     invoice.ownLegalForm = seller.get("legal_form", "")
     invoice.ownHraNo = seller.get("handels_register_number", "")

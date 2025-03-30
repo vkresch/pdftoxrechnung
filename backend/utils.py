@@ -12,7 +12,7 @@ EXAMPLE_JSON = """
     "type": "Header",
     "type_code": "380",
     "name": "E-Rechnung",
-    "buyer_reference": "04011000-12345ABCXYZ-86",
+    "leitweg_id": "04011000-12345ABCXYZ-86",
     "issue_date_time": "2019-05-08",
     "languages": "de",
     "notes": [
@@ -39,6 +39,7 @@ EXAMPLE_JSON = """
         "tax_id": "DE123456789",
         "iban": "DE28700100809999999999",
         "phone": "(0123) 4567",
+        "fax": "(0123) 4568",
         "email": "info@kraxi.com",
         "homepage": "www.kraxi.com",
         "legal_form": "GmbH",
@@ -90,7 +91,6 @@ EXAMPLE_JSON = """
       "contract_reference": "V-2019-0456",
       "project_reference": "P-2019-0123",
       "purchase_order_reference": "PO-2019-0789",
-      "sales_order_reference": "SO-2019-1234"
     },
     "settlement": {
       "type": "Settlement",

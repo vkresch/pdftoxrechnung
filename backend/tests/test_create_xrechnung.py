@@ -8,7 +8,7 @@ from pdfplumber import open as open_pdf
 invoice_data = {
     "context": {
         "type": "Context",
-        "guideline_parameter": "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended",
+        "guideline_parameter": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
     },
     "header": {
         "id": "2019-03",
@@ -85,7 +85,6 @@ invoice_data = {
             "contract_reference": "V-2019-0456",
             "project_reference": "P-2019-0123",
             "purchase_order_reference": "PO-2019-0789",
-            "sales_order_reference": "SO-2019-1234",
         },
         "settlement": {
             "type": "Settlement",
@@ -139,7 +138,7 @@ invoice_data = {
                 "id": "SKU-1000",
                 "order_position": "1",
                 "description": "Detaillierte Beschreibung für Superdrachen. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
             {
                 "type": "Item",
@@ -160,7 +159,7 @@ invoice_data = {
                 "id": "SKU-1001",
                 "order_position": "2",
                 "description": "Detaillierte Beschreibung für Turbo Flyer. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
             {
                 "type": "Item",
@@ -181,7 +180,7 @@ invoice_data = {
                 "id": "SKU-1002",
                 "order_position": "3",
                 "description": "Detaillierte Beschreibung für Sturzflug-Geier. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
             {
                 "type": "Item",
@@ -202,7 +201,7 @@ invoice_data = {
                 "id": "SKU-1003",
                 "order_position": "4",
                 "description": "Detaillierte Beschreibung für Eisvogel. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
             {
                 "type": "Item",
@@ -223,7 +222,7 @@ invoice_data = {
                 "id": "SKU-1004",
                 "order_position": "5",
                 "description": "Detaillierte Beschreibung für Storch. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
             {
                 "type": "Item",
@@ -244,7 +243,7 @@ invoice_data = {
                 "id": "SKU-1005",
                 "order_position": "6",
                 "description": "Detaillierte Beschreibung für Adler. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
             {
                 "type": "Item",
@@ -265,7 +264,7 @@ invoice_data = {
                 "id": "SKU-1006",
                 "order_position": "7",
                 "description": "Detaillierte Beschreibung für Kostenlose Zugabe. Hochwertige Qualität, langlebiges Material.",
-                "quantity_unit": "H87",
+                "quantity_unit": "XPP",
             },
         ],
         "billing_period": {"start_date": "2019-05-01", "end_date": "2019-05-31"},
@@ -285,7 +284,7 @@ invoice_data = {
     },
     "document_references": ["Ausschreibung 2019-04-XYZ", "Los 3: Papierflugzeuge"],
     "intro_text": "Vielen Dank für Ihren Auftrag. Wir stellen Ihnen hiermit folgende Positionen in Rechnung:",
-    "output_format": "zugferd:xrechnung",
+    "output_format": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
     "output_lang_code": "de",
 }
 

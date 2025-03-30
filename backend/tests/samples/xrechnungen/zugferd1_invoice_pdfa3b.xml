@@ -1,277 +1,260 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2">
-    <cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</cbc:CustomizationID>
-    <cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
-    <cbc:ID>2019-03</cbc:ID>
-    <cbc:IssueDate>2019-05-08</cbc:IssueDate>
-    <cbc:DueDate>2019-05-08</cbc:DueDate>
-    <cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
-    <cbc:Note>Zahlbar innerhalb von 30 Tagen netto auf unser Konto. Bitte geben Sie dabei die Rechnungsnummer an. Skontoabzüge werden nicht akzeptiert.</cbc:Note>
-    <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
-    <cbc:BuyerReference>ABC-123</cbc:BuyerReference>
-    <cac:AccountingSupplierParty>
-        <cac:Party>
-            <cbc:EndpointID schemeID="EM">DE123456789</cbc:EndpointID>
-            <cac:PartyName>
-                <cbc:Name>Kraxi GmbH</cbc:Name>
-            </cac:PartyName>
-            <cac:PostalAddress>
-                <cbc:StreetName>Flugzeugallee 17</cbc:StreetName>
-                <cbc:CityName>Papierfeld</cbc:CityName>
-                <cbc:PostalZone>12345</cbc:PostalZone>
-                <cac:Country>
-                    <cbc:IdentificationCode>DE</cbc:IdentificationCode>
-                </cac:Country>
-            </cac:PostalAddress>
-            <cac:PartyTaxScheme>
-                <cbc:CompanyID>DE123456789</cbc:CompanyID>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:PartyTaxScheme>
-            <cac:PartyLegalEntity>
-                <cbc:RegistrationName>Kraxi GmbH</cbc:RegistrationName>
-                <cbc:CompanyID>HRB 999999</cbc:CompanyID>
-                <cbc:CompanyLegalForm>GmbH</cbc:CompanyLegalForm>
-            </cac:PartyLegalEntity>
-            <cac:Contact>
-                <cbc:Name>Paul Kraxi</cbc:Name>
-                <cbc:Telephone>(0123) 4567</cbc:Telephone>
-                <cbc:ElectronicMail>info@kraxi.com</cbc:ElectronicMail>
-            </cac:Contact>
-        </cac:Party>
-    </cac:AccountingSupplierParty>
-    <cac:AccountingCustomerParty>
-        <cac:Party>
-            <cbc:EndpointID schemeID="EM">987-654</cbc:EndpointID>
-            <cac:PostalAddress>
-                <cbc:StreetName>Rabattstr. 25</cbc:StreetName>
-                <cbc:CityName>Osterhausen</cbc:CityName>
-                <cbc:PostalZone>34567</cbc:PostalZone>
-                <cac:Country>
-                    <cbc:IdentificationCode>DE</cbc:IdentificationCode>
-                </cac:Country>
-            </cac:PostalAddress>
-            <cac:PartyLegalEntity>
-                <cbc:RegistrationName>Papierflieger-Vertriebs-GmbH</cbc:RegistrationName>
-            </cac:PartyLegalEntity>
-            <cac:Contact>
-                <cbc:Name>Helga Musterfrau</cbc:Name>
-            </cac:Contact>
-            </cac:Party>
-    </cac:AccountingCustomerParty>
-    <cac:PaymentMeans>
-        <cbc:PaymentMeansCode>58</cbc:PaymentMeansCode>
-        <cbc:PaymentID>2019-03</cbc:PaymentID>
-        <cac:PayeeFinancialAccount>
-            <cbc:ID>DE28700100809999999999</cbc:ID>
-            <cbc:Name>Kraxi GmbH</cbc:Name>
-        </cac:PayeeFinancialAccount>
-    </cac:PaymentMeans>
-    <cac:PaymentTerms>
-        <cbc:Note>Zahlung innerhalb von 0 Tagen ab Rechnungseingang ohne Abzüge</cbc:Note>
-    </cac:PaymentTerms>
-    <cac:TaxTotal>
-        <cbc:TaxAmount currencyID="EUR">160.55</cbc:TaxAmount>
-        <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="EUR">845</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="EUR">160.55</cbc:TaxAmount>
-            <cac:TaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:TaxCategory>
-            </cac:TaxSubtotal>
-    </cac:TaxTotal>
-    <cac:LegalMonetaryTotal>
-        <cbc:LineExtensionAmount currencyID="EUR">845</cbc:LineExtensionAmount>
-        <cbc:TaxExclusiveAmount currencyID="EUR">845</cbc:TaxExclusiveAmount>
-        <cbc:TaxInclusiveAmount currencyID="EUR">1005.55</cbc:TaxInclusiveAmount>
-        <cbc:PayableAmount currencyID="EUR">1005.55</cbc:PayableAmount>
-    </cac:LegalMonetaryTotal>
-    <cac:InvoiceLine>
-        <cbc:ID>1</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">2</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">40</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Superdrachen</cbc:Description>
-            <cbc:Name>Superdrachen</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>1</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">20</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>2</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">5</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">200</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Turbo Flyer</cbc:Description>
-            <cbc:Name>Turbo Flyer</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>2</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">40</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>3</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">180</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Sturzflug-Geier</cbc:Description>
-            <cbc:Name>Sturzflug-Geier</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>3</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">180</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>4</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">3</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">150</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Eisvogel</cbc:Description>
-            <cbc:Name>Eisvogel</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>4</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">50</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>5</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">10</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">200</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Storch</cbc:Description>
-            <cbc:Name>Storch</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>5</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">20</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>6</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">75</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Adler</cbc:Description>
-            <cbc:Name>Adler</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>6</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">75</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    <cac:InvoiceLine>
-        <cbc:ID>7</cbc:ID>
-        <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">0</cbc:LineExtensionAmount>
-        <cac:InvoicePeriod>
-            <cbc:StartDate>2019-05-08</cbc:StartDate>
-            <cbc:EndDate>2019-05-08</cbc:EndDate>
-        </cac:InvoicePeriod>
-        <cac:Item>
-            <cbc:Description>Kostenlose Zugabe</cbc:Description>
-            <cbc:Name>Kostenlose Zugabe</cbc:Name>
-            <cac:SellersItemIdentification>
-                <cbc:ID>7</cbc:ID>
-            </cac:SellersItemIdentification>
-            <cac:ClassifiedTaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>19</cbc:Percent>
-                <cac:TaxScheme>
-                    <cbc:ID>VAT</cbc:ID>
-                </cac:TaxScheme>
-            </cac:ClassifiedTaxCategory>
-        </cac:Item>
-        <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">0</cbc:PriceAmount>
-        </cac:Price>
-    </cac:InvoiceLine>
-    
+<ubl:Invoice xmlns:ubl="urn:oasis:names:specification:ubl:schema:xsd:Invoice-2" xmlns:cbc="urn:oasis:names:specification:ubl:schema:xsd:CommonBasicComponents-2" xmlns:cac="urn:oasis:names:specification:ubl:schema:xsd:CommonAggregateComponents-2">
+	<cbc:CustomizationID>urn:cen.eu:en16931:2017#compliant#urn:xeinkauf.de:kosit:xrechnung_3.0</cbc:CustomizationID>
+	<cbc:ProfileID>urn:fdc:peppol.eu:2017:poacc:billing:01:1.0</cbc:ProfileID>
+	<cbc:ID>2019-03</cbc:ID>
+	<cbc:IssueDate>2019-05-08</cbc:IssueDate>
+	<cbc:DueDate>2019-05-08</cbc:DueDate>
+	<cbc:InvoiceTypeCode>380</cbc:InvoiceTypeCode>
+	<cbc:Note>Zahlbar innerhalb von 30 Tagen netto auf unser Konto. Bitte geben Sie dabei die Rechnungsnummer an. Skontoabzüge werden nicht akzeptiert.</cbc:Note>
+	<cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
+	<cbc:BuyerReference>0</cbc:BuyerReference>
+	<cac:OrderReference>
+		<cbc:SalesOrderID>ABC-123</cbc:SalesOrderID>
+	</cac:OrderReference>
+	<cac:AccountingSupplierParty>
+		<cac:Party>
+			<cbc:EndpointID schemeID="EM">info@kraxi.com</cbc:EndpointID>
+			<cac:PartyName>
+				<cbc:Name>Kraxi GmbH</cbc:Name>
+			</cac:PartyName>
+			<cac:PostalAddress>
+				<cbc:StreetName>Flugzeugallee 17</cbc:StreetName>
+				<cbc:CityName>Papierfeld</cbc:CityName>
+				<cbc:PostalZone>12345</cbc:PostalZone>
+				<cac:Country>
+					<cbc:IdentificationCode>DE</cbc:IdentificationCode>
+				</cac:Country>
+			</cac:PostalAddress>
+			<cac:PartyTaxScheme>
+				<cbc:CompanyID>DE123456789</cbc:CompanyID>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:PartyTaxScheme>
+			<cac:PartyLegalEntity>
+				<cbc:RegistrationName>Kraxi GmbH</cbc:RegistrationName>
+				<cbc:CompanyID>HRB 999999</cbc:CompanyID>
+				<cbc:CompanyLegalForm>GmbH</cbc:CompanyLegalForm>
+			</cac:PartyLegalEntity>
+			<cac:Contact>
+				<cbc:Name>Paul Kraxi</cbc:Name>
+				<cbc:Telephone>(0123) 4567</cbc:Telephone>
+				<cbc:ElectronicMail>info@kraxi.com</cbc:ElectronicMail>
+			</cac:Contact>
+		</cac:Party>
+	</cac:AccountingSupplierParty>
+	<cac:AccountingCustomerParty>
+		<cac:Party>
+			<cac:PartyIdentification>
+				<cbc:ID>987-654</cbc:ID>
+			</cac:PartyIdentification>
+			<cac:PartyName>
+				<cbc:Name>Papierflieger-Vertriebs-GmbH</cbc:Name>
+			</cac:PartyName>
+			<cac:PostalAddress>
+				<cbc:StreetName>Rabattstr. 25</cbc:StreetName>
+				<cbc:CityName>Osterhausen</cbc:CityName>
+				<cbc:PostalZone>34567</cbc:PostalZone>
+				<cac:Country>
+					<cbc:IdentificationCode>DE</cbc:IdentificationCode>
+				</cac:Country>
+			</cac:PostalAddress>
+			<cac:PartyLegalEntity>
+				<cbc:RegistrationName>Papierflieger-Vertriebs-GmbH</cbc:RegistrationName>
+			</cac:PartyLegalEntity>
+			<cac:Contact>
+				<cbc:Name>Helga Musterfrau</cbc:Name>
+			</cac:Contact>
+		</cac:Party>
+	</cac:AccountingCustomerParty>
+	<cac:Delivery>
+		<cbc:ActualDeliveryDate>2019-05-08</cbc:ActualDeliveryDate>
+	</cac:Delivery>
+	<cac:PaymentMeans>
+		<cbc:PaymentMeansCode name="SEPA credit transfer">58</cbc:PaymentMeansCode>
+		<cbc:PaymentID>2019-03</cbc:PaymentID>
+		<cac:PayeeFinancialAccount>
+			<cbc:ID>DE28700100809999999999</cbc:ID>
+			<cbc:Name>Kraxi GmbH</cbc:Name>
+		</cac:PayeeFinancialAccount>
+	</cac:PaymentMeans>
+	<cac:PaymentTerms>
+		<cbc:Note>Zahlbar innerhalb von 30 Tagen netto auf unser Konto. Bitte geben Sie dabei die
+Rechnungsnummer an. Skontoabzüge werden nicht akzeptiert.</cbc:Note>
+	</cac:PaymentTerms>
+	<cac:TaxTotal>
+		<cbc:TaxAmount currencyID="EUR">160.55</cbc:TaxAmount>
+		<cac:TaxSubtotal>
+			<cbc:TaxableAmount currencyID="EUR">845</cbc:TaxableAmount>
+			<cbc:TaxAmount currencyID="EUR">160.55</cbc:TaxAmount>
+			<cac:TaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:TaxCategory>
+		</cac:TaxSubtotal>
+	</cac:TaxTotal>
+	<cac:LegalMonetaryTotal>
+		<cbc:LineExtensionAmount currencyID="EUR">845</cbc:LineExtensionAmount>
+		<cbc:TaxExclusiveAmount currencyID="EUR">845</cbc:TaxExclusiveAmount>
+		<cbc:TaxInclusiveAmount currencyID="EUR">1005.55</cbc:TaxInclusiveAmount>
+		<cbc:PayableAmount currencyID="EUR">1005.55</cbc:PayableAmount>
+	</cac:LegalMonetaryTotal>
+	<cac:InvoiceLine>
+		<cbc:ID>1</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">2</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">40</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Superdrachen</cbc:Description>
+			<cbc:Name>Superdrachen</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>1</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">20</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
+	<cac:InvoiceLine>
+		<cbc:ID>2</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">5</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">200</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Turbo Flyer</cbc:Description>
+			<cbc:Name>Turbo Flyer</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>2</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">40</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
+	<cac:InvoiceLine>
+		<cbc:ID>3</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">180</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Sturzflug-Geier</cbc:Description>
+			<cbc:Name>Sturzflug-Geier</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>3</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">180</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
+	<cac:InvoiceLine>
+		<cbc:ID>4</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">3</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">150</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Eisvogel</cbc:Description>
+			<cbc:Name>Eisvogel</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>4</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">50</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
+	<cac:InvoiceLine>
+		<cbc:ID>5</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">10</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">200</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Storch</cbc:Description>
+			<cbc:Name>Storch</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>5</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">20</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
+	<cac:InvoiceLine>
+		<cbc:ID>6</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">75</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Adler</cbc:Description>
+			<cbc:Name>Adler</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>6</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">75</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
+	<cac:InvoiceLine>
+		<cbc:ID>7</cbc:ID>
+		<cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
+		<cbc:LineExtensionAmount currencyID="EUR">0</cbc:LineExtensionAmount>
+		<cac:Item>
+			<cbc:Description>Kostenlose Zugabe</cbc:Description>
+			<cbc:Name>Kostenlose Zugabe</cbc:Name>
+			<cac:SellersItemIdentification>
+				<cbc:ID>7</cbc:ID>
+			</cac:SellersItemIdentification>
+			<cac:ClassifiedTaxCategory>
+				<cbc:ID>S</cbc:ID>
+				<cbc:Percent>19</cbc:Percent>
+				<cac:TaxScheme>
+					<cbc:ID>VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:ClassifiedTaxCategory>
+		</cac:Item>
+		<cac:Price>
+			<cbc:PriceAmount currencyID="EUR">0</cbc:PriceAmount>
+		</cac:Price>
+	</cac:InvoiceLine>
 </ubl:Invoice>
