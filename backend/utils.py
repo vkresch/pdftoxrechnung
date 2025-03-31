@@ -60,7 +60,6 @@ EXAMPLE_JSON = """
         "id": "987-654",
         "name": "Papierflieger-Vertriebs-GmbH",
         "contact_name": "Helga Musterfrau",
-        "order_id": "123453322",
         "sales_order_number": "ABC-123",
         "contract_document_reference": "COSNTR-XXX", 
         "legal_form": "GmbH",
@@ -90,7 +89,7 @@ EXAMPLE_JSON = """
       ],
       "contract_reference": "V-2019-0456",
       "project_reference": "P-2019-0123",
-      "purchase_order_reference": "PO-2019-0789",
+      "order_id": "PO-2019-0789",
     },
     "settlement": {
       "type": "Settlement",

@@ -49,7 +49,6 @@ class Buyer(BaseModel):
     id: Optional[str] = Field(default=None, description="Buyer ID (Käufer-ID, Kundennummer)")
     name: str = Field(description="Company name of the buyer (Firmenname des Käufers)")
     contact_name: Optional[str] = Field(default=None, description="Name of contact person (Name der Kontaktperson)")
-    order_id: Optional[str] = Field(default=None, description="Order ID (Bestellnummer)")
     sales_order_number: Optional[str] = Field(default=None, description="Sales order number (Auftragsnummer)")
     contract_document_reference: Optional[str] = Field(default=None, description="Reference to contract document (Vertragsdokumentreferenz)")
     legal_form: Optional[str] = Field(default=None, description="Legal form of the company (Rechtsform)")
@@ -76,7 +75,7 @@ class Agreement(BaseModel):
     orders: List[Order] = Field(description="List of orders (Liste der Bestellungen)")
     contract_reference: Optional[str] = Field(default=None, description="Reference to contract (Vertragsnummer)")
     project_reference: Optional[str] = Field(default=None, description="Reference to project (Projektnummer)")
-    purchase_order_reference: Optional[str] = Field(default=None, description="Reference to purchase order (Bestellnummer)")
+    order_id: Optional[str] = Field(default=None, description="Reference to purchase order (Bestellnummer)")
 
 
 class Payee(BaseModel):

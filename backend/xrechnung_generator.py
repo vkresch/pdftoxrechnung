@@ -103,7 +103,7 @@ def generate_xrechnung(invoice_data):
     agreement = invoice_data["trade"]["agreement"]
     invoice.contractDocumentReference = agreement.get("contract_reference", "")
     invoice.projectReference = agreement.get("project_reference", "")
-    invoice.purchaseOrderReference = agreement.get("purchase_order_reference", "")
+    invoice.purchaseOrderReference = agreement.get("order_id", "")
     
     # SELLER ------------------------------------------------------------
     seller = agreement["seller"]
@@ -127,7 +127,6 @@ def generate_xrechnung(invoice_data):
     invoice.customerID = buyer.get("id", "")
     invoice.customerCompanyName = buyer.get("name", "")
     invoice.customerContactName = buyer.get("contact_name", "")
-    invoice.customerOrderID = buyer.get("order_id", "")
     invoice.customerSalesOrderNumber = buyer.get("sales_order_number", "")
     invoice.customerContractDocumentReference = buyer.get("contract_document_reference", "")
     buyer_address = buyer["address"]
