@@ -43,3 +43,9 @@ npm start
    ```bash
    git clone https://github.com/vkresch/pdftoxrechnung.git
    cd pdftoxrechnung
+
+## Docker
+
+```
+docker-compose up -d --build
+```
