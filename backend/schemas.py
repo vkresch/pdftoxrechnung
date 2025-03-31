@@ -179,7 +179,7 @@ class Trade(BaseModel):
 class Header(BaseModel):
     id: str = Field(description="Invoice ID (Rechnungsnummer)")
     type: str = Field(default="Header", description="Type of header (Kopfzeilentyp)")
-    leitweg_id: str = Field(description="Leitweg ID")
+    leitweg_id: str = Field(description="Pflichtangabe bei Rechnungen für Behörden, optional bei Rechnungen für Firmen (Leitweg ID)")
     type_code: str = Field(description="Type code of the document (Dokumententypcode)")
     name: str = Field(description="Document name (Dokumentenname)")
     issue_date_time: datetime.date = Field(description="Issue date of the invoice (Ausstellungsdatum der Rechnung)")

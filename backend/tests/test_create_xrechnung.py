@@ -85,6 +85,7 @@ invoice_data = {
             "project_reference": "P-2019-0123",
             "order_id": "PO-2019-0789",
         },
+        "delivery": {"date": "2019-05-08"},
         "settlement": {
             "type": "Settlement",
             "payee": {"type": "Payee", "name": "Kraxi GmbH"},
@@ -290,6 +291,10 @@ invoice_data = {
 
 def test_xml_creation_output():
 
+    invoice_data["context"][
+        "guideline_parameter"
+    ] = "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
+
     with open("backend/tests/samples/output.xml") as xml:
         xml_string = xml.read()
 
@@ -305,4 +310,6 @@ def test_xrechnung_creation():
         xml_string = xml.read()
 
     xml_content = generate_xrechnung(invoice_data)
+    # with open("backend/tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml", "w") as f:
+    #     f.write(xml_content)
     assert xml_string == xml_content

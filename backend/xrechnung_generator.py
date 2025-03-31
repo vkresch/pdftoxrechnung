@@ -54,6 +54,7 @@ class Invoice:
 
         # DELIVERY
         self.locationID = ""
+        self.deliveryDate = ""
         self.recipientName = ""
         self.deliveryStreetName = ""
         self.deliveryCityName = ""
@@ -96,7 +97,7 @@ def generate_xrechnung(invoice_data):
     # HEADER ------------------------------------------------------------
     header = invoice_data["header"]
     invoice.invoiceNumber = header["id"]
-    invoice.invoiceDate = header["issue_date_time"]    
+    invoice.invoiceDate = header["issue_date_time"]
     invoice.leitwegID = header.get("leitweg_id", 0)
     invoice.note = " ".join(header.get("notes", []))
     
@@ -155,8 +156,9 @@ def generate_xrechnung(invoice_data):
         invoice.dueDays = (dueDateObject - invoiceDateObject).days
 
     # DELIVERY ------------------------------------------------------------
-    delivery = invoice_data["trade"].get("delivery")
+    delivery = invoice_data["trade"].get("delivery")    
     if delivery:
+        invoice.deliveryDate = delivery.get("date", header["issue_date_time"])
         invoice.locationID = delivery.get("location_id", "")
         invoice.recipientName = delivery.get("recipient_name", "")
         address = delivery.get("address", "")
@@ -167,6 +169,8 @@ def generate_xrechnung(invoice_data):
             invoice.deliveryRegion = address.get("region", "")
             invoice.deliveryCountryCode = address.get("country_code", "")
             invoice.deliveryReceiptName = address.get("recipient_name", "")
+    else:
+        invoice.deliveryDate = header["issue_date_time"]
 
     # ALLOWANCES ------------------------------------------------------------
     allowances = invoice_data["trade"].get("allowances")

@@ -59,10 +59,15 @@
     <cac:AccountingCustomerParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.customerID }}</cbc:EndpointID>
-            {% if data.customerID != "" %}
+            {% if data.customerID != "" -%}
             <cac:PartyIdentification>
                 <cbc:ID>{{ data.customerID }}</cbc:ID>
             </cac:PartyIdentification>
+            {% endif -%}
+            {% if data.customerCompanyName != "" -%}
+            <cac:PartyName>
+                <cbc:Name>{{ data.customerCompanyName }}</cbc:Name>
+            </cac:PartyName>
             {% endif -%}
             <cac:PostalAddress>
                 <cbc:StreetName>{{ data.customerStreetname }}</cbc:StreetName>
@@ -84,9 +89,9 @@
             {% endif -%}
         </cac:Party>
     </cac:AccountingCustomerParty>
-    {% if data.invoiceDate != "" -%}
+    {% if data.deliveryDate != "" -%}
     <cac:Delivery>
-        {% if data.invoiceDate != "" -%}<cbc:ActualDeliveryDate>{{ data.invoiceDate }}</cbc:ActualDeliveryDate>{% endif %}
+        {% if data.deliveryDate != "" -%}<cbc:ActualDeliveryDate>{{ data.deliveryDate }}</cbc:ActualDeliveryDate>{% endif %}
         {% if data.locationID != "" -%}
 		<cac:DeliveryLocation>
 			<cbc:ID>{{ data.locationID }}</cbc:ID>
@@ -177,7 +182,7 @@
         <cbc:TaxInclusiveAmount currencyID="{{ data.currencyCode }}">{{ data.priceFull }}</cbc:TaxInclusiveAmount>
         <cbc:PayableAmount currencyID="{{ data.currencyCode }}">{{ data.priceFull }}</cbc:PayableAmount>
     </cac:LegalMonetaryTotal>
-    {% for item in data.items -%}
+    {%- for item in data.items %}
     <cac:InvoiceLine>
         <cbc:ID>{{ item.lineID }}</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">{{ item.quantity }}</cbc:InvoicedQuantity>
@@ -206,5 +211,5 @@
             <cbc:PriceAmount currencyID="{{ data.currencyCode }}">{{ item.priceNet }}</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
-    {% endfor -%}
+    {%- endfor %}
 </ubl:Invoice>
