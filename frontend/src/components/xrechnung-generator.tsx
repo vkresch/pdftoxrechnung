@@ -396,41 +396,35 @@ export default function XRechnungGenerator() {
                   <CardContent className="pt-6">
                     <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
                     <Alert
-                      variant={
-                        validationResult.errorCount > 0
-                          ? "destructive"
-                          : validationResult.warningCount > 0
-                            ? "default"
-                            : "default"
-                      }
+                      variant={(validationResult?.errorCount ?? 0) > 0 ? "destructive" : "default"}
                       className={
-                        validationResult.errorCount === 0 && validationResult.warningCount === 0
+                        (validationResult?.errorCount ?? 0) === 0 && (validationResult?.warningCount ?? 0) === 0
                           ? "bg-green-700 border-green-800 text-white"
-                          : validationResult.errorCount > 0
+                          : (validationResult?.errorCount ?? 0) > 0
                             ? "bg-red-700 border-red-800 text-white"
                             : "bg-amber-600 border-amber-700 text-white"
                       }
                     >
-                      {validationResult.errorCount === 0 && validationResult.warningCount === 0 ? (
+                      {(validationResult?.errorCount ?? 0) === 0 && (validationResult?.warningCount ?? 0) === 0 ? (
                         <CheckCircle className="h-4 w-4 mr-2 text-white" />
-                      ) : validationResult.errorCount > 0 ? (
+                      ) : (validationResult?.errorCount ?? 0) > 0 ? (
                         <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       ) : (
                         <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       )}
                       <AlertDescription>
                         <div className="font-medium">
-                          {validationResult.errorCount === 0 && validationResult.warningCount === 0
+                          {(validationResult?.errorCount ?? 0) === 0 && (validationResult?.warningCount ?? 0) === 0
                             ? "Valid"
-                            : validationResult.errorCount > 0
-                              ? `Invalid - ${validationResult.errorCount} error${validationResult.errorCount > 1 ? "s" : ""}, ${validationResult.warningCount} warning${validationResult.warningCount > 1 ? "s" : ""}`
-                              : `Valid with warnings - ${validationResult.warningCount} warning${validationResult.warningCount > 1 ? "s" : ""}`}
-                          {validationResult.return_code !== undefined && ` (Code: ${validationResult.return_code})`}
+                            : (validationResult?.errorCount ?? 0) > 0
+                              ? `Invalid - ${validationResult?.errorCount} error${(validationResult?.errorCount ?? 0) > 1 ? "s" : ""}, ${validationResult?.warningCount} warning${(validationResult?.warningCount ?? 0) > 1 ? "s" : ""}`
+                              : `Valid with warnings - ${validationResult?.warningCount} warning${(validationResult?.warningCount ?? 0) > 1 ? "s" : ""}`}
+                          {validationResult?.return_code !== undefined && ` (Code: ${validationResult.return_code})`}
                         </div>
-                        <div className="mt-1">{validationResult.description}</div>
+                        <div className="mt-1">{validationResult?.description}</div>
 
                         {/* Display validation messages */}
-                        {validationResult.validationMessages && validationResult.validationMessages.length > 0 && (
+                        {validationResult?.validationMessages && validationResult.validationMessages.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-white/20">
                             <div className="font-medium mb-1">Validation Messages:</div>
                             <ValidationMessageDisplay
@@ -443,7 +437,7 @@ export default function XRechnungGenerator() {
                       </AlertDescription>
                     </Alert>
 
-                    {(validationResult.errorCount > 0 || validationResult.warningCount > 0) && (
+                    {(validationResult?.errorCount ?? 0) > 0 || (validationResult?.warningCount ?? 0) > 0 ? (
                       <Button
                         onClick={handleDownloadValidationReport}
                         className="w-full mt-4"
@@ -453,7 +447,7 @@ export default function XRechnungGenerator() {
                         <Download className="mr-2 h-4 w-4" />
                         Download Validation Report
                       </Button>
-                    )}
+                    ) : null}
                   </CardContent>
                 </Card>
               )}

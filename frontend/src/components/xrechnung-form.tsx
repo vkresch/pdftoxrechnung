@@ -330,10 +330,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
     setFormState((prevState: any) => {
       const newState = JSON.parse(JSON.stringify(prevState))
-      const items = (newState.trade.items[
-        // Swap items
-        (items[index], items[index - 1])
-      ] = [items[index - 1], items[index]])
+      const items = newState.trade.items
+      // Swap items
+      ;[items[index], items[index - 1]] = [items[index - 1], items[index]]
 
       // Update line_ids
       items.forEach((item: any, idx: number) => {
@@ -350,11 +349,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       const newState = JSON.parse(JSON.stringify(prevState))
       const items = newState.trade.items
 
-      if (index >= items.length - 1)
-        return (newState[
-          // Swap items
-          (items[index], items[index + 1])
-        ] = [items[index + 1], items[index]])
+      if (index >= items.length - 1) {
+        return newState
+      }
+
+      // Swap items
+      const temp = items[index]
+      items[index] = items[index + 1]
+      items[index + 1] = temp
 
       // Update line_ids
       items.forEach((item: any, idx: number) => {
@@ -1902,8 +1904,11 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
 
         {
           formState.trade.items.length === 0 && (
-            <Alert variant="warning">
-              <AlertDescription>Mindestens eine Rechnungsposition ist erforderlich.</AlertDescription>
+            <Alert
+                  variant="default"
+                  className="bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/20 dark:text-amber-400 dark:border-amber-800/30"
+                >
+                  <AlertDescription>Mindestens eine Rechnungsposition ist erforderlich.</AlertDescription>
             </Alert>
           )
         }
