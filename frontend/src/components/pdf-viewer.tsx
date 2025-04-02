@@ -1,12 +1,12 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState, useEffect } from "react"
 
-interface PDFPreviewProps {
+interface PDFViewerProps {
   file: File
 }
 
-export function PDFPreview({ file }: PDFPreviewProps) {
+export function PDFViewer({ file }: PDFViewerProps) {
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
 
   useEffect(() => {
