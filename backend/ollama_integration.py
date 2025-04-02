@@ -4,8 +4,8 @@ import requests
 import os
 import json
 import logging
-from backend.schemas import Invoice
-from backend.utils import PROMPT
+from schemas import Invoice
+from utils import PROMPT
 
 # mistral, deepseek-r1:14b, deepseek-r1:8b, deepseek-r1:1.5b, llama3.2:3b, llama3.1
 OLLAMA_MODEL = "llama3.1"  # Replace with your model of choice (ollama list)

@@ -3,10 +3,12 @@ version: '3.3'
 services:
   backend:
     build: ./backend
+    volumes:
+      - ./uploads:/app/uploads  # Mounts `./uploads` (host) to `/app/uploads` (container)
     ports:
       - "8000:8000"
-    environment:
-      - ENV=production
+    env_file:
+      - .env
     restart: always
 
   frontend:

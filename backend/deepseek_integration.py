@@ -6,7 +6,7 @@ import logging
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from seleniumbase import SB  # SB is a simple SeleniumBase driver
-from backend.utils import PROMPT
+from utils import PROMPT
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",

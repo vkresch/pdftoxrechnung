@@ -1,4 +1,4 @@
-from backend.schemas import Invoice
+from schemas import Invoice
 
 EXAMPLE_JSON = """
 ```

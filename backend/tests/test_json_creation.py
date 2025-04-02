@@ -2,7 +2,7 @@ import pytest
 from pdfplumber import open as open_pdf
 from decimal import Decimal
 from datetime import datetime, timezone
-from backend.pdf_parser import process
+from pdf_parser import process
 
 models = [
     "deepseek",

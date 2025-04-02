@@ -1,8 +1,8 @@
 import pytest
 from datetime import datetime, timezone
 from decimal import Decimal
-from backend.pdf_parser import generate_invoice_xml
-from backend.xrechnung_generator import generate_xrechnung
+from pdf_parser import generate_invoice_xml
+from xrechnung_generator import generate_xrechnung
 from pdfplumber import open as open_pdf
 
 invoice_data = {

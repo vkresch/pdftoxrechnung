@@ -1,7 +1,7 @@
 import os
 import pytest
 from pathlib import Path
-from backend.validate import validate
+from validate import validate
 
 xml_files = [
     "./backend/tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml",

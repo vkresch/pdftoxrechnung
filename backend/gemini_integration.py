@@ -3,8 +3,8 @@ import re
 import json
 import logging
 from google import genai
-from backend.schemas import Invoice
-from backend.utils import PROMPT
+from schemas import Invoice
+from utils import PROMPT
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 

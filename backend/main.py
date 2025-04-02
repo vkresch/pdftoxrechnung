@@ -10,8 +10,8 @@ from pydantic import BaseModel
 from typing import List
 from pathlib import Path
 from pdf_parser import extract_invoice_data, generate_invoice_xml
-from backend.validate import validate
-from backend.xrechnung_generator import generate_xrechnung
+from validate import validate
+from xrechnung_generator import generate_xrechnung
 
 app = FastAPI()
 
@@ -57,7 +57,11 @@ async def upload_pdf(file: UploadFile = File(...)):
         f.write(content)
 
     invoice_data = extract_invoice_data(str(file_path))
-    return JSONResponse(content=invoice_data)
+
+    # Explicitly add CORS headers
+    response = JSONResponse(content=invoice_data)
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 @app.post("/convert/zugferd")
@@ -87,13 +91,16 @@ async def convert_to_xrechnung(invoice_data: dict):
     with open(output_file_path, "w") as f:
         f.write(xml_content)
 
-    # Store filename in registry
     file_registry["xrechnung"] = unique_filename
-    return FileResponse(
+
+    # Manually set CORS headers for file response
+    response = FileResponse(
         output_file_path,
         media_type="application/xml",
         filename=unique_filename,
     )
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 @app.get("/validation-report-content/")

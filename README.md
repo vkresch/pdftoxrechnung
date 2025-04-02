@@ -27,7 +27,7 @@ To use the Ollama model locally:
 
 ## Backend Setup
 
-uvicorn backend.app.main:app --reload
+uvicorn app.main:app --reload
 
 ## Frontend Setup
 

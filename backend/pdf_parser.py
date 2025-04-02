@@ -3,11 +3,11 @@ import re
 import logging
 import time
 import numpy as np
-from backend.chatgpt_integration import process_with_chatgpt
-from backend.deepseek_integration import process_with_deepseek
-from backend.ollama_integration import process_with_ollama
+from chatgpt_integration import process_with_chatgpt
+from deepseek_integration import process_with_deepseek
+from ollama_integration import process_with_ollama
 
-# from backend.gemini_integration import process_with_gemini
+# from gemini_integration import process_with_gemini
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 import easyocr
