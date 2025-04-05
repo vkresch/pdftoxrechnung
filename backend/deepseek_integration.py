@@ -6,7 +6,7 @@ import logging
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from seleniumbase import SB  # SB is a simple SeleniumBase driver
-from utils import PROMPT
+from utils import PROMPT, remove_nulls
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -24,6 +24,7 @@ def process_with_deepseek(pdf_text, test=False):
     with SB(
         uc=True,
         ad_block=True,
+        xvfb=True,
         test=test,
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
@@ -49,8 +50,8 @@ def process_with_deepseek(pdf_text, test=False):
         if not logged_in:
             logging.info("Login required, proceeding with login.")
 
-            if test:
-                sb.save_screenshot("screenshots/01_deepseek_before_login.png")
+            # if test:
+            sb.save_screenshot("screenshots/01_deepseek_before_login.png")
 
             # Enter credentials only if login is needed
             sb.send_keys("//input[@class='ds-input__input'][@type='text']", MAIL)
@@ -63,8 +64,8 @@ def process_with_deepseek(pdf_text, test=False):
         else:
             logging.info("Already logged in, proceeding to chat.")
 
-        if test:
-            sb.save_screenshot("screenshots/02_deepseek_logged_in.png")
+        # if test:
+        sb.save_screenshot("screenshots/02_deepseek_logged_in.png")
 
         chat_text_area = sb.find_element("id", "chat-input")
         sb.execute_script(
@@ -76,12 +77,14 @@ def process_with_deepseek(pdf_text, test=False):
             chat_text_area,
             f"{PROMPT} {pdf_text}",
         )
+        # if test:
+        sb.save_screenshot("screenshots/03_deepseek_logged_in.png")
         sb.wait_for_element_visible("//div[@class='_7436101'][@aria-disabled='false']")
-        sb.click("//div[@class='_7436101'][@aria-disabled='false']")
+        chat_text_area.send_keys(Keys.ENTER)
 
         if test:
             sb.sleep(20)
-            sb.save_screenshot("screenshots/03_deepseek_started_extraction.png")
+            sb.save_screenshot("screenshots/04_deepseek_started_extraction.png")
 
         # Wait for response elements to load
         logging.info("Extracting pdf data into json ...")
@@ -91,10 +94,10 @@ def process_with_deepseek(pdf_text, test=False):
         response = sb.find_element(".md-code-block pre").text
 
         # Save a screenshot
-        if test:
-            sb.save_screenshot("screenshots/04_deepseek_after_extraction.png")
+        # if test:
+        sb.save_screenshot("screenshots/05_deepseek_after_extraction.png")
 
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)
         logging.info(f"JSON String:\n{json_str}")
-        return json.loads(json_str)
+        return remove_nulls(json.loads(json_str))

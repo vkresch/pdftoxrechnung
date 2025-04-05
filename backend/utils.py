@@ -1,5 +1,16 @@
 from schemas import Invoice
 
+
+# Function to recursively remove keys with None values
+def remove_nulls(obj):
+    if isinstance(obj, dict):
+        return {k: remove_nulls(v) for k, v in obj.items() if v is not None}
+    elif isinstance(obj, list):
+        return [remove_nulls(item) for item in obj]
+    else:
+        return obj
+
+
 EXAMPLE_JSON = """
 ```
 {
@@ -312,11 +323,11 @@ EXAMPLE_JSON = """
 
 PROMPT = f"""
 You are an expert in document processing.
-Given the extracted text from an invoice PDF, 
+Given the extracted text from an invoice PDF,
 extract and return only the invoice data in 
 JSON object format with the following schema with exactly the provided key names:
 
-```
+```json
 {Invoice.model_json_schema()}
 ```
 

@@ -13,12 +13,12 @@ models = [
 @pytest.mark.parametrize("model", models)
 def test_json_creation_output(model):
     # Extract text from the PDF using pdfplumber
-    with open_pdf("backend/tests/samples/zugferd1_invoice_pdfa3b.pdf") as pdf:
+    with open_pdf("tests/samples/zugferd1_invoice_pdfa3b.pdf") as pdf:
         pdf_text = ""
         for page in pdf.pages:
             pdf_text += page.extract_text()
 
-    result = process(pdf_text, model=model, test=False)
+    result = process(pdf_text, model=model, test=True)
     assert (
         result.get("context").get("guideline_parameter")
         == "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"

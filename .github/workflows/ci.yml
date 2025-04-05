@@ -29,6 +29,24 @@ jobs:
     - name: Check black format 
       run:  black --check --diff .
 
+  docker-build:
+    runs-on: ubuntu-22.04
+    strategy:
+      fail-fast: false
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Build backend docker images
+      run: cd backend && docker build .
+
+    - name: Build frontend docker images
+      run: cd frontend && docker build .
+
   tests:
     runs-on: ubuntu-22.04
     strategy:
@@ -86,13 +104,14 @@ jobs:
         DEEPSEEK_MAIL: ${{ secrets.DEEPSEEK_MAIL }}
         DEEPSEEK_PASSWORD: ${{ secrets.DEEPSEEK_PASSWORD }}
       run: |
+        cd backend
         mkdir screenshots
-        python -m pytest backend/ -vv
+        python -m pytest . -vv
 
     - name: Upload Screenshots
       if: always()
       uses: actions/upload-artifact@v4
       with:
         name: screenshots
-        path: screenshots/
+        path: backend/screenshots/
         retention-days: 7

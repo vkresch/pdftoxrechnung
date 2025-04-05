@@ -98,7 +98,7 @@ def generate_xrechnung(invoice_data):
     header = invoice_data["header"]
     invoice.invoiceNumber = header["id"]
     invoice.invoiceDate = header["issue_date_time"]
-    invoice.leitwegID = header.get("leitweg_id", 0)
+    invoice.leitwegID = header.get("leitweg_id", 0) or 0
     invoice.note = " ".join(header.get("notes", []))
     
     agreement = invoice_data["trade"]["agreement"]
@@ -151,7 +151,7 @@ def generate_xrechnung(invoice_data):
         invoice.taxPercent = tax_rates[0]["rate"] 
     
     invoiceDateObject = datetime.strptime(invoice.invoiceDate, "%Y-%m-%d")
-    if invoice.dueDate != "":
+    if invoice.dueDate is not None and invoice.dueDate != "":
         dueDateObject = datetime.strptime(invoice.dueDate, "%Y-%m-%d")
         invoice.dueDays = (dueDateObject - invoiceDateObject).days
 
@@ -196,7 +196,7 @@ def generate_xrechnung(invoice_data):
             "taxCategory": item["settlement_tax"].get("category", ""),
         })
     
-    template = Template(open("./backend/templates/ubl-3.0.1-xrechnung-template.xml").read())
+    template = Template(open("./templates/ubl-3.0.1-xrechnung-template.xml").read())
     return template.render(data=invoice)
 # fmt: on
 
