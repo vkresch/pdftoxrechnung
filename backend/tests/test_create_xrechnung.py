@@ -295,21 +295,21 @@ def test_xml_creation_output():
         "guideline_parameter"
     ] = "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
 
-    with open("backend/tests/samples/output.xml") as xml:
+    with open("tests/samples/output.xml") as xml:
         xml_string = xml.read()
 
     xml_content = generate_invoice_xml(invoice_data)
-    # with open("backend/tests/samples/output.xml", "w") as f:
+    # with open("tests/samples/output.xml", "w") as f:
     #     f.write(xml_content)
     assert xml_string == xml_content
 
 
 def test_xrechnung_creation():
 
-    with open("backend/tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml") as xml:
+    with open("tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml") as xml:
         xml_string = xml.read()
 
     xml_content = generate_xrechnung(invoice_data)
-    # with open("backend/tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml", "w") as f:
+    # with open("tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml", "w") as f:
     #     f.write(xml_content)
     assert xml_string == xml_content

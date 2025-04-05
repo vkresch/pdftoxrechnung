@@ -81,7 +81,7 @@ def test_generate_sample():
     # Generate XML file
     xml = doc.serialize(schema="FACTUR-X_EXTENDED")
 
-    output_path = "backend/tests/samples/output_zugferd.xml"
+    output_path = "tests/samples/output_zugferd.xml"
 
     with open(output_path, "wb") as f:
         f.write(xml)
