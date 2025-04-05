@@ -62,7 +62,7 @@ export default function XRechnungGenerator() {
       const formData = new FormData()
       formData.append("file", pdfFile)
 
-      const response = await fetch("http://localhost:8000/upload/", {
+      const response = await fetch("/api/upload/", {
         method: "POST",
         body: formData,
       })
@@ -109,7 +109,7 @@ export default function XRechnungGenerator() {
     setIsLoading(true)
 
     try {
-      const response = await fetch("http://localhost:8000/convert/", {
+      const response = await fetch("/api/convert/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -149,7 +149,7 @@ export default function XRechnungGenerator() {
 
     try {
       // First call the validation endpoint
-      const response = await fetch("http://localhost:8000/validate/", {
+      const response = await fetch("/api/validate/", {
         method: "POST",
       })
 
@@ -160,7 +160,7 @@ export default function XRechnungGenerator() {
       const result = await response.json()
 
       // Now fetch the XML report file
-      const reportResponse = await fetch("http://localhost:8000/validation-report-content/", {
+      const reportResponse = await fetch("/api/validation-report-content/", {
         method: "GET",
       })
 
@@ -300,7 +300,7 @@ export default function XRechnungGenerator() {
   const handleDownloadValidationReport = () => {
     // Create a link to download the validation report from the FastAPI backend
     const link = document.createElement("a")
-    link.href = "http://localhost:8000/validation-report/"
+    link.href = "/api/validation-report/"
     link.download = "validation-report.xml"
     document.body.appendChild(link)
     link.click()

@@ -42,7 +42,7 @@ export default function InvoiceConverter() {
     formData.append("file", file)
 
     try {
-      const response = await fetch("http://localhost:8000/upload/", {
+      const response = await fetch("/api/upload/", {
         method: "POST",
         body: formData,
       })
@@ -68,7 +68,7 @@ export default function InvoiceConverter() {
     setError(null)
 
     try {
-      const response = await fetch("http://localhost:8000/convert/", {
+      const response = await fetch("/api/convert/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
