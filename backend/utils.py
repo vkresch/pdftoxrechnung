@@ -1,5 +1,6 @@
 from schemas import Invoice
 
+
 # Function to recursively remove keys with None values
 def remove_nulls(obj):
     if isinstance(obj, dict):
@@ -8,6 +9,7 @@ def remove_nulls(obj):
         return [remove_nulls(item) for item in obj]
     else:
         return obj
+
 
 EXAMPLE_JSON = """
 ```

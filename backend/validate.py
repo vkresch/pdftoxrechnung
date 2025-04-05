@@ -7,6 +7,7 @@ logging.basicConfig(
     level=logging.INFO,
 )
 
+
 def validate(xml_file, upload_folder=Path("./uploads")):
     jar_path = "validator/validationtool-1.5.0-standalone.jar"
     scenarios_file = "validator/scenarios.xml"
