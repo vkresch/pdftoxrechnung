@@ -24,12 +24,14 @@ def process_with_chatgpt(pdf_text, test=False):
         # user_data_dir="./user_data",  # Reuse Chrome profile to persist login
     ) as sb:
         url = "https://chatgpt.com/"
-        sb.activate_cdp_mode(url)
-        sb.sleep(1)
-        sb.uc_gui_click_captcha()
-        sb.sleep(1)
-        sb.uc_gui_handle_captcha()
-        sb.sleep(1)
+        sb.uc_open_with_reconnect(url)
+        if test:
+            sb.sleep(1)
+            sb.uc_gui_click_captcha()
+            sb.sleep(1)
+            sb.uc_gui_handle_captcha()
+            sb.sleep(1)
+        sb.save_screenshot("screenshots/01_chatgpt_on_site.png")
         sb.click_if_visible('button[aria-label="Close dialog"]')
         sb.wait_for_element_visible("#prompt-textarea", timeout=60)
         chat_text_area = sb.find_element("id", "prompt-textarea")
@@ -40,9 +42,11 @@ def process_with_chatgpt(pdf_text, test=False):
         )
         chat_text_area.send_keys(Keys.ENTER)
 
+        sb.sleep(100)
+
         # Save a screenshot for debugging issues
-        if test:
-            sb.save_screenshot("screenshots/01_chatgpt_started_extraction.png")
+        # if test:
+        sb.save_screenshot("screenshots/02_chatgpt_started_extraction.png")
 
         logging.info("Extracting pdf data into json ...")
         sb.wait_for_element_visible(

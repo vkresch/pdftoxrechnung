@@ -323,11 +323,11 @@ EXAMPLE_JSON = """
 
 PROMPT = f"""
 You are an expert in document processing.
-Given the extracted text from an invoice PDF, 
+Given the extracted text from an invoice PDF,
 extract and return only the invoice data in 
 JSON object format with the following schema with exactly the provided key names:
 
-```
+```json
 {Invoice.model_json_schema()}
 ```
 
