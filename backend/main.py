@@ -15,11 +15,9 @@ from xrechnung_generator import generate_xrechnung
 
 app = FastAPI()
 
-origins = ["http://localhost:3000", "http://localhost:8000"]
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -109,11 +107,13 @@ async def validation_report():
         ".xml", "-report.xml"
     )
     output_file_path = UPLOAD_FOLDER / filename
-    return FileResponse(
+    response = FileResponse(
         output_file_path,
         media_type="application/xml",
         filename=filename,
     )
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 @app.get("/validation-report/")
@@ -122,11 +122,13 @@ async def download_report():
         ".xml", "-report.html"
     )
     output_file_path = UPLOAD_FOLDER / filename
-    return FileResponse(
+    response = FileResponse(
         output_file_path,
         media_type="application/html",
         filename=filename,
     )
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    return response
 
 
 @app.post("/validate/")

@@ -1,11 +1,16 @@
+import logging
 import subprocess
 from pathlib import Path
 
+logging.basicConfig(
+    format="%(asctime)s - %(levelname)s - %(message)s",
+    level=logging.INFO,
+)
 
 def validate(xml_file, upload_folder=Path("./uploads")):
-    jar_path = "backend/validator/validationtool-1.5.0-standalone.jar"
-    scenarios_file = "backend/validator/scenarios.xml"
-    output_directory = Path.cwd() / "backend/validator/"
+    jar_path = "validator/validationtool-1.5.0-standalone.jar"
+    scenarios_file = "validator/scenarios.xml"
+    output_directory = Path.cwd() / "validator/"
 
     command = [
         "java",
@@ -22,6 +27,7 @@ def validate(xml_file, upload_folder=Path("./uploads")):
     ]
 
     try:
+        logging.info(f"Validating {xml_file} ...")
         result = subprocess.run(command, capture_output=True, text=True)
         return_code = result.returncode
 
@@ -44,6 +50,7 @@ def validate(xml_file, upload_folder=Path("./uploads")):
         else:
             response["description"] = "Unknown error."
 
+        logging.info(f"Validation completed: {response['description']}")
         return response
     except Exception as e:
         return {"return_code": -99, "description": str(e)}

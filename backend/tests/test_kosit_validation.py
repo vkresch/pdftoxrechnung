@@ -4,8 +4,8 @@ from pathlib import Path
 from validate import validate
 
 xml_files = [
-    "./backend/tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml",
-    "./backend/tests/samples/xrechnungen/ubl-br-cl-14-15-and-br-co-09-country-codes-kosovo.xml",
+    "./tests/samples/xrechnungen/zugferd1_invoice_pdfa3b.xml",
+    "./tests/samples/xrechnungen/ubl-br-cl-14-15-and-br-co-09-country-codes-kosovo.xml",
 ]
 
 

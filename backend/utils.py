@@ -1,5 +1,14 @@
 from schemas import Invoice
 
+# Function to recursively remove keys with None values
+def remove_nulls(obj):
+    if isinstance(obj, dict):
+        return {k: remove_nulls(v) for k, v in obj.items() if v is not None}
+    elif isinstance(obj, list):
+        return [remove_nulls(item) for item in obj]
+    else:
+        return obj
+
 EXAMPLE_JSON = """
 ```
 {

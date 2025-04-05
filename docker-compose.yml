@@ -5,6 +5,7 @@ services:
     build: ./backend
     volumes:
       - ./uploads:/app/uploads  # Mounts `./uploads` (host) to `/app/uploads` (container)
+      - ./screenshots:/app/screenshots  # Mounts `./uploads` (host) to `/app/uploads` (container)
     ports:
       - "8000:8000"
     env_file:
