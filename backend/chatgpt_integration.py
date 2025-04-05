@@ -7,7 +7,7 @@ from contextlib import suppress
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import TimeoutException, NoSuchElementException
 from seleniumbase import SB  # SB is a simple SeleniumBase driver
-from utils import PROMPT
+from utils import PROMPT, remove_nulls
 
 logging.basicConfig(
     format="%(asctime)s - %(levelname)s - %(message)s",
@@ -57,4 +57,4 @@ def process_with_chatgpt(pdf_text, test=False):
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)
         logging.info(f"JSON String:\n{json_str}")
-        return json.loads(json_str)
+        return remove_nulls(json.loads(json_str))
