@@ -41,8 +41,11 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build Docker images with Compose
-      run: docker compose build
+    - name: Build backend docker images
+      run: cd backend && docker build .
+
+    - name: Build frontend docker images
+      run: cd frontend && docker build .
 
   tests:
     runs-on: ubuntu-22.04
