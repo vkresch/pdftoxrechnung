@@ -50,8 +50,8 @@
 
 /* Custom Styles */
 @layer utilities {
-  .border {
-    border-color: hsl(var(--border));
+  .border {    
+    border-color: grey;
   }
 
   .input {
