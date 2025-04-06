@@ -90,10 +90,10 @@ export function FileUploader({ onFileSelect, selectedFile, isLoading }: FileUplo
           </div>
         )}
         <h3 className="text-xl font-semibold">
-          {isLoading ? "Processing PDF" : selectedFile ? "Replace file" : "Upload invoice"}
+          {isLoading ? "Rechnung wird verarbeitet" : selectedFile ? "Rechnung ersetzen" : "Rechnung hochladen"}
         </h3>
         <p className="text-muted-foreground">
-          {isLoading ? "Please wait while we extract the data" : "Drag and drop your PDF invoice or click to browse"}
+          {isLoading ? "Bitte warten während wir die Daten extrahieren" : "Drag und drop deine PDF Rechnung oder klicke um zu wählen"}
         </p>
 
         {selectedFile && !isLoading && (

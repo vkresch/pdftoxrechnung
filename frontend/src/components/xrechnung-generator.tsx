@@ -375,26 +375,26 @@ export default function XRechnungGenerator() {
                 <div className="mx-auto w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
                   <Download className="h-8 w-8 text-primary" />
                 </div>
-                <h2 className="text-2xl font-bold mb-2">XRechnung XML Generated</h2>
+                <h2 className="text-2xl font-bold mb-2">XRechnung XML generiert</h2>
                 <p className="text-muted-foreground">
-                  Your XRechnung XML file has been generated successfully. You can download it now.
+                  Ihre XRechnung XML-Datei wurde erfolgreich erstellt. Sie können sie jetzt herunterladen.
                 </p>
               </div>
 
               <Button onClick={handleDownloadXML} className="w-full mb-4">
                 <Download className="mr-2 h-4 w-4" />
-                Download XRechnung XML
+                XRechnung herunterladen
               </Button>
 
               <Button onClick={handleValidateXML} className="w-full mb-4" variant="outline" disabled={isValidating}>
                 <FileCheck className="mr-2 h-4 w-4" />
-                {isValidating ? "Validating..." : "Validate XRechnung"}
+                {isValidating ? "Validierung läuft..." : "XRechnung validieren"}
               </Button>
 
               {validationResult && (
                 <Card className="mt-6 mb-6">
                   <CardContent className="pt-6">
-                    <h3 className="text-lg font-semibold mb-2">Validation Results</h3>
+                    <h3 className="text-lg font-semibold mb-2">Validierungsergebnisse</h3>
                     <Alert
                       variant={(validationResult?.errorCount ?? 0) > 0 ? "destructive" : "default"}
                       className={
@@ -445,7 +445,7 @@ export default function XRechnungGenerator() {
                         size="sm"
                       >
                         <Download className="mr-2 h-4 w-4" />
-                        Download Validation Report
+                        Bericht herunterladen
                       </Button>
                     ) : null}
                   </CardContent>
@@ -505,13 +505,12 @@ export default function XRechnungGenerator() {
 
   return (
     <div className="flex flex-col h-screen">
-      <div className="p-6 border-b">
-        <h1 className="text-2xl font-bold mb-6 text-center">XRechnung Generator</h1>
+      <div className="p-2 border-b bg-background sticky shadow-md top-14 bg-secondary z-50">
         <StepIndicator
           steps={[
-            { id: "upload", label: "Upload PDF" },
-            { id: "validate", label: "Validate Data" },
-            { id: "download", label: "Download XML" },
+            { id: "upload", label: "PDF hochladen" },
+            { id: "validate", label: "Daten validieren" },
+            { id: "download", label: "Download XRechnung" },
           ]}
           currentStep={currentStep}
         />
@@ -519,7 +518,7 @@ export default function XRechnungGenerator() {
 
       {renderStepContent()}
 
-      <div className="p-4 border-t bg-background shadow-md">{renderButtons()}</div>
+      <div className="p-2 border-t bg-background bg-secondary shadow-md sticky bottom-0 z-50">{renderButtons()}</div>
     </div>
   )
 }
