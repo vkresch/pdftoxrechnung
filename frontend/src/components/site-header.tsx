@@ -15,7 +15,7 @@ export function SiteHeader() {
         <div className="mr-4">
           <Link href="/" className="flex items-center space-x-2">
             <FileText className="h-6 w-6" />
-            <span className="font-bold hidden sm:inline-block">XRechnung Generator</span>
+            <span className="font-bold hidden sm:inline-block">PDF to XRechnung</span>
           </Link>
         </div>
 
