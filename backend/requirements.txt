@@ -8,6 +8,7 @@ pytest
 pydantic
 black
 google-genai
+pymongo==4.11.3
 drafthorse==2025.1.0
 seleniumbase==4.35.7
 easyocr==1.7.2

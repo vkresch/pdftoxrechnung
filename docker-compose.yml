@@ -26,13 +26,17 @@ services:
   backend:
     build: ./backend
     volumes:
-      - ./uploads:/app/uploads  # Mounts `./uploads` (host) to `/app/uploads` (container)
-      - ./screenshots:/app/screenshots  # Mounts `./uploads` (host) to `/app/uploads` (container)
+      - ./uploads:/app/uploads
+      - ./screenshots:/app/screenshots
     expose:
       - "8000"
     env_file:
       - .env
     restart: always
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017
 
   frontend:
     build: ./frontend
@@ -41,3 +45,15 @@ services:
     depends_on:
       - backend
     restart: always
+
+  mongodb:
+    image: mongo:6
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
