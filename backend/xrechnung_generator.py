@@ -140,7 +140,7 @@ def generate_xrechnung(invoice_data):
     # SETTLEMENT -------------------------------------------------------
     settlement = invoice_data["trade"]["settlement"]
     invoice.dueDate = settlement.get("advance_payment_date", "")
-    invoice.paymentMeansCode = settlement["payment_means"]["type_code"] # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
+    invoice.paymentMeansCode = settlement["payment_means"].get("type_code", "58") # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
     invoice.ownIban = settlement.get("payment_means").get("iban", "")
     invoice.currencyCode = settlement.get("currency_code", "EUR")
     invoice.priceNet = settlement["monetary_summation"]["net_total"]

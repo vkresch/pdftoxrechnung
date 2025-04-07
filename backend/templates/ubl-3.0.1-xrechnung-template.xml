@@ -46,13 +46,13 @@
             </cac:PartyTaxScheme>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.ownCompanyName }}</cbc:RegistrationName>
-                <cbc:CompanyID>{{ data.ownHraNo }}</cbc:CompanyID>
-                <cbc:CompanyLegalForm>{{ data.ownLegalForm }}</cbc:CompanyLegalForm>
+                {% if data.ownHraNo != "" -%}<cbc:CompanyID>{{ data.ownHraNo }}</cbc:CompanyID>{% endif %}
+                {% if data.ownLegalForm != "" -%}<cbc:CompanyLegalForm>{{ data.ownLegalForm }}</cbc:CompanyLegalForm>{% endif %}
             </cac:PartyLegalEntity>
             <cac:Contact>
                 <cbc:Name>{{ data.ownContactName }}</cbc:Name>
-                <cbc:Telephone>{{ data.ownContactPhone }}</cbc:Telephone>
-                <cbc:ElectronicMail>{{ data.ownContactEmail }}</cbc:ElectronicMail>
+                {% if data.ownContactPhone != "" -%}<cbc:Telephone>{{ data.ownContactPhone }}</cbc:Telephone>{% endif %}
+                {% if data.ownContactEmail != "" -%}<cbc:ElectronicMail>{{ data.ownContactEmail }}</cbc:ElectronicMail>{% endif %}
             </cac:Contact>
         </cac:Party>
     </cac:AccountingSupplierParty>

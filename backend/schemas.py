@@ -90,7 +90,7 @@ class Invoicee(BaseModel):
 
 class PaymentMeans(BaseModel):
     type: str = Field(description="Type of payment means (Zahlungsmitteltyp)")
-    type_code: str = Field(description="Payment type code (Zahlungstypcode)")
+    type_code: str = Field(description="Payment type code with default value: '58' (Zahlungstypcode)")
     account_name: Optional[str] = Field(description="Account name (Kontoname)")
     iban: Optional[str] = Field(description="International bank account number (IBAN)")
     bic: Optional[str] = Field(description="Bank identifier code (BIC/SWIFT-Code)")
@@ -111,7 +111,7 @@ class MonetarySummation(BaseModel):
     grand_total: Optional[float] = Field(description="Grand total amount including taxes (Gesamtbetrag inkl. Steuern)")
     paid_amount: Optional[float] = Field(description="Amount already paid (Bereits gezahlter Betrag)")
     rounding_amount: Optional[float] = Field(description="Rounding amount (Rundungsbetrag)")
-    due_amount: Optional[float] = Field(description="Amount due for payment (Fälliger Zahlungsbetrag)")
+    due_amount: Optional[float] = Field(description="Amount due for payment normally equals the grand_total (Fälliger Zahlungsbetrag)")
 
 
 class Settlement(BaseModel):
@@ -180,7 +180,7 @@ class Header(BaseModel):
     id: str = Field(description="Invoice ID (Rechnungsnummer)")
     type: str = Field(description="Type of header (Kopfzeilentyp)")
     leitweg_id: str = Field(description="Pflichtangabe bei Rechnungen für Behörden, optional bei Rechnungen für Firmen (Leitweg ID)")
-    type_code: str = Field(description="Type code of the document (Dokumententypcode)")
+    type_code: str = Field(description="Type code of the document with default value: '380' (Dokumententypcode)")
     name: str = Field(description="Document name (Dokumentenname)")
     issue_date_time: datetime.datetime = Field(description="Issue date of the invoice (Ausstellungsdatum der Rechnung)", json_schema_extra={"format": "date-time"})
     languages: str = Field(description="Language codes (Sprachcodes)")
