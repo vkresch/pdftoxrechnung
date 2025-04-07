@@ -91,11 +91,13 @@ def process_with_deepseek(pdf_text, test=False):
         sb.wait_for_element_visible("//div[@class='ds-flex _965abe9']", timeout=300)
 
         # response = sb.find_element(".ds-markdown--block p").text
+        # if test:
+        sb.save_screenshot("screenshots/05_deepseek_after_extraction.png")
         response = sb.find_element(".md-code-block pre").text
 
         # Save a screenshot
         # if test:
-        sb.save_screenshot("screenshots/05_deepseek_after_extraction.png")
+        sb.save_screenshot("screenshots/06_deepseek_after_extraction.png")
 
         json_match = re.search(r"({.*})", response, re.DOTALL)
         json_str = json_match.group(1)

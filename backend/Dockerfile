@@ -62,7 +62,7 @@ RUN apt-get install -y \
 
 # Install useful utilities
 RUN apt-get update
-RUN apt-get install -y xdg-utils ca-certificates openjdk-17-jdk
+RUN apt-get install -y xdg-utils ca-certificates openjdk-17-jdk poppler-utils
 
 # Set JAVA_HOME environment variable (optional but useful)
 ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
