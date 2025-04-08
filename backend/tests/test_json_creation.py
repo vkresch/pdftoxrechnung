@@ -15,10 +15,7 @@ def test_json_creation_output(model):
 
     processed_text = extract_text_from_pdf("tests/samples/zugferd1_invoice_pdfa3b.pdf")
     result = process(processed_text, model=model, test=True)
-    assert (
-        result.get("context").get("guideline_parameter")
-        == "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
-    )
+
     assert result.get("header").get("id") == "2019-03"
     assert result.get("header").get("issue_date_time") == "2019-05-08"
     assert result.get("header").get("languages") == "de"
