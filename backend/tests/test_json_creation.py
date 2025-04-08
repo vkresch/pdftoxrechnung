@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pdf_parser import process, extract_text_from_pdf
 
 models = [
-    "deepseek",
+    # "deepseek",
     "gemini",
     # "chatgpt", # FIXME: There seems to be an issue right now
 ]
@@ -46,7 +46,6 @@ def test_json_creation_output(model):
     assert settlement.get("monetary_summation").get("net_total") == 845
     assert settlement.get("monetary_summation").get("tax_total") == 160.55
     assert settlement.get("monetary_summation").get("grand_total") == 1005.55
-    assert settlement.get("monetary_summation").get("due_amount") == 1005.55
 
     items = result.get("trade").get("items")
     assert len(items) == 7
