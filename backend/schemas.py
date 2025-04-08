@@ -65,7 +65,7 @@ class Buyer(BaseModel):
 
 class Order(BaseModel):
     type: str = Field(description="Type of order (Auftragstyp)")
-    date: datetime.date = Field(description="Order date (Bestelldatum)", json_schema_extra={"format": "date-time"})
+    date: datetime.date = Field(description="Order date (Bestelldatum)", json_schema_extra={"format": "date"})
 
 
 class Agreement(BaseModel):
@@ -120,7 +120,7 @@ class Settlement(BaseModel):
     invoicee: Invoicee = Field(description="Invoicee information (Rechnungsempfängerinformationen)")
     currency_code: str = Field(description="Currency code, e.g., EUR (Währungscode)")
     payment_means: PaymentMeans = Field(description="Payment means information (Zahlungsmittelinformationen)")
-    advance_payment_date: datetime.date = Field(description="Date of advance payment (Vorauszahlungsdatum)", json_schema_extra={"format": "date-time"})
+    advance_payment_date: datetime.date = Field(description="Date of advance payment (Vorauszahlungsdatum)", json_schema_extra={"format": "date"})
     trade_tax: List[TradeTax] = Field(description="List of trade taxes (Liste der Handelssteuern)")
     monetary_summation: MonetarySummation = Field(description="Monetary summation information (Währungssummeninformationen)")
     payment_reference: Optional[str] = Field(description="Payment reference (Zahlungsreferenz)")
@@ -138,8 +138,8 @@ class Item(BaseModel):
     type: str = Field(description="Type of item (Positionstyp)")
     line_id: str = Field(description="Line ID (Zeilennummer)")
     product_name: str = Field(description="Product name (Produktname)")
-    period_start: Optional[datetime.datetime] = Field(description="Start date of period (Startdatum des Zeitraums)", json_schema_extra={"format": "date-time"})
-    period_end: Optional[datetime.datetime] = Field(description="End date of period (Enddatum des Zeitraums)", json_schema_extra={"format": "date-time"})
+    period_start: Optional[datetime.datetime] = Field(description="Start date of period (Startdatum des Zeitraums)", json_schema_extra={"format": "date"})
+    period_end: Optional[datetime.datetime] = Field(description="End date of period (Enddatum des Zeitraums)", json_schema_extra={"format": "date"})
     agreement_net_price: float = Field(description="Agreed net price (Vereinbarter Nettopreis)")
     quantity: int = Field(description="Quantity (Menge)")
     delivery_details: float = Field(description="Delivery details amount (Lieferdetailsbetrag)")
@@ -152,8 +152,8 @@ class Item(BaseModel):
 
 
 class BillingPeriod(BaseModel):
-    start_date: datetime.date = Field(description="Start date of billing period (Startdatum des Abrechnungszeitraums)", json_schema_extra={"format": "date-time"})
-    end_date: datetime.date = Field(description="End date of billing period (Enddatum des Abrechnungszeitraums)", json_schema_extra={"format": "date-time"})
+    start_date: datetime.date = Field(description="Start date of billing period (Startdatum des Abrechnungszeitraums)", json_schema_extra={"format": "date"})
+    end_date: datetime.date = Field(description="End date of billing period (Enddatum des Abrechnungszeitraums)", json_schema_extra={"format": "date"})
 
 
 class DeliveryParty(BaseModel):
@@ -162,7 +162,7 @@ class DeliveryParty(BaseModel):
 
 
 class Delivery(BaseModel):
-    date: datetime.date = Field(description="Delivery date (Lieferdatum)", json_schema_extra={"format": "date-time"})
+    date: datetime.date = Field(description="Delivery date (Lieferdatum)", json_schema_extra={"format": "date"})
     delivery_note_id: Optional[str] = Field(description="Delivery note ID (Lieferscheinnummer)")
     delivery_party: DeliveryParty = Field(description="Delivery party information (Lieferparteiinformationen)")
 
@@ -182,7 +182,7 @@ class Header(BaseModel):
     leitweg_id: str = Field(description="Pflichtangabe bei Rechnungen für Behörden, optional bei Rechnungen für Firmen (Leitweg ID)")
     type_code: str = Field(description="Type code of the document with default value: '380' (Dokumententypcode)")
     name: str = Field(description="Document name (Dokumentenname)")
-    issue_date_time: datetime.date = Field(description="Issue date of the invoice (Ausstellungsdatum der Rechnung)", json_schema_extra={"format": "date-time"})
+    issue_date_time: datetime.date = Field(description="Issue date of the invoice (Ausstellungsdatum der Rechnung)", json_schema_extra={"format": "date"})
     languages: str = Field(description="Language codes (Sprachcodes)")
     notes: List[str] = Field(description="Additional notes (Zusätzliche Hinweise)")
 

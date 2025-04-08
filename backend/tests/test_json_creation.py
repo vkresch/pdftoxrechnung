@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pdf_parser import process, extract_text_from_pdf
 
 models = [
-    # "deepseek",
+    "deepseek",
     "gemini",
     # "chatgpt", # FIXME: There seems to be an issue right now
 ]
