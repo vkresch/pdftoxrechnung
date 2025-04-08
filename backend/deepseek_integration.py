@@ -80,6 +80,7 @@ def process_with_deepseek(pdf_text, test=False):
         # if test:
         sb.save_screenshot("screenshots/03_deepseek_logged_in.png")
         sb.wait_for_element_visible("//div[@class='_7436101'][@aria-disabled='false']")
+        sb.sleep(1)
         chat_text_area.send_keys(Keys.ENTER)
 
         if test:

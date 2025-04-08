@@ -17,7 +17,7 @@ def test_json_creation_output(model):
     result = process(processed_text, model=model, test=True)
 
     assert result.get("header").get("id") == "2019-03"
-    assert "2019-05-08" in result.get("header").get("issue_date_time")
+    assert result.get("header").get("issue_date_time") == "2019-05-08"
     assert result.get("header").get("languages") == "de"
 
     seller = result.get("trade").get("agreement").get("seller")
