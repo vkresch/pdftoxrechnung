@@ -7,7 +7,7 @@ from chatgpt_integration import process_with_chatgpt
 from deepseek_integration import process_with_deepseek
 from ollama_integration import process_with_ollama
 
-# from gemini_integration import process_with_gemini
+from gemini_integration import process_with_gemini
 from pdfplumber import open as open_pdf
 from datetime import datetime, timezone
 import easyocr
@@ -33,8 +33,8 @@ def process(pdf_text, model="chatgpt", test=False):
         return process_with_deepseek(pdf_text, test)
     elif model == "chatgpt":
         return process_with_chatgpt(pdf_text, test)
-    # elif model == "gemini":
-    #     return process_with_gemini(pdf_text)
+    elif model == "gemini":
+        return process_with_gemini(pdf_text)
     return process_with_chatgpt(pdf_text, test)
 
 
@@ -55,7 +55,7 @@ def generate_invoice_xml(invoice_data):
     
     # Header
     doc.header.id = invoice_data["header"].get("id", "")
-    doc.header.type_code = invoice_data["header"].get("type_code", "")
+    doc.header.type_code = invoice_data["header"].get("type_code", "380")
     doc.header.name = invoice_data["header"].get("name", "")
     doc.header.issue_date_time = datetime.strptime(invoice_data["header"].get("issue_date_time", "2025-01-01"), "%Y-%m-%d").date()
     doc.header.languages.add(invoice_data["header"].get("languages", ""))
@@ -133,9 +133,14 @@ def generate_invoice_xml(invoice_data):
 
 
 def preprocess_invoice_text(text):
+    # Step 1: Temporarily replace decimal commas (e.g., "1.005,55" → "1.005DOT55")
+    text = re.sub(r"(\d),(\d{2})\b", r"\1DOT\2", text)
 
-    # Normalize number formatting (ensure consistent decimal separator)
-    text = text.replace(",", ".")
+    # Step 2: Remove periods used as thousands separators (e.g., "1.005DOT55" → "1005DOT55")
+    text = re.sub(r"(?<=\d)\.(?=\d{3}DOT)", "", text)
+
+    # Step 3: Replace temporary marker with decimal point
+    text = text.replace("DOT", ".")
 
     return text
 
@@ -174,7 +179,7 @@ def extract_invoice_data(pdf_file_path: str) -> str:
     # Send extracted text to Ollama model for field recognition
     processed_text = extract_text_from_pdf(pdf_file_path)
     start_time = time.perf_counter()
-    invoice_data = process(processed_text, model="deepseek")
+    invoice_data = process(processed_text, model="gemini")
     logging.info(
         f"Execution time of data extraction: {time.perf_counter() - start_time:.6f} seconds"
     )

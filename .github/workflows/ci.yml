@@ -103,6 +103,7 @@ jobs:
       env:
         DEEPSEEK_MAIL: ${{ secrets.DEEPSEEK_MAIL }}
         DEEPSEEK_PASSWORD: ${{ secrets.DEEPSEEK_PASSWORD }}
+        GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
       run: |
         cd backend
         mkdir screenshots

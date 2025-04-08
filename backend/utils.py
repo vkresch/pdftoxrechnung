@@ -322,24 +322,28 @@ EXAMPLE_JSON = """
 """
 
 PROMPT = f"""
-You are an expert in document processing.
-Given the extracted text from an invoice PDF,
-extract and return only the invoice data in 
-JSON object format with the following schema with exactly the provided key names:
+You are a highly skilled document processing AI.
+
+Your task is to extract structured invoice data from raw text extracted from a PDF. Return the data as a single **valid JSON object** using the **exact key names and structure** defined in the following schema:
 
 ```json
 {Invoice.model_json_schema()}
 ```
 
-Extract all relevant values from the text.
-Ensure all numerical values remain in their original format.
-Do not include any explanations or additional text, only
-return the the valid JSON object with the exact key names.
+Instructions:
+  - Extract all relevant information from the input text.
+  - Preserve all numerical values exactly as they appear (do not reformat).
+  - Do not include any explanations, comments, or additional text.
+  - Your entire output should be a valid JSON object only.
+  - Ensure every key from the schema is included (use null if data is missing).
+  - Follow the schema strictly to avoid invalid output.
+  - Do not reuse any values from the example provided.
+  - Do not invent new data which is not in the input text.
 
-Example output:
+Here is an example of the expected output format:
 
 {EXAMPLE_JSON}
 
-Input text:
+Now extract the data from the following invoice text:
 
 """

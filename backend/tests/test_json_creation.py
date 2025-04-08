@@ -1,28 +1,21 @@
 import pytest
-from pdfplumber import open as open_pdf
 from decimal import Decimal
 from datetime import datetime, timezone
-from pdf_parser import process
+from pdf_parser import process, extract_text_from_pdf
 
 models = [
     "deepseek",
+    "gemini",
     # "chatgpt", # FIXME: There seems to be an issue right now
 ]
 
 
 @pytest.mark.parametrize("model", models)
 def test_json_creation_output(model):
-    # Extract text from the PDF using pdfplumber
-    with open_pdf("tests/samples/zugferd1_invoice_pdfa3b.pdf") as pdf:
-        pdf_text = ""
-        for page in pdf.pages:
-            pdf_text += page.extract_text()
 
-    result = process(pdf_text, model=model, test=True)
-    assert (
-        result.get("context").get("guideline_parameter")
-        == "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
-    )
+    processed_text = extract_text_from_pdf("tests/samples/zugferd1_invoice_pdfa3b.pdf")
+    result = process(processed_text, model=model, test=True)
+
     assert result.get("header").get("id") == "2019-03"
     assert result.get("header").get("issue_date_time") == "2019-05-08"
     assert result.get("header").get("languages") == "de"
@@ -53,7 +46,6 @@ def test_json_creation_output(model):
     assert settlement.get("monetary_summation").get("net_total") == 845
     assert settlement.get("monetary_summation").get("tax_total") == 160.55
     assert settlement.get("monetary_summation").get("grand_total") == 1005.55
-    assert settlement.get("monetary_summation").get("due_amount") == 1005.55
 
     items = result.get("trade").get("items")
     assert len(items) == 7

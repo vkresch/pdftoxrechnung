@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { XRechnungForm } from "./xrechnung-form"
 import { FileUploader } from "./file-uploader"
 import { Button } from "@/components/ui/button"
@@ -42,6 +42,18 @@ export default function XRechnungGenerator() {
   const [validationResult, setValidationResult] = useState<ValidationResult | null>(null)
   const { toast } = useToast()
 
+  const [sessionId, setSessionId] = useState<string | null>(null)
+
+  useEffect(() => {
+    // This code runs only on the client
+    let storedId = localStorage.getItem("session_id")
+    if (!storedId) {
+      storedId = crypto.randomUUID()
+      localStorage.setItem("session_id", storedId)
+    }
+    setSessionId(storedId)
+  }, [])
+
   const handleFileSelect = (file: File | null) => {
     setPdfFile(file)
   }
@@ -62,9 +74,17 @@ export default function XRechnungGenerator() {
       const formData = new FormData()
       formData.append("file", pdfFile)
 
+      if (!sessionId) {
+        console.error("No session ID available yet.")
+        return
+      }
+
       const response = await fetch("/api/upload/", {
         method: "POST",
         body: formData,
+        headers: {
+          "X-Session-ID": sessionId,
+        },
       })
 
       if (!response.ok) {
@@ -109,10 +129,16 @@ export default function XRechnungGenerator() {
     setIsLoading(true)
 
     try {
+      if (!sessionId) {
+        console.error("No session ID available yet.")
+        return
+      }
+
       const response = await fetch("/api/convert/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "X-Session-ID": sessionId,
         },
         body: JSON.stringify(extractedData),
       })
@@ -148,9 +174,17 @@ export default function XRechnungGenerator() {
     setIsValidating(true)
 
     try {
+      if (!sessionId) {
+        console.error("No session ID available yet.")
+        return
+      }
+
       // First call the validation endpoint
       const response = await fetch("/api/validate/", {
         method: "POST",
+        headers: {
+          "X-Session-ID": sessionId,
+        },
       })
 
       if (!response.ok) {
@@ -162,6 +196,9 @@ export default function XRechnungGenerator() {
       // Now fetch the XML report file
       const reportResponse = await fetch("/api/validation-report-content/", {
         method: "GET",
+        headers: {
+          "X-Session-ID": sessionId,
+        },
       })
 
       if (!reportResponse.ok) {
@@ -297,19 +334,51 @@ export default function XRechnungGenerator() {
     return messages
   }
 
-  const handleDownloadValidationReport = () => {
-    // Create a link to download the validation report from the FastAPI backend
-    const link = document.createElement("a")
-    link.href = "/api/validation-report/"
-    link.download = "validation-report.xml"
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-
-    toast({
-      title: "Download Started",
-      description: "Validation report is being downloaded",
-    })
+  const handleDownloadValidationReport = async () => {
+    if (!sessionId) {
+      toast({
+        title: "Session Error",
+        description: "Session ID not found. Please refresh the page.",
+        variant: "destructive",
+      })
+      return
+    }
+  
+    try {
+      const response = await fetch("/api/validation-report/", {
+        method: "GET",
+        headers: {
+          "X-Session-ID": sessionId,
+        },
+      })
+  
+      if (!response.ok) {
+        throw new Error("Failed to download report")
+      }
+  
+      const blob = await response.blob()
+      const url = window.URL.createObjectURL(blob)
+  
+      const link = document.createElement("a")
+      link.href = url
+      link.download = "validation-report.xml"
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(url)
+  
+      toast({
+        title: "Download Started",
+        description: "Validation report is being downloaded",
+      })
+    } catch (err) {
+      console.error("Download failed:", err)
+      toast({
+        title: "Download Failed",
+        description: "Unable to download the validation report",
+        variant: "destructive",
+      })
+    }
   }
 
   const handleClear = () => {
