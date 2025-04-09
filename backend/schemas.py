@@ -193,6 +193,6 @@ class Invoice(BaseModel):
     trade: Trade = Field(description="Trade information (Handelsinformationen)")
     document_references: Optional[List[str]] = Field(description="References to other documents (Referenzen zu anderen Dokumenten)")
     intro_text: Optional[str] = Field(description="Introductory text (Einleitungstext)")
-    output_format: Optional[str] = Field(description="Output format, e.g., PDF (Ausgabeformat)")
+    output_format: Optional[str] = Field(description="Output format, e.g., 'xrechnung:ubl' (Ausgabeformat)")
     output_lang_code: Optional[str] = Field(description="Output language code, e.g., DE (Ausgabesprachcode)")
 # fmt: on

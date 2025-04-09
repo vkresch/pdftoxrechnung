@@ -2447,7 +2447,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
               <div>
                 <Label htmlFor="invoice-output-format">Format</Label>
                 <Select
-                  value={formState.output_format || "xrechnung:ubl"}
+                  value={"xrechnung:ubl"}
                   onValueChange={(value) => handleInputChange("output_format", value)}
                 >
                   <SelectTrigger id="invoice-output-format" className="border-primary">

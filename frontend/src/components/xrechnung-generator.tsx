@@ -243,7 +243,12 @@ export default function XRechnungGenerator() {
 
               {validationMessages.length > 0 && (
                 <div className="mt-2 pt-2 border-t border-gray-200 dark:border-gray-700">
-                  <ValidationMessageDisplay messages={validationMessages} maxHeight="200px" showLocations={false} />
+                  <ValidationMessageDisplay
+                    messages={validationMessages}
+                    maxHeight="200px"
+                    showLocations={false}
+                    className={errorCount > 0 ? "text-white" : ""}
+                  />
                 </div>
               )}
             </div>
@@ -424,7 +429,7 @@ export default function XRechnungGenerator() {
 
       case "validate":
         return (
-          <div className="flex-grow flex h-[calc(100vh-180px)]">
+          <div className="flex-grow flex h-[calc(100vh-220px)]">
             <div className="w-1/2 overflow-auto p-6 border-r">
               <h2 className="text-xl font-bold mb-4">PDF Preview</h2>
               {pdfFile && <PDFPreview file={pdfFile} />}
@@ -465,37 +470,35 @@ export default function XRechnungGenerator() {
                   <CardContent className="pt-6">
                     <h3 className="text-lg font-semibold mb-2">Validierungsergebnisse</h3>
                     <Alert
-                      variant={(validationResult?.errorCount ?? 0) > 0 ? "destructive" : "default"}
+                      variant="default"
                       className={
-                        (validationResult?.errorCount ?? 0) === 0 && (validationResult?.warningCount ?? 0) === 0
-                          ? "bg-green-700 border-green-800 text-white"
-                          : (validationResult?.errorCount ?? 0) > 0
-                            ? "bg-red-700 border-red-800 text-white"
-                            : "bg-amber-600 border-amber-700 text-white"
+                        validationResult.errorCount && validationResult.errorCount > 0
+                          ? "bg-red-700 border-red-800 text-white"
+                          : validationResult.warningCount && validationResult.warningCount > 0
+                            ? "bg-amber-600 border-amber-700 text-white"
+                            : "bg-green-700 border-green-800 text-white"
                       }
                     >
-                      {(validationResult?.errorCount ?? 0) === 0 && (validationResult?.warningCount ?? 0) === 0 ? (
+                      {!validationResult.errorCount && !validationResult.warningCount ? (
                         <CheckCircle className="h-4 w-4 mr-2 text-white" />
-                      ) : (validationResult?.errorCount ?? 0) > 0 ? (
-                        <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       ) : (
                         <AlertCircle className="h-4 w-4 mr-2 text-white" />
                       )}
                       <AlertDescription>
                         <div className="font-medium">
-                          {(validationResult?.errorCount ?? 0) === 0 && (validationResult?.warningCount ?? 0) === 0
+                          {!validationResult.errorCount && !validationResult.warningCount
                             ? "Valid"
-                            : (validationResult?.errorCount ?? 0) > 0
-                              ? `Invalid - ${validationResult?.errorCount} error${(validationResult?.errorCount ?? 0) > 1 ? "s" : ""}, ${validationResult?.warningCount} warning${(validationResult?.warningCount ?? 0) > 1 ? "s" : ""}`
-                              : `Valid with warnings - ${validationResult?.warningCount} warning${(validationResult?.warningCount ?? 0) > 1 ? "s" : ""}`}
-                          {validationResult?.return_code !== undefined && ` (Code: ${validationResult.return_code})`}
+                            : validationResult.errorCount && validationResult.errorCount > 0
+                              ? `Invalid - ${validationResult.errorCount} error${validationResult.errorCount > 1 ? "s" : ""}, ${validationResult.warningCount || 0} warning${(validationResult.warningCount || 0) > 1 ? "s" : ""}`
+                              : `Valid with warnings - ${validationResult.warningCount} warning${(validationResult.warningCount || 0) > 1 ? "s" : ""}`}
+                          {validationResult.return_code !== undefined && ` (Code: ${validationResult.return_code})`}
                         </div>
-                        <div className="mt-1">{validationResult?.description}</div>
+                        <div className="mt-1">{validationResult.description}</div>
 
                         {/* Display validation messages */}
-                        {validationResult?.validationMessages && validationResult.validationMessages.length > 0 && (
+                        {validationResult.validationMessages && validationResult.validationMessages.length > 0 && (
                           <div className="mt-3 pt-3 border-t border-white/20">
-                            <div className="font-medium mb-1">Validation Messages:</div>
+                            <div className="font-medium mb-1 text-white">Validation Messages:</div>
                             <ValidationMessageDisplay
                               messages={validationResult.validationMessages}
                               className="text-white"
@@ -506,7 +509,8 @@ export default function XRechnungGenerator() {
                       </AlertDescription>
                     </Alert>
 
-                    {(validationResult?.errorCount ?? 0) > 0 || (validationResult?.warningCount ?? 0) > 0 ? (
+                    {((validationResult.errorCount && validationResult.errorCount > 0) ||
+                      (validationResult.warningCount && validationResult.warningCount > 0)) && (
                       <Button
                         onClick={handleDownloadValidationReport}
                         className="w-full mt-4"
@@ -516,7 +520,7 @@ export default function XRechnungGenerator() {
                         <Download className="mr-2 h-4 w-4" />
                         Bericht herunterladen
                       </Button>
-                    ) : null}
+                    )}
                   </CardContent>
                 </Card>
               )}
