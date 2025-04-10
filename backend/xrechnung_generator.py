@@ -104,6 +104,10 @@ def generate_xrechnung(invoice_data):
     invoice.invoiceDate = header["issue_date_time"]
     invoice.leitwegID = header.get("leitweg_id", 0) or 0
     invoice.note = " ".join(header.get("notes", []))
+
+    billing_period = invoice_data["trade"]["billing_period"]
+    invoice.periodStart = billing_period.get("start_date", "")
+    invoice.periodEnd = billing_period.get("end_date", "")
     
     agreement = invoice_data["trade"]["agreement"]
     invoice.contractDocumentReference = agreement.get("contract_reference", "")
@@ -146,7 +150,8 @@ def generate_xrechnung(invoice_data):
     invoice.customerAdditionalStreetname = buyer_address.get("street_name2", "")
     invoice.customerCityname = buyer_address.get("city_name", "")
     invoice.customerPostalZone = buyer_address.get("postal_zone", "")
-    invoice.customerCompanyID = buyer.get("tax_id", "")
+    invoice.customerCompanyID = buyer.get("vat_id", "")
+    invoice.customerTaxNo = buyer.get("tax_id", "")
     invoice.customerRegisterID = buyer.get("register_id", "")
     invoice.customerContactPhone = buyer.get("contact_phone", "")
     invoice.customerContactEmail = buyer.get("contact_email", "")

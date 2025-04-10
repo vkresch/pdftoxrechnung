@@ -11,6 +11,12 @@
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>{{ data.currencyCode }}</cbc:DocumentCurrencyCode>
     <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
+    {% if data.periodStart != "" and data.periodEnd != "" -%}
+    <cac:InvoicePeriod>
+		<cbc:StartDate>{{ data.periodStart }}</cbc:StartDate>
+		<cbc:EndDate>{{ data.periodEnd }}</cbc:EndDate>
+	</cac:InvoicePeriod>
+    {% endif -%}
     {% if data.customerPurchaseOrderReference != "" -%}
     <cac:OrderReference>
         <cbc:ID>{{ data.customerPurchaseOrderReference }}</cbc:ID>
