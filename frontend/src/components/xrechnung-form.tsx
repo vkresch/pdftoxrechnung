@@ -226,6 +226,9 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     // Calculate allowances and charges
     let allowancesTotal = 0
     let chargesTotal = 0
+    let itemsGrossTotal = 0
+    let allowancesGrossTotal = 0
+    let chargesGrossTotal = 0
 
     // Calculate allowances total
     if (state.trade.allowances && state.trade.allowances.length > 0) {
@@ -240,6 +243,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           } else {
             allowance.gross_amount = allowance.amount
           }
+          allowancesGrossTotal += Number(allowance.gross_amount)
         }
       })
     }
@@ -257,32 +261,47 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
           } else {
             charge.gross_amount = charge.amount
           }
+          chargesGrossTotal += Number(charge.gross_amount)
         }
       })
     }
+
+    // Calculate the gross total for items
+    state.trade.items.forEach((item: any) => {
+      itemsGrossTotal += Number(item.total_amount || 0)
+    })
 
     // Calculate the final net total (items - allowances + charges)
     const netTotal = itemsNetTotal - allowancesTotal + chargesTotal
 
     // Calculate tax total by summing up all individual tax amounts
-    const taxTotal = state.trade.items.reduce(
+    const itemsTaxTotal = state.trade.items.reduce(
       (sum: number, item: any) => sum + Number(item.settlement_tax?.amount || 0),
       0,
     )
 
-    // Calculate the grand total directly from all gross amounts
-    const itemsGrossTotal = state.trade.items.reduce(
-      (sum: number, item: any) => sum + Number(item.total_amount || 0),
-      0,
-    )
+    // Calculate tax from allowances
+    const allowancesTaxTotal =
+      state.trade.allowances?.reduce((sum: number, allowance: any) => {
+        if (allowance.amount && allowance.tax_rate) {
+          const taxRate = Number(allowance.tax_rate) / 100
+          return sum + Number(allowance.amount * taxRate)
+        }
+        return sum
+      }, 0) || 0
 
-    // Calculate allowances gross total
-    const allowancesGrossTotal =
-      state.trade.allowances?.reduce((sum: number, allowance: any) => sum + Number(allowance.gross_amount || 0), 0) || 0
+    // Calculate tax from charges
+    const chargesTaxTotal =
+      state.trade.charges?.reduce((sum: number, charge: any) => {
+        if (charge.amount && charge.tax_rate) {
+          const taxRate = Number(charge.tax_rate) / 100
+          return sum + Number(charge.amount * taxRate)
+        }
+        return sum
+      }, 0) || 0
 
-    // Calculate charges gross total
-    const chargesGrossTotal =
-      state.trade.charges?.reduce((sum: number, charge: any) => sum + Number(charge.gross_amount || 0), 0) || 0
+    // Total tax is the sum of item taxes, minus allowance taxes, plus charge taxes
+    const taxTotal = Number.parseFloat((itemsTaxTotal - allowancesTaxTotal + chargesTaxTotal).toFixed(2))
 
 
     // Update monetary summation
