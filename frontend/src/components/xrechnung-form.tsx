@@ -757,49 +757,56 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 />
               </div>
 
-              <div className="col-span-1 md:col-span-2">
-                <Label className="flex items-center">
+              <div>
+                <Label htmlFor="invoice-sales-document-reference" className="flex items-center">
                   Dokumentreferenz
                   <span className="text-xs text-muted-foreground ml-1">(BT-17)</span>
                 </Label>
-                <div id="invoice-document-references">
-                  {formState.document_references?.map((ref: string, index: number) => (
-                    <div key={index} className="flex gap-2 mt-1">
-                      <Input
-                        type="text"
-                        placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
-                        defaultValue={ref}
-                        onBlur={(e) => {
-                          const newRefs = [...formState.document_references]
-                          newRefs[index] = e.target.value
-                          handleInputChange("document_references", newRefs)
-                        }}
-                        className="flex-grow"
-                      />
-                      <Button variant="outline" size="icon" onClick={() => removeDocumentReference(index)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                      {index === formState.document_references.length - 1 && (
-                        <Button variant="outline" size="icon" onClick={addDocumentReference}>
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
+                <Input
+                  id="invoice-sales-document-reference"
+                  placeholder="Dokumentreferenz"
+                  defaultValue={formState.trade.agreement.buyer.document_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.document_reference", e.target.value)}
+                />
+              </div>
 
-                  {(!formState.document_references || formState.document_references.length === 0) && (
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        type="text"
-                        placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
-                        className="flex-grow"
-                      />
-                      <Button variant="outline" size="icon" onClick={addDocumentReference}>
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <Label htmlFor="invoice-object-reference" className="flex items-center">
+                  Objektreferenz
+                  <span className="text-xs text-muted-foreground ml-1">(BT-18)</span>
+                </Label>
+                <Input
+                  id="invoice-object-reference"
+                  placeholder="Objektreferenz"
+                  defaultValue={formState.trade.agreement.buyer.object_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.document_reference", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-billing-reference" className="flex items-center">
+                  Rechnungsreferenz
+                  <span className="text-xs text-muted-foreground ml-1">(BT-25)</span>
+                </Label>
+                <Input
+                  id="invoice-billing-reference"
+                  placeholder="Rechnungsreferenz"
+                  defaultValue={formState.trade.agreement.buyer.previous_billing_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.previous_billing_reference", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-billing-date" className="flex items-center">
+                  Rechnungsreferenzdatum
+                  <span className="text-xs text-muted-foreground ml-1">(BT-26)</span>
+                </Label>
+                <Input
+                  id="invoice-billing-date"
+                  type="date"
+                  defaultValue={formState.trade.agreement.buyer.previous_billing_date || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.buyer.previous_billing_date", e.target.value)}
+                />
               </div>
 
               <div className="col-span-1 md:col-span-2">
@@ -1154,6 +1161,21 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <SelectItem value="customerId">Kundennummer</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-buyer-register-id" className="flex items-center">
+                  Registernummer<span className="text-xs text-muted-foreground ml-1">(BT-47)</span>
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="invoice-buyer-register-id"
+                    placeholder="Registernummer"
+                    defaultValue={formState.trade.agreement.buyer.register_id || ""}
+                    onBlur={(e) => handleInputChange("trade.agreement.buyer.register_id", e.target.value)}
+                    className="flex-grow"
+                  />
                 </div>
               </div>
 

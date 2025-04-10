@@ -11,20 +11,50 @@
     <cbc:Note>{{ data.note }}</cbc:Note>
     <cbc:DocumentCurrencyCode>{{ data.currencyCode }}</cbc:DocumentCurrencyCode>
     <cbc:BuyerReference>{{ data.leitwegID }}</cbc:BuyerReference>
-    {% if data.purchaseOrderReference != "" -%}
+    {% if data.customerPurchaseOrderReference != "" -%}
     <cac:OrderReference>
-        <cbc:ID>{{ data.purchaseOrderReference }}</cbc:ID>
-		{% if data.customerSalesOrderNumber != "" -%}<cbc:SalesOrderID>{{ data.customerSalesOrderNumber }}</cbc:SalesOrderID>{% endif -%}
+        <cbc:ID>{{ data.customerPurchaseOrderReference }}</cbc:ID>
+		{% if data.ownSalesOrderReference != "" -%}<cbc:SalesOrderID>{{ data.ownSalesOrderReference }}</cbc:SalesOrderID>{% endif -%}
 	</cac:OrderReference>
+    {% endif -%}
+    {% if data.previousBillingReference != "" -%}
+    <cac:BillingReference>
+		<cac:InvoiceDocumentReference>
+			<cbc:ID>{{ data.previousBillingReference }}</cbc:ID>
+			<cbc:IssueDate>{{ data.previousBillingDate }}</cbc:IssueDate>
+		</cac:InvoiceDocumentReference>
+	</cac:BillingReference>
+    {% endif -%}
+    {% if data.documentReference != "" -%}
+	<cac:OriginatorDocumentReference>
+		<cbc:ID>{{ data.documentReference }}</cbc:ID>
+	</cac:OriginatorDocumentReference>
     {% endif -%}
     {% if data.contractDocumentReference != "" -%}
     <cac:ContractDocumentReference>
 		<cbc:ID>{{ data.contractDocumentReference }}</cbc:ID>
 	</cac:ContractDocumentReference>
     {% endif -%}
+    {% if data.objectReference != "" -%}
+    <cac:AdditionalDocumentReference>
+		<cbc:ID>{{ data.objectReference }}</cbc:ID>
+		<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+	</cac:AdditionalDocumentReference>
+    {% endif -%}
+    {% if data.documentReference != "" -%}
+	<cac:AdditionalDocumentReference>
+		<cbc:ID>{{ data.documentReference }}</cbc:ID>
+		<cbc:DocumentTypeCode>50</cbc:DocumentTypeCode>
+	</cac:AdditionalDocumentReference>
+    {% endif -%}
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">{{ data.ownContactEmail }}</cbc:EndpointID>
+            {% if data.ownID != "" -%}
+            <cac:PartyIdentification>
+				<cbc:ID>{{ data.ownID }}</cbc:ID>
+			</cac:PartyIdentification>
+            {% endif -%}
             {% if data.ownCompanyName != "" -%}
             <cac:PartyName>
                 <cbc:Name>{{ data.ownCompanyName }}</cbc:Name>
@@ -32,18 +62,29 @@
             {% endif -%}
             <cac:PostalAddress>
                 {% if data.ownStreetname != "" -%}<cbc:StreetName>{{ data.ownStreetname }}</cbc:StreetName>{% endif %}
+                {% if data.ownAdditionalStreetname != "" -%}<cbc:AdditionalStreetName>{{ data.ownAdditionalStreetname }}</cbc:AdditionalStreetName>{% endif %}
                 {% if data.ownCityname != "" -%}<cbc:CityName>{{ data.ownCityname }}</cbc:CityName>{% endif %}
                 {% if data.ownPostalCode != "" -%}<cbc:PostalZone>{{ data.ownPostalCode }}</cbc:PostalZone>{% endif %}
                 <cac:Country>
                     <cbc:IdentificationCode>DE</cbc:IdentificationCode>
                 </cac:Country>
             </cac:PostalAddress>
+            {% if data.ownCompanyID != "" -%}
             <cac:PartyTaxScheme>
                 <cbc:CompanyID>{{ data.ownCompanyID }}</cbc:CompanyID>
                 <cac:TaxScheme>
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:PartyTaxScheme>
+            {% endif -%}
+            {% if data.ownTaxNo != "" -%}
+            <cac:PartyTaxScheme>
+				<cbc:CompanyID>{{ data.ownTaxNo }}</cbc:CompanyID>
+				<cac:TaxScheme>
+					<cbc:ID>!VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:PartyTaxScheme>
+            {% endif -%}
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.ownCompanyName }}</cbc:RegistrationName>
                 {% if data.ownHraNo != "" -%}<cbc:CompanyID>{{ data.ownHraNo }}</cbc:CompanyID>{% endif %}
@@ -71,20 +112,32 @@
             {% endif -%}
             <cac:PostalAddress>
                 <cbc:StreetName>{{ data.customerStreetname }}</cbc:StreetName>
+                {% if data.customerAdditionalStreetname != "" -%}<cbc:AdditionalStreetName>{{ data.customerAdditionalStreetname }}</cbc:AdditionalStreetName>{% endif %}
                 <cbc:CityName>{{ data.customerCityname }}</cbc:CityName>
                 <cbc:PostalZone>{{ data.customerPostalZone }}</cbc:PostalZone>
                 <cac:Country>
                     <cbc:IdentificationCode>DE</cbc:IdentificationCode>
                 </cac:Country>
             </cac:PostalAddress>
+            {% if data.customerCompanyID != "" -%}
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>{{ data.customerCompanyID }}</cbc:CompanyID>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+            {% endif -%}
             {% if data.customerCompanyName != "" -%}
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.customerCompanyName }}</cbc:RegistrationName>
+                {% if data.customerRegisterID != "" -%}<cbc:CompanyID>{{ data.customerRegisterID }}</cbc:CompanyID>{% endif %}
             </cac:PartyLegalEntity>
             {% endif -%}
             {% if data.customerContactName != "" -%}
             <cac:Contact>
                 <cbc:Name>{{ data.customerContactName }}</cbc:Name>
+                {% if data.customerContactPhone != "" -%}<cbc:Telephone>{{ data.customerContactPhone }}</cbc:Telephone>{% endif %}
+				{% if data.customerContactEmail != "" -%}<cbc:ElectronicMail>{{ data.customerContactEmail }}</cbc:ElectronicMail>{% endif %}
             </cac:Contact>
             {% endif -%}
         </cac:Party>
@@ -97,9 +150,15 @@
 			<cbc:ID>{{ data.locationID }}</cbc:ID>
 			<cac:Address>
 				{% if data.deliveryStreetName != "" -%}<cbc:StreetName>{{ data.deliveryStreetName }}</cbc:StreetName>{% endif %}
+                {% if data.deliveryAdditionalStreetName != "" -%}<cbc:AdditionalStreetName>{{ data.deliveryAdditionalStreetName }}</cbc:AdditionalStreetName>{% endif %}
 				{% if data.deliveryCityName != "" -%}<cbc:CityName>{{ data.deliveryCityName }}</cbc:CityName>{% endif %}
 				{% if data.deliveryPostalZone != "" -%}<cbc:PostalZone>{{ data.deliveryPostalZone }}</cbc:PostalZone>{% endif %}
 				{% if data.deliveryRegion != "" -%}<cbc:CountrySubentity>{{ data.deliveryRegion }}</cbc:CountrySubentity>{% endif %}
+                {% if data.deliveryAdditionalInfo != "" -%}
+                <cac:AddressLine>
+					<cbc:Line>{{ data.deliveryAdditionalInfo }}</cbc:Line>
+				</cac:AddressLine>
+                {% endif -%}
                 {% if data.deliveryCountryCode != "" -%}
 				<cac:Country>
 					<cbc:IdentificationCode>{{ data.deliveryCountryCode }}</cbc:IdentificationCode>
@@ -114,7 +173,7 @@
 			</cac:PartyName>
 		</cac:DeliveryParty>
         {% endif -%}
-        {% endif -%}
+        {%- endif %}
 	</cac:Delivery>
     {% endif -%}
     <cac:PaymentMeans>
@@ -123,6 +182,11 @@
         <cac:PayeeFinancialAccount>
             {% if data.ownIban != "" -%}<cbc:ID>{{ data.ownIban }}</cbc:ID>{% endif %}
             {% if data.ownCompanyName != "" -%}<cbc:Name>{{ data.ownCompanyName }}</cbc:Name>{% endif %}
+            {% if data.ownBIC != "" -%}
+            <cac:FinancialInstitutionBranch>
+				<cbc:ID>{{ data.ownBIC }}</cbc:ID>
+			</cac:FinancialInstitutionBranch>
+            {% endif -%}
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     <cac:PaymentTerms>
@@ -131,7 +195,7 @@
     {% for charge in data.charges -%}
     <cac:AllowanceCharge>
 		<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
-		{% if charge.reason != "" -%}<cbc:AllowanceChargeReason>{{ charge.reason }}</cbc:AllowanceChargeReason>{% endif -%}
+		{% if charge.reason != "" -%}<cbc:AllowanceChargeReason>{{ charge.reason }}</cbc:AllowanceChargeReason>{% endif %}
 		<cbc:MultiplierFactorNumeric>{{ charge.percent }}</cbc:MultiplierFactorNumeric>
 		<cbc:Amount currencyID="{{ data.currencyCode }}">{{ charge.amount }}</cbc:Amount>
 		<cbc:BaseAmount currencyID="{{ data.currencyCode }}">{{ charge.basis_amount }}</cbc:BaseAmount>
@@ -147,7 +211,7 @@
     {% for allowance in data.allowances -%}
 	<cac:AllowanceCharge>
 		<cbc:ChargeIndicator>false</cbc:ChargeIndicator>
-		{% if allowance.reason != "" -%}<cbc:AllowanceChargeReason>{{ allowance.reason }}</cbc:AllowanceChargeReason>{% endif -%}
+		{% if allowance.reason != "" -%}<cbc:AllowanceChargeReason>{{ allowance.reason }}</cbc:AllowanceChargeReason>{% endif %}
 		<cbc:MultiplierFactorNumeric>{{ allowance.percent }}</cbc:MultiplierFactorNumeric>
 		<cbc:Amount currencyID="{{ data.currencyCode }}">{{ allowance.amount }}</cbc:Amount>
 		<cbc:BaseAmount currencyID="{{ data.currencyCode }}">{{ allowance.basis_amount }}</cbc:BaseAmount>

@@ -26,7 +26,8 @@ class Invoice:
         self.ownContactFax = ""
         self.ownContactEmail = ""
         self.ownIban = ""
-        self.ownBic = ""
+        self.ownBIC = ""
+        self.ownBankName = ""
         self.ownAccountOwner = ""
         self.ownHraNo = ""  # Handelsregisternummer
         self.ownHraName = ""  # Handelsregister Name
@@ -40,9 +41,11 @@ class Invoice:
         # BUYER
         self.customerCompanyID = ""  # UmstID
         self.customerStreetname = ""
+        self.customerAdditionalStreetname = ""
         self.customerPostalZone = ""
         self.customerCityname = ""
-        self.customerEmail = ""
+        self.customerContactEmail = ""
+        self.customerContactPhone = ""
         self.customerCompanyName = ""
 
         # SETTLEMENT
@@ -55,8 +58,9 @@ class Invoice:
         # DELIVERY
         self.locationID = ""
         self.deliveryDate = ""
-        self.recipientName = ""
         self.deliveryStreetName = ""
+        self.deliveryAdditionalStreetName = ""
+        self.deliveryAdditionalInfo = ""
         self.deliveryCityName = ""
         self.deliveryPostalZone = ""
         self.deliveryRegion = ""
@@ -104,17 +108,24 @@ def generate_xrechnung(invoice_data):
     agreement = invoice_data["trade"]["agreement"]
     invoice.contractDocumentReference = agreement.get("contract_reference", "")
     invoice.projectReference = agreement.get("project_reference", "")
-    invoice.purchaseOrderReference = agreement.get("order_id", "")
+    invoice.objectReference = agreement.get("object_reference", "")
+    invoice.documentReference = agreement.get("document_reference", "")
+    invoice.previousBillingReference = agreement.get("previous_billing_reference", "")
+    invoice.previousBillingDate = agreement.get("previous_billing_date", "")
     
     # SELLER ------------------------------------------------------------
     seller = agreement["seller"]
     invoice.ownCompanyName = seller.get("name", "")
     invoice.ownContactName = seller.get("contact_name", "")
+    invoice.ownSalesOrderReference = seller.get("order_id", "")
     seller_address = seller["address"]
     invoice.ownStreetname = seller_address.get("street_name", "")
+    invoice.ownAdditionalStreetname = seller_address.get("street_name2", "")
     invoice.ownCityname = seller_address.get("city_name", "")
     invoice.ownPostalCode = seller_address.get("postal_zone", "")
-    invoice.ownCompanyID = seller.get("tax_id", "")
+    invoice.ownID = seller.get("id", "")
+    invoice.ownCompanyID = seller.get("vat_id", "")
+    invoice.ownTaxNo = seller.get("tax_id", "")
     invoice.ownContactEmail = seller.get("email", "")
     invoice.ownContactPhone = seller.get("phone", "")
     invoice.ownContactFax = seller.get("fax", "")
@@ -126,22 +137,27 @@ def generate_xrechnung(invoice_data):
     # BUYER ------------------------------------------------------------
     buyer = agreement["buyer"]
     invoice.customerID = buyer.get("id", "")
+    invoice.customerPurchaseOrderReference = buyer.get("order_id", "")
     invoice.customerCompanyName = buyer.get("name", "")
     invoice.customerContactName = buyer.get("contact_name", "")
-    invoice.customerSalesOrderNumber = buyer.get("sales_order_number", "")
     invoice.customerContractDocumentReference = buyer.get("contract_document_reference", "")
     buyer_address = buyer["address"]
     invoice.customerStreetname = buyer_address.get("street_name", "")
+    invoice.customerAdditionalStreetname = buyer_address.get("street_name2", "")
     invoice.customerCityname = buyer_address.get("city_name", "")
     invoice.customerPostalZone = buyer_address.get("postal_zone", "")
     invoice.customerCompanyID = buyer.get("tax_id", "")
-    invoice.customerContactEmail = buyer.get("email", "")
+    invoice.customerRegisterID = buyer.get("register_id", "")
+    invoice.customerContactPhone = buyer.get("contact_phone", "")
+    invoice.customerContactEmail = buyer.get("contact_email", "")
     
     # SETTLEMENT -------------------------------------------------------
     settlement = invoice_data["trade"]["settlement"]
     invoice.dueDate = settlement.get("advance_payment_date", "")
     invoice.paymentMeansCode = settlement["payment_means"].get("type_code", "58") # https://docs.peppol.eu/poacc/billing/3.0/codelist/UNCL4461/
     invoice.ownIban = settlement.get("payment_means").get("iban", "")
+    invoice.ownBIC = settlement.get("payment_means").get("bic", "")
+    invoice.ownBankName = settlement.get("payment_means").get("bank_name", "")
     invoice.currencyCode = settlement.get("currency_code", "EUR")
     invoice.priceNet = settlement["monetary_summation"]["net_total"]
     invoice.priceTax = settlement["monetary_summation"]["tax_total"]
@@ -160,10 +176,11 @@ def generate_xrechnung(invoice_data):
     if delivery:
         invoice.deliveryDate = delivery.get("date", header["issue_date_time"])
         invoice.locationID = delivery.get("location_id", "")
-        invoice.recipientName = delivery.get("recipient_name", "")
         address = delivery.get("address", "")
         if address:
             invoice.deliveryStreetName = address.get("street_name", "")
+            invoice.deliveryAdditionalStreetName = address.get("street_name2", "")
+            invoice.deliveryAdditionalInfo = address.get("additional_info", "")
             invoice.deliveryCityName = address.get("city_name", "")
             invoice.deliveryPostalZone = address.get("postal_zone", "")
             invoice.deliveryRegion = address.get("region", "")
