@@ -752,8 +752,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-sales-order-reference"
                   placeholder="Auftragsnummer"
-                  defaultValue={formState.trade.agreement.buyer.sales_order_number || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.buyer.sales_order_number", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.order_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.order_id", e.target.value)}
                 />
               </div>
 
@@ -765,8 +765,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-sales-document-reference"
                   placeholder="Dokumentreferenz"
-                  defaultValue={formState.trade.agreement.buyer.document_reference || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.buyer.document_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.document_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.document_reference", e.target.value)}
                 />
               </div>
 
@@ -778,8 +778,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-object-reference"
                   placeholder="Objektreferenz"
-                  defaultValue={formState.trade.agreement.buyer.object_reference || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.buyer.document_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.object_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.object_reference", e.target.value)}
                 />
               </div>
 
@@ -791,8 +791,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-billing-reference"
                   placeholder="Rechnungsreferenz"
-                  defaultValue={formState.trade.agreement.buyer.previous_billing_reference || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.buyer.previous_billing_reference", e.target.value)}
+                  defaultValue={formState.trade.agreement.previous_billing_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.previous_billing_reference", e.target.value)}
                 />
               </div>
 
@@ -804,8 +804,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-billing-date"
                   type="date"
-                  defaultValue={formState.trade.agreement.buyer.previous_billing_date || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.buyer.previous_billing_date", e.target.value)}
+                  defaultValue={formState.trade.agreement.previous_billing_date || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.previous_billing_date", e.target.value)}
                 />
               </div>
 

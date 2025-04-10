@@ -162,6 +162,7 @@ def generate_xrechnung(invoice_data):
     invoice.priceNet = settlement["monetary_summation"]["net_total"]
     invoice.priceTax = settlement["monetary_summation"]["tax_total"]
     invoice.priceFull = invoice.priceNet + invoice.priceTax
+    invoice.paymentTerms = settlement.get("payment_terms", "")
     tax_rates = settlement["trade_tax"]
     if tax_rates:
         invoice.taxPercent = tax_rates[0]["rate"] 
@@ -174,6 +175,7 @@ def generate_xrechnung(invoice_data):
     # DELIVERY ------------------------------------------------------------
     delivery = invoice_data["trade"].get("delivery")    
     if delivery:
+        invoice.deliveryReceiptName = delivery.get("recipient_name", "")
         invoice.deliveryDate = delivery.get("date", header["issue_date_time"])
         invoice.locationID = delivery.get("location_id", "")
         address = delivery.get("address", "")
@@ -185,7 +187,6 @@ def generate_xrechnung(invoice_data):
             invoice.deliveryPostalZone = address.get("postal_zone", "")
             invoice.deliveryRegion = address.get("region", "")
             invoice.deliveryCountryCode = address.get("country_code", "")
-            invoice.deliveryReceiptName = address.get("recipient_name", "")
     else:
         invoice.deliveryDate = header["issue_date_time"]
 

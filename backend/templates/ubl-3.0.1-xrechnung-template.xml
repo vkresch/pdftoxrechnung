@@ -14,7 +14,7 @@
     {% if data.customerPurchaseOrderReference != "" -%}
     <cac:OrderReference>
         <cbc:ID>{{ data.customerPurchaseOrderReference }}</cbc:ID>
-		{% if data.ownSalesOrderReference != "" -%}<cbc:SalesOrderID>{{ data.ownSalesOrderReference }}</cbc:SalesOrderID>{% endif -%}
+		{% if data.ownSalesOrderReference != "" -%}<cbc:SalesOrderID>{{ data.ownSalesOrderReference }}</cbc:SalesOrderID>{% endif %}
 	</cac:OrderReference>
     {% endif -%}
     {% if data.previousBillingReference != "" -%}
@@ -173,7 +173,7 @@
 			</cac:PartyName>
 		</cac:DeliveryParty>
         {% endif -%}
-        {%- endif %}
+        {% endif -%}
 	</cac:Delivery>
     {% endif -%}
     <cac:PaymentMeans>
@@ -189,9 +189,11 @@
             {% endif -%}
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
+    {% if data.paymentTerms != "" -%}
     <cac:PaymentTerms>
-        <cbc:Note>{{ data.note }}</cbc:Note>
+        <cbc:Note>{{ data.paymentTerms }}</cbc:Note>
     </cac:PaymentTerms>
+    {% endif -%}
     {% for charge in data.charges -%}
     <cac:AllowanceCharge>
 		<cbc:ChargeIndicator>true</cbc:ChargeIndicator>
