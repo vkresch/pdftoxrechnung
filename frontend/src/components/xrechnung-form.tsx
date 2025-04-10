@@ -232,6 +232,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       state.trade.allowances.forEach((allowance: any) => {
         if (allowance.amount) {
           allowancesTotal += Number(allowance.amount)
+
+          // Calculate gross amount for each allowance
+          if (allowance.tax_rate) {
+            const taxRate = Number(allowance.tax_rate) / 100
+            allowance.gross_amount = Number.parseFloat((allowance.amount * (1 + taxRate)).toFixed(2))
+          } else {
+            allowance.gross_amount = allowance.amount
+          }
         }
       })
     }
@@ -241,6 +249,14 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       state.trade.charges.forEach((charge: any) => {
         if (charge.amount) {
           chargesTotal += Number(charge.amount)
+
+          // Calculate gross amount for each charge
+          if (charge.tax_rate) {
+            const taxRate = Number(charge.tax_rate) / 100
+            charge.gross_amount = Number.parseFloat((charge.amount * (1 + taxRate)).toFixed(2))
+          } else {
+            charge.gross_amount = charge.amount
+          }
         }
       })
     }
@@ -254,6 +270,21 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       0,
     )
 
+    // Calculate the grand total directly from all gross amounts
+    const itemsGrossTotal = state.trade.items.reduce(
+      (sum: number, item: any) => sum + Number(item.total_amount || 0),
+      0,
+    )
+
+    // Calculate allowances gross total
+    const allowancesGrossTotal =
+      state.trade.allowances?.reduce((sum: number, allowance: any) => sum + Number(allowance.gross_amount || 0), 0) || 0
+
+    // Calculate charges gross total
+    const chargesGrossTotal =
+      state.trade.charges?.reduce((sum: number, charge: any) => sum + Number(charge.gross_amount || 0), 0) || 0
+
+
     // Update monetary summation
     if (state.trade.settlement && state.trade.settlement.monetary_summation) {
       state.trade.settlement.monetary_summation.items_net_total = Number.parseFloat(itemsNetTotal.toFixed(2))
@@ -262,14 +293,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       state.trade.settlement.monetary_summation.net_total = Number.parseFloat(netTotal.toFixed(2))
       state.trade.settlement.monetary_summation.tax_total = Number.parseFloat(taxTotal.toFixed(2))
 
-      // Calculate and update the grand total (including tax)
-      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((netTotal + taxTotal).toFixed(2))
+      // Calculate and update the grand total directly from gross amounts
+      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat(
+        (itemsGrossTotal - allowancesGrossTotal + chargesGrossTotal).toFixed(2),
+      )
 
       // Calculate due amount (grand total - paid amount + rounding amount)
       const paidAmount = Number(state.trade.settlement.monetary_summation.paid_amount || 0)
       const roundingAmount = Number(state.trade.settlement.monetary_summation.rounding_amount || 0)
       state.trade.settlement.monetary_summation.due_amount = Number.parseFloat(
-        (netTotal + taxTotal - paidAmount + roundingAmount).toFixed(2),
+        (state.trade.settlement.monetary_summation.grand_total - paidAmount + roundingAmount).toFixed(2),
       )
     }
 
@@ -386,6 +419,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         percent: 0,
         tax_category: "S",
         tax_rate: 19,
+        gross_amount: 0,
         reason: "",
       })
 
@@ -423,6 +457,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         percent: 0,
         tax_category: "S",
         tax_rate: 19,
+        gross_amount: 0,
         reason: "",
       })
 
@@ -2030,6 +2065,26 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                         </div>
                       </div>
                     </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-allowance-gross-amount-${index}`} className="flex items-center">
+                        Betrag (Brutto)
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-allowance-gross-amount-${index}`}
+                          type="number"
+                          step="any"
+                          value={allowance.gross_amount || 0}
+                          readOnly
+                          disabled
+                          className="font-medium"
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -2178,6 +2233,26 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           value={charge.amount || 0}
                           readOnly
                           disabled
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-charge-gross-amount-${index}`} className="flex items-center">
+                        Betrag (Brutto)
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-charge-gross-amount-${index}`}
+                          type="number"
+                          step="any"
+                          value={charge.gross_amount || 0}
+                          readOnly
+                          disabled
+                          className="font-medium"
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">
                           {formState.trade.settlement.currency_code || "€"}

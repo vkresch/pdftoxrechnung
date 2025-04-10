@@ -105,9 +105,10 @@ def generate_xrechnung(invoice_data):
     invoice.leitwegID = header.get("leitweg_id", 0) or 0
     invoice.note = " ".join(header.get("notes", []))
 
-    billing_period = invoice_data["trade"]["billing_period"]
-    invoice.periodStart = billing_period.get("start_date", "")
-    invoice.periodEnd = billing_period.get("end_date", "")
+    billing_period = invoice_data["trade"].get("billing_period")
+    if billing_period:
+        invoice.periodStart = billing_period.get("start_date", "")
+        invoice.periodEnd = billing_period.get("end_date", "")
     
     agreement = invoice_data["trade"]["agreement"]
     invoice.contractDocumentReference = agreement.get("contract_reference", "")
