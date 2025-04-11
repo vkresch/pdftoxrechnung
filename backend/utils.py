@@ -23,7 +23,7 @@ EXAMPLE_JSON = """
     "type": "Header",
     "type_code": "380",
     "name": "E-Rechnung",
-    "leitweg_id": "04011000-12345ABCXYZ-86",
+    "leitweg_id": "LEITWEGID-12345ABCXYZ-00",
     "issue_date_time": "2019-05-08",
     "languages": "de",
     "notes": [
@@ -95,11 +95,11 @@ EXAMPLE_JSON = """
         "contact_email": "h.musterfrau@papierflieger.de",
         "contact_phone": "+49 987 6543210"
       },
-      "project_reference": "P-2019-0123",
-      "contract_reference": "V-2019-0456",
-      "object_reference": "O-2019-0456",
-      "document_reference": "D-2019-0456",
-      "previous_billing_reference": "B-2019-0456",
+      "contract_reference": "V-REFERENCE-0456",
+      "project_reference": "P-REFERENCE-0123",
+      "object_reference": "O-REFERENCE-0456",
+      "document_reference": "D-REFERENCE-0456",
+      "previous_billing_reference": "B-REFERENCE-0456",
       "previous_billing_date": "2018-05-08"
     },
     "settlement": {

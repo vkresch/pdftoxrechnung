@@ -28,7 +28,7 @@ def test_json_creation_output(model):
     assert seller_address.get("street_name") == "Flugzeugallee 17"
     assert seller_address.get("city_name") == "Papierfeld"
     assert seller_address.get("postal_zone") == "12345"
-    assert seller.get("order_id") == "ABC-123"
+    assert seller.get("order_id") == "SELLER-2019-0789"
 
     buyer = result.get("trade").get("agreement").get("buyer")
     assert buyer.get("id") == "987-654"

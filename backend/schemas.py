@@ -136,7 +136,7 @@ class Tax(BaseModel):
     type: str = Field(description="Type of tax (Steuertyp)")
     category: str = Field(description="Tax category (Steuerkategorie)")
     rate: float = Field(description="Tax rate in percentage (Steuersatz in Prozent)")
-    amount: float = Field(description="Tax amount of the item (Delivery details times the rate) (Steuerbetrag)")
+    amount: float = Field(description="Tax amount (Steuerbetrag)")
 
 
 class Item(BaseModel):
@@ -147,9 +147,9 @@ class Item(BaseModel):
     period_end: Optional[datetime.datetime] = Field(description="End date of period (Enddatum des Zeitraums)", json_schema_extra={"format": "date-time"})
     agreement_net_price: float = Field(description="Agreed net price (Vereinbarter Nettopreis)")
     quantity: int = Field(description="Quantity (Menge)")
-    delivery_details: float = Field(description="Delivery details net amount without tax (Lieferdetailsbetrag ohne Steuer)")
+    delivery_details: float = Field(description="Delivery details amount (Lieferdetailsbetrag)")
     settlement_tax: Tax = Field(description="Settlement tax information (Abrechnungssteuerinformationen)")
-    total_amount: float = Field(description="Total gross amount for this item with taxes (Gesamtbetrag für diese Position mit Steuer)")
+    total_amount: float = Field(description="Total amount for this item (Gesamtbetrag für diese Position)")
     id: Optional[str] = Field(description="Item ID (Positions-ID)")
     order_position: Optional[str] = Field(description="Order position (Bestellposition)")
     description: Optional[str] = Field(description="Description of the item (Beschreibung der Position)")
