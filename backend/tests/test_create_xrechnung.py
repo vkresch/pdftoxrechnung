@@ -88,7 +88,7 @@ invoice_data = {
             "object_reference": "O-2019-0456",
             "document_reference": "D-2019-0456",
             "previous_billing_reference": "B-2019-0456",
-            "previous_billing_date": "2018-05-08"
+            "previous_billing_date": "2018-05-08",
         },
         "delivery": {"date": "2019-05-08"},
         "settlement": {
