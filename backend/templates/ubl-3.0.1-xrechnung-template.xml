@@ -50,7 +50,6 @@
     {% if data.documentReference != "" -%}
 	<cac:AdditionalDocumentReference>
 		<cbc:ID>{{ data.documentReference }}</cbc:ID>
-		<cbc:DocumentTypeCode>50</cbc:DocumentTypeCode>
 	</cac:AdditionalDocumentReference>
     {% endif -%}
     <cac:AccountingSupplierParty>
@@ -68,7 +67,7 @@
             {% endif -%}
             <cac:PostalAddress>
                 {% if data.ownStreetname != "" -%}<cbc:StreetName>{{ data.ownStreetname }}</cbc:StreetName>{% endif %}
-                {% if data.ownAdditionalStreetname != "" -%}<cbc:AdditionalStreetName>{{ data.ownAdditionalStreetname }}</cbc:AdditionalStreetName>{% endif %}
+                {% if data.ownAdditionalStreetname != "" -%}<cbc:AdditionalStreetName>{{ data.ownAdditionalStreetname }}</cbc:AdditionalStreetName>{% endif -%}
                 {% if data.ownCityname != "" -%}<cbc:CityName>{{ data.ownCityname }}</cbc:CityName>{% endif %}
                 {% if data.ownPostalCode != "" -%}<cbc:PostalZone>{{ data.ownPostalCode }}</cbc:PostalZone>{% endif %}
                 <cac:Country>
@@ -118,7 +117,7 @@
             {% endif -%}
             <cac:PostalAddress>
                 <cbc:StreetName>{{ data.customerStreetname }}</cbc:StreetName>
-                {% if data.customerAdditionalStreetname != "" -%}<cbc:AdditionalStreetName>{{ data.customerAdditionalStreetname }}</cbc:AdditionalStreetName>{% endif %}
+                {% if data.customerAdditionalStreetname != "" -%}<cbc:AdditionalStreetName>{{ data.customerAdditionalStreetname }}</cbc:AdditionalStreetName>{% endif -%}
                 <cbc:CityName>{{ data.customerCityname }}</cbc:CityName>
                 <cbc:PostalZone>{{ data.customerPostalZone }}</cbc:PostalZone>
                 <cac:Country>
@@ -133,10 +132,18 @@
                 </cac:TaxScheme>
             </cac:PartyTaxScheme>
             {% endif -%}
+            {% if data.customerTaxNo != "" -%}
+            <cac:PartyTaxScheme>
+				<cbc:CompanyID>{{ data.customerTaxNo }}</cbc:CompanyID>
+				<cac:TaxScheme>
+					<cbc:ID>!VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:PartyTaxScheme>
+            {% endif -%}
             {% if data.customerCompanyName != "" -%}
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.customerCompanyName }}</cbc:RegistrationName>
-                {% if data.customerRegisterID != "" -%}<cbc:CompanyID>{{ data.customerRegisterID }}</cbc:CompanyID>{% endif %}
+                {%- if data.customerRegisterID != "" %}<cbc:CompanyID>{{ data.customerRegisterID }}</cbc:CompanyID>{% endif %}
             </cac:PartyLegalEntity>
             {% endif -%}
             {% if data.customerContactName != "" -%}
@@ -192,7 +199,7 @@
             <cac:FinancialInstitutionBranch>
 				<cbc:ID>{{ data.ownBIC }}</cbc:ID>
 			</cac:FinancialInstitutionBranch>
-            {% endif -%}
+            {%- endif %}
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     {% if data.paymentTerms != "" -%}

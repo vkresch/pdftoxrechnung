@@ -75,7 +75,6 @@ class Agreement(BaseModel):
     type: str = Field(description="Type of agreement (Vereinbarungstyp)")
     seller: Seller = Field(description="Seller information (Verkäuferinformationen)")
     buyer: Buyer = Field(description="Buyer information (Käuferinformationen)")
-    orders: List[Order] = Field(description="List of orders (Liste der Bestellungen)")
     project_reference: Optional[str] = Field(description="Reference to project (Projektnummer (BT-11))")
     contract_reference: Optional[str] = Field(description="Reference to contract (Vertragsnummer (BT-12))")
     object_reference: Optional[str] = Field(description="Reference to object order (Objektreferenz, Projektname, Bauvorhaben, Systemkennung (BT-18))")
@@ -137,7 +136,7 @@ class Tax(BaseModel):
     type: str = Field(description="Type of tax (Steuertyp)")
     category: str = Field(description="Tax category (Steuerkategorie)")
     rate: float = Field(description="Tax rate in percentage (Steuersatz in Prozent)")
-    amount: float = Field(description="Tax amount (Steuerbetrag)")
+    amount: float = Field(description="Tax amount of the item (Delivery details times the rate) (Steuerbetrag)")
 
 
 class Item(BaseModel):
@@ -148,9 +147,9 @@ class Item(BaseModel):
     period_end: Optional[datetime.datetime] = Field(description="End date of period (Enddatum des Zeitraums)", json_schema_extra={"format": "date-time"})
     agreement_net_price: float = Field(description="Agreed net price (Vereinbarter Nettopreis)")
     quantity: int = Field(description="Quantity (Menge)")
-    delivery_details: float = Field(description="Delivery details amount (Lieferdetailsbetrag)")
+    delivery_details: float = Field(description="Delivery details net amount without tax (Lieferdetailsbetrag ohne Steuer)")
     settlement_tax: Tax = Field(description="Settlement tax information (Abrechnungssteuerinformationen)")
-    total_amount: float = Field(description="Total amount for this item (Gesamtbetrag für diese Position)")
+    total_amount: float = Field(description="Total gross amount for this item with taxes (Gesamtbetrag für diese Position mit Steuer)")
     id: Optional[str] = Field(description="Item ID (Positions-ID)")
     order_position: Optional[str] = Field(description="Order position (Bestellposition)")
     description: Optional[str] = Field(description="Description of the item (Beschreibung der Position)")

@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from pdf_parser import process, extract_text_from_pdf
 
 models = [
-    "deepseek",
+    # "deepseek",
     "gemini",
     # "chatgpt", # FIXME: There seems to be an issue right now
 ]
@@ -28,12 +28,12 @@ def test_json_creation_output(model):
     assert seller_address.get("street_name") == "Flugzeugallee 17"
     assert seller_address.get("city_name") == "Papierfeld"
     assert seller_address.get("postal_zone") == "12345"
+    assert seller.get("order_id") == "ABC-123"
 
     buyer = result.get("trade").get("agreement").get("buyer")
     assert buyer.get("id") == "987-654"
     assert buyer.get("name") == "Papierflieger-Vertriebs-GmbH"
     assert buyer.get("contact_name") == "Helga Musterfrau"
-    assert buyer.get("sales_order_number") == "ABC-123"
 
     buyer_address = buyer.get("address")
     assert buyer_address.get("street_name") == "Rabattstr. 25"

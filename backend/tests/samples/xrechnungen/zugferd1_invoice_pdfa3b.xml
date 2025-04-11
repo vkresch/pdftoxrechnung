@@ -9,15 +9,39 @@
     <cbc:Note>Zahlbar innerhalb von 30 Tagen netto auf unser Konto. Bitte geben Sie dabei die Rechnungsnummer an. Skontoabzüge werden nicht akzeptiert.</cbc:Note>
     <cbc:DocumentCurrencyCode>EUR</cbc:DocumentCurrencyCode>
     <cbc:BuyerReference>0</cbc:BuyerReference>
+    <cac:InvoicePeriod>
+		<cbc:StartDate>2019-05-01</cbc:StartDate>
+		<cbc:EndDate>2019-05-31</cbc:EndDate>
+	</cac:InvoicePeriod>
     <cac:OrderReference>
-        <cbc:ID>PO-2019-0789</cbc:ID>
-		<cbc:SalesOrderID>ABC-123</cbc:SalesOrderID></cac:OrderReference>
+        <cbc:ID>BUYER-2019-0789</cbc:ID>
+		<cbc:SalesOrderID>SELLER-2019-0789</cbc:SalesOrderID>
+	</cac:OrderReference>
+    <cac:BillingReference>
+		<cac:InvoiceDocumentReference>
+			<cbc:ID>B-2019-0456</cbc:ID>
+			<cbc:IssueDate>2018-05-08</cbc:IssueDate>
+		</cac:InvoiceDocumentReference>
+	</cac:BillingReference>
+    <cac:OriginatorDocumentReference>
+		<cbc:ID>D-2019-0456</cbc:ID>
+	</cac:OriginatorDocumentReference>
     <cac:ContractDocumentReference>
 		<cbc:ID>V-2019-0456</cbc:ID>
 	</cac:ContractDocumentReference>
+    <cac:AdditionalDocumentReference>
+		<cbc:ID>O-2019-0456</cbc:ID>
+		<cbc:DocumentTypeCode>130</cbc:DocumentTypeCode>
+	</cac:AdditionalDocumentReference>
+    <cac:AdditionalDocumentReference>
+		<cbc:ID>D-2019-0456</cbc:ID>
+	</cac:AdditionalDocumentReference>
     <cac:AccountingSupplierParty>
         <cac:Party>
             <cbc:EndpointID schemeID="EM">info@kraxi.com</cbc:EndpointID>
+            <cac:PartyIdentification>
+				<cbc:ID>S-12345</cbc:ID>
+			</cac:PartyIdentification>
             <cac:PartyName>
                 <cbc:Name>Kraxi GmbH</cbc:Name>
             </cac:PartyName>
@@ -35,6 +59,12 @@
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:PartyTaxScheme>
+            <cac:PartyTaxScheme>
+				<cbc:CompanyID>321/312/54321</cbc:CompanyID>
+				<cac:TaxScheme>
+					<cbc:ID>!VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:PartyTaxScheme>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>Kraxi GmbH</cbc:RegistrationName>
                 <cbc:CompanyID>HRB 999999</cbc:CompanyID>
@@ -64,11 +94,25 @@
                     <cbc:IdentificationCode>DE</cbc:IdentificationCode>
                 </cac:Country>
             </cac:PostalAddress>
+            <cac:PartyTaxScheme>
+                <cbc:CompanyID>DE987654321</cbc:CompanyID>
+                <cac:TaxScheme>
+                    <cbc:ID>VAT</cbc:ID>
+                </cac:TaxScheme>
+            </cac:PartyTaxScheme>
+            <cac:PartyTaxScheme>
+				<cbc:CompanyID>123/123/12345</cbc:CompanyID>
+				<cac:TaxScheme>
+					<cbc:ID>!VAT</cbc:ID>
+				</cac:TaxScheme>
+			</cac:PartyTaxScheme>
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>Papierflieger-Vertriebs-GmbH</cbc:RegistrationName>
             </cac:PartyLegalEntity>
             <cac:Contact>
                 <cbc:Name>Helga Musterfrau</cbc:Name>
+                <cbc:Telephone>+49 987 6543210</cbc:Telephone>
+				<cbc:ElectronicMail>h.musterfrau@papierflieger.de</cbc:ElectronicMail>
             </cac:Contact>
             </cac:Party>
     </cac:AccountingCustomerParty>
@@ -81,6 +125,9 @@
         <cac:PayeeFinancialAccount>
             <cbc:ID>DE28700100809999999999</cbc:ID>
             <cbc:Name>Kraxi GmbH</cbc:Name>
+            <cac:FinancialInstitutionBranch>
+				<cbc:ID>PBNKDEFF</cbc:ID>
+			</cac:FinancialInstitutionBranch>
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     <cac:PaymentTerms>
