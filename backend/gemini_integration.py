@@ -22,7 +22,10 @@ def process_with_gemini(pdf_text):
 
     headers = {"Content-Type": "application/json"}
 
-    payload = {"contents": [{"parts": [{"text": f"{PROMPT} {pdf_text}"}]}]}
+    payload = {
+        "contents": [{"parts": [{"text": f"{PROMPT} {pdf_text}"}]}],
+        "generationConfig": {"temperature": 0},
+    }
 
     response = requests.post(URL, headers=headers, data=json.dumps(payload))
 
