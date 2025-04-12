@@ -136,7 +136,7 @@
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="EUR">160.55</cbc:TaxAmount>
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="EUR">845</cbc:TaxableAmount>
+            <cbc:TaxableAmount currencyID="EUR">845.0</cbc:TaxableAmount>
             <cbc:TaxAmount currencyID="EUR">160.55</cbc:TaxAmount>
             <cac:TaxCategory>
                 <cbc:ID>S</cbc:ID>
@@ -145,7 +145,7 @@
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:TaxCategory>
-            </cac:TaxSubtotal>
+        </cac:TaxSubtotal>
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="EUR">845</cbc:LineExtensionAmount>
@@ -156,7 +156,7 @@
     <cac:InvoiceLine>
         <cbc:ID>1</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">2</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">40</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">40.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -176,13 +176,13 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">20</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">20.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>2</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">5</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">200</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">200.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -202,13 +202,13 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">40</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">40.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>3</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">180</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">180.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -228,13 +228,13 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">180</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">180.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>4</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">3</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">150</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">150.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -254,13 +254,13 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">50</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">50.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>5</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">10</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">200</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">200.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -280,13 +280,13 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">20</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">20.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>6</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">75</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">75.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -306,13 +306,13 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">75</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">75.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
     <cac:InvoiceLine>
         <cbc:ID>7</cbc:ID>
         <cbc:InvoicedQuantity unitCode="XPP">1</cbc:InvoicedQuantity>
-        <cbc:LineExtensionAmount currencyID="EUR">0</cbc:LineExtensionAmount>
+        <cbc:LineExtensionAmount currencyID="EUR">0.0</cbc:LineExtensionAmount>
         <cac:InvoicePeriod>
             <cbc:StartDate>2019-05-08</cbc:StartDate>
             <cbc:EndDate>2019-05-08</cbc:EndDate>
@@ -332,7 +332,7 @@
             </cac:ClassifiedTaxCategory>
         </cac:Item>
         <cac:Price>
-            <cbc:PriceAmount currencyID="EUR">0</cbc:PriceAmount>
+            <cbc:PriceAmount currencyID="EUR">0.0</cbc:PriceAmount>
         </cac:Price>
     </cac:InvoiceLine>
 </ubl:Invoice>

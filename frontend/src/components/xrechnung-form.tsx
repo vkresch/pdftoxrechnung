@@ -1845,15 +1845,24 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       </Label>
                       <div className="flex">
                         <Input
-                          id={`invoice-item-vat-rate-${index}`}
-                          type="number"
-                          step="any"
-                          className="bg-[var(--required-field-bg-color)]"
-                          value={item.settlement_tax?.rate || 19}
-                          onChange={(e) =>
-                            handleInputChange(`trade.items.${index}.settlement_tax.rate`, Number(e.target.value))
-                          }
-                        />
+                            id={`invoice-item-vat-rate-${index}`}
+                            type="number"
+                            min="0"
+                            step="any"
+                            className="bg-[var(--required-field-bg-color)]"
+                            value={item.settlement_tax?.rate ?? 0}
+                            onChange={(e) => {
+                              const value = Number(e.target.value)
+                              handleInputChange(`trade.items.${index}.settlement_tax.rate`, value)
+                              // If tax rate is set to zero, set category to "E" (tax exempt)
+                              if (value === 0) {
+                                handleInputChange(`trade.items.${index}.settlement_tax.category`, "E")
+                              } else if (item.settlement_tax?.category === "E") {
+                                // If changing from zero and category is "E", change to standard rate
+                                handleInputChange(`trade.items.${index}.settlement_tax.category`, "S")
+                              }
+                            }}
+                          />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
                     </div>
@@ -1865,9 +1874,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       </Label>
                       <Select
                         value={item.settlement_tax?.category || "S"}
-                        onValueChange={(value) =>
+                        onValueChange={(value) => {
                           handleInputChange(`trade.items.${index}.settlement_tax.category`, value)
-                        }
+                          // If category is set to "E" (tax exempt), set rate to 0
+                          if (value === "E") {
+                            handleInputChange(`trade.items.${index}.settlement_tax.rate`, 0)
+                          } else if (item.settlement_tax?.rate === 0 && value !== "Z") {
+                            // If changing from "E" and rate is 0, set to standard rate (19%)
+                            handleInputChange(`trade.items.${index}.settlement_tax.rate`, 19)
+                          }
+                        }}
                       >
                         <SelectTrigger
                           id={`invoice-item-vat-code-${index}`}
@@ -2113,7 +2129,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       </Label>
                       <Select
                         value={allowance.tax_category || "S"}
-                        onValueChange={(value) => handleInputChange(`trade.allowances.${index}.tax_category`, value)}
+                        onValueChange={(value) => {
+                          handleInputChange(`trade.allowances.${index}.tax_category`, value)
+                          // If category is set to "E" (tax exempt), set rate to 0
+                          if (value === "E") {
+                            handleInputChange(`trade.allowances.${index}.tax_rate`, 0)
+                          } else if (allowance.tax_rate === 0 && value !== "Z") {
+                            // If changing from "E" and rate is 0, set to standard rate (19%)
+                            handleInputChange(`trade.allowances.${index}.tax_rate`, 19)
+                          }
+                        }}
                       >
                         <SelectTrigger id={`invoice-allowance-tax-category-${index}`}>
                           <SelectValue placeholder="Steuerkategorie" />
@@ -2137,15 +2162,24 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                         Steuersatz<span className="text-xs text-muted-foreground ml-1">(BT-96)</span>
                       </Label>
                       <div className="flex">
-                        <Input
+                      <Input
                           id={`invoice-allowance-tax-rate-${index}`}
                           type="number"
+                          min="0"
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
-                          value={allowance.tax_rate || 19}
-                          onChange={(e) =>
-                            handleInputChange(`trade.allowances.${index}.tax_rate`, Number(e.target.value))
-                          }
+                          value={allowance.tax_rate ?? 0}
+                          onChange={(e) => {
+                            const value = Number(e.target.value)
+                            handleInputChange(`trade.allowances.${index}.tax_rate`, value)
+                            // If tax rate is set to zero, set category to "E" (tax exempt)
+                            if (value === 0) {
+                              handleInputChange(`trade.allowances.${index}.tax_category`, "E")
+                            } else if (allowance.tax_category === "E") {
+                              // If changing from zero and category is "E", change to standard rate
+                              handleInputChange(`trade.allowances.${index}.tax_category`, "S")
+                            }
+                          }}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>
@@ -2287,7 +2321,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       </Label>
                       <Select
                         value={charge.tax_category || "S"}
-                        onValueChange={(value) => handleInputChange(`trade.charges.${index}.tax_category`, value)}
+                        onValueChange={(value) => {
+                          handleInputChange(`trade.charges.${index}.tax_category`, value)
+                          // If category is set to "E" (tax exempt), set rate to 0
+                          if (value === "E") {
+                            handleInputChange(`trade.charges.${index}.tax_rate`, 0)
+                          } else if (charge.tax_rate === 0 && value !== "Z") {
+                            // If changing from "E" and rate is 0, set to standard rate (19%)
+                            handleInputChange(`trade.charges.${index}.tax_rate`, 19)
+                          }
+                        }}
                       >
                         <SelectTrigger id={`invoice-charge-tax-category-${index}`}>
                           <SelectValue placeholder="Steuerkategorie" />
@@ -2314,10 +2357,21 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                         <Input
                           id={`invoice-charge-tax-rate-${index}`}
                           type="number"
+                          min="0"
                           step="any"
                           className="bg-[var(--required-field-bg-color)]"
-                          defaultValue={charge.tax_rate || 19}
-                          onChange={(e) => handleInputChange(`trade.charges.${index}.tax_rate`, Number(e.target.value))}
+                          value={charge.tax_rate ?? 0}
+                          onChange={(e) => {
+                            const value = Number(e.target.value)
+                            handleInputChange(`trade.charges.${index}.tax_rate`, value)
+                            // If tax rate is set to zero, set category to "E" (tax exempt)
+                            if (value === 0) {
+                              handleInputChange(`trade.charges.${index}.tax_category`, "E")
+                            } else if (charge.tax_category === "E") {
+                              // If changing from zero and category is "E", change to standard rate
+                              handleInputChange(`trade.charges.${index}.tax_category`, "S")
+                            }
+                          }}
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">%</div>
                       </div>

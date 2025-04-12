@@ -241,19 +241,19 @@
     {% endfor -%}
     <cac:TaxTotal>
         <cbc:TaxAmount currencyID="{{ data.currencyCode }}">{{ data.priceTax }}</cbc:TaxAmount>
+        {% for category, tax_sub_total in data.taxSubTotals.items() -%}
         <cac:TaxSubtotal>
-            <cbc:TaxableAmount currencyID="{{ data.currencyCode }}">{{ data.priceNet }}</cbc:TaxableAmount>
-            <cbc:TaxAmount currencyID="{{ data.currencyCode }}">{{ data.priceTax }}</cbc:TaxAmount>
-            {% if data.taxPercent != "" -%}
+            <cbc:TaxableAmount currencyID="{{ data.currencyCode }}">{{ tax_sub_total.priceNet }}</cbc:TaxableAmount>
+            <cbc:TaxAmount currencyID="{{ data.currencyCode }}">{{ tax_sub_total.priceNet * (tax_sub_total.taxPercent|float / 100) }}</cbc:TaxAmount>
             <cac:TaxCategory>
-                <cbc:ID>S</cbc:ID>
-                <cbc:Percent>{{ data.taxPercent }}</cbc:Percent>
+                <cbc:ID>{{ category }}</cbc:ID>
+                <cbc:Percent>{{ tax_sub_total.taxPercent }}</cbc:Percent>
                 <cac:TaxScheme>
                     <cbc:ID>VAT</cbc:ID>
                 </cac:TaxScheme>
             </cac:TaxCategory>
-            {% endif -%}
         </cac:TaxSubtotal>
+        {%- endfor %}
     </cac:TaxTotal>
     <cac:LegalMonetaryTotal>
         <cbc:LineExtensionAmount currencyID="{{ data.currencyCode }}">{{ data.priceNet }}</cbc:LineExtensionAmount>
