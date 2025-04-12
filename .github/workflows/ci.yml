@@ -63,12 +63,13 @@ jobs:
 
     - name: Install dependencies
       run: |
+        sudo apt-get update
+        sudo apt-get install -y poppler-utils
         python -m pip install --upgrade pip
         pip install --upgrade pip
         pip install --upgrade wheel
         pip install -r backend/requirements.txt
         pip install --upgrade pyautogui
-        sudo apt install poppler-utils
     
     - name: Install extra dependencies
       run: |
@@ -76,7 +77,7 @@ jobs:
   
     - name: Install Chrome
       run: |
-        sudo apt install google-chrome-stable
+        sudo apt install -y google-chrome-stable
     
     - name: Check the console scripts interface
       run: |
