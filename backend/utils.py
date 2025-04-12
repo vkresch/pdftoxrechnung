@@ -339,8 +339,7 @@ Instructions:
   - Follow the schema strictly to avoid invalid output.
   - Do not output the json model schema again
   - All the dates should be in the format "yyyy-mm-dd".
-  - Important do not use values from the example provided as default.
-  - Do not invent new data which is not in the input text.
+  - Important do not use id values from the example provided as default.
   - The final output should be a valid json object.
 
 Here is an example of the expected output format:

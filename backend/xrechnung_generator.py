@@ -207,18 +207,32 @@ def generate_xrechnung(invoice_data):
         invoice.charges = charges
     
     # LINE ITEMS ------------------------------------------------------------
+    tax_sub_totals = {}
     for item in invoice_data["trade"]["items"]:
+        tax_category = item["settlement_tax"].get("category", "")
+        price_net = float(item.get("agreement_net_price", 0))
+        delivery_details = float(item.get("delivery_details", 0))
+        tax_percent = item["settlement_tax"].get("rate", "")
+        
         invoice.items.append({
             "lineID": item.get("line_id", ""),
             "periodStart": item.get("period_start", ""),
             "periodEnd": item.get("period_end", ""),
             "positionName": item.get("product_name", ""),
             "quantity": item.get("quantity", ""),
-            "deliveryDetails": item.get("delivery_details", ""),
-            "priceNet": item.get("agreement_net_price", ""),
-            "taxPercent": item["settlement_tax"].get("rate", ""),
-            "taxCategory": item["settlement_tax"].get("category", ""),
+            "deliveryDetails": delivery_details,
+            "priceNet": price_net,
+            "taxPercent": tax_percent,
+            "taxCategory": tax_category,
         })
+
+        # Sum the priceNet values for each taxCategory
+        if tax_category in tax_sub_totals:
+            tax_sub_totals[tax_category]["priceNet"] += delivery_details
+        else:
+            tax_sub_totals[tax_category] = {"priceNet": delivery_details, "taxPercent": tax_percent}
+
+    invoice.taxSubTotals = tax_sub_totals
     
     template = Template(open("./templates/ubl-3.0.1-xrechnung-template.xml").read())
     return template.render(data=invoice)
