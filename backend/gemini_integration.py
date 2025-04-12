@@ -4,7 +4,7 @@ import json
 import logging
 import requests
 from schemas import Invoice
-from utils import PROMPT
+from utils import PROMPT, remove_nulls
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
@@ -22,7 +22,10 @@ def process_with_gemini(pdf_text):
 
     headers = {"Content-Type": "application/json"}
 
-    payload = {"contents": [{"parts": [{"text": f"{PROMPT} {pdf_text}"}]}]}
+    payload = {
+        "contents": [{"parts": [{"text": f"{PROMPT} {pdf_text}"}]}],
+        "generationConfig": {"temperature": 0},
+    }
 
     response = requests.post(URL, headers=headers, data=json.dumps(payload))
 
@@ -36,7 +39,7 @@ def process_with_gemini(pdf_text):
         json_match = re.search(r"({.*})", raw_text, re.DOTALL)
         json_str = json_match.group(1)
         logging.info(f"JSON String:\n{json_str}")
-        return json.loads(json_str)
+        return remove_nulls(json.loads(json_str))
     except Exception as e:
         logging.error(f"Failed to extract JSON: {e}")
         raise

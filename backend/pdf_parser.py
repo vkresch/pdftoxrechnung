@@ -163,9 +163,11 @@ def extract_text_from_pdf(pdf_file_path: str, language: str = "de") -> str:
         extracted_text = []
         for img in images:
             results = reader.readtext(
-                np.array(img), detail=0
+                np.array(img), detail=1
             )  # Extract text (detail=0 returns only text)
-            extracted_text.extend(results)  # Add extracted text to the list
+            for bbox, text, confidence in results:
+                if confidence > 0.5:
+                    extracted_text.append(text)
 
         # Join extracted text into a single string
         pdf_text = "\n".join(extracted_text)

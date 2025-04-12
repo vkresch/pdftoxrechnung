@@ -15,6 +15,7 @@ class Address(BaseModel):
     state: Optional[str] = Field(description="State or province (Bundesland)")
     street_name: Optional[str] = Field(description="Street name (Straßenname)")
     street_name2: Optional[str] = Field(description="Additional street information (Zusätzliche Straßeninformationen)")
+    additional_info: Optional[str] = Field(description="Additional street name information (Zusätzliche Straßeninformation)")
     city_name: Optional[str] = Field(description="City name (Stadt)")
     postal_zone: Optional[str] = Field(description="Postal code (Postleitzahl)")
 
@@ -22,6 +23,7 @@ class Address(BaseModel):
 class Seller(BaseModel):
     type: str = Field(description="Type of party - Seller (Verkäufer)")
     name: str = Field(description="Company name of the seller (Firmenname des Verkäufers)")
+    order_id: Optional[str] = Field(description="Sales Order Reference (Auftragsnummer (BT-14))")
     contact_name: Optional[str] = Field(description="Name of contact person (Name der Kontaktperson)")
     address: Address = Field(description="Address of the seller (Adresse des Verkäufers)")
     tax_id: str = Field(description="Tax identification number (Steuernummer)")
@@ -34,7 +36,7 @@ class Seller(BaseModel):
     handels_register_name: Optional[str] = Field(description="Name of commercial register (Handelsregistername)")
     handels_register_number: Optional[str] = Field(description="Commercial register number (Handelsregisternummer)")
     trade_name: Optional[str] = Field(description="Trade name (Handelsname)")
-    id: Optional[str] = Field(description="Seller ID (Verkäufer-ID)")
+    id: Optional[str] = Field(description="Seller ID (Verkäufer-ID, Verkäuferkennung)")
     trade_id: Optional[str] = Field(description="Trade ID (Handels-ID)")
     vat_id: Optional[str] = Field(description="VAT identification number (Umsatzsteuer-ID)")
     legal_info: Optional[str] = Field(description="Legal information (Rechtliche Informationen)")
@@ -47,13 +49,14 @@ class Seller(BaseModel):
 class Buyer(BaseModel):
     type: str = Field(description="Type of party - Buyer (Käufer)")
     id: Optional[str] = Field(description="Buyer ID (Käufer-ID, Kundennummer)")
+    order_id: Optional[str] = Field(description="Purchase Order Reference (Bestellnummer (BT-13))")
     name: str = Field(description="Company name of the buyer (Firmenname des Käufers)")
     contact_name: Optional[str] = Field(description="Name of contact person (Name der Kontaktperson)")
-    sales_order_number: Optional[str] = Field(description="Sales order number (Auftragsnummer)")
     contract_document_reference: Optional[str] = Field(description="Reference to contract document (Vertragsdokumentreferenz)")
     legal_form: Optional[str] = Field(description="Legal form of the company (Rechtsform)")
     address: Address = Field(description="Address of the buyer (Adresse des Käufers)")
     trade_name: Optional[str] = Field(description="Trade name (Handelsname)")
+    register_id: Optional[str] = Field(description="Registration ID (Registernummer)")
     id_type: Optional[str] = Field(description="Type of ID (ID-Typ)")
     vat_id: Optional[str] = Field(description="VAT identification number (Umsatzsteuer-ID)")
     reference: Optional[str] = Field(description="Reference (Referenz)")
@@ -72,10 +75,12 @@ class Agreement(BaseModel):
     type: str = Field(description="Type of agreement (Vereinbarungstyp)")
     seller: Seller = Field(description="Seller information (Verkäuferinformationen)")
     buyer: Buyer = Field(description="Buyer information (Käuferinformationen)")
-    orders: List[Order] = Field(description="List of orders (Liste der Bestellungen)")
-    contract_reference: Optional[str] = Field(description="Reference to contract (Vertragsnummer)")
-    project_reference: Optional[str] = Field(description="Reference to project (Projektnummer)")
-    order_id: Optional[str] = Field(description="Reference to purchase order (Bestellnummer)")
+    project_reference: Optional[str] = Field(description="Reference to project (Projektnummer (BT-11))")
+    contract_reference: Optional[str] = Field(description="Reference to contract (Vertragsnummer (BT-12))")
+    object_reference: Optional[str] = Field(description="Reference to object order (Objektreferenz, Projektname, Bauvorhaben, Systemkennung (BT-18))")
+    document_reference: Optional[str] = Field(description="Reference to document order (Dokumentreferenz, Leistungsnachweis (BT-17))")
+    previous_billing_reference: Optional[str] = Field(description="Reference to previous billing invoice (Rechnungsreferenz auf vorherige Rechnung (BT-25))")
+    previous_billing_date: datetime.date = Field(description="Previous billing invoice date (Datum der vorherigen Rechnung (BT-26))", json_schema_extra={"format": "date-time"})
 
 
 class Payee(BaseModel):
@@ -158,7 +163,9 @@ class BillingPeriod(BaseModel):
 
 class DeliveryParty(BaseModel):
     name: str = Field(description="Name of delivery party (Name der Lieferpartei)")
+    location_id: str = Field(description="Location ID (Kennung des Lieferorts)")
     address: Address = Field(description="Address of delivery party (Adresse der Lieferpartei)")
+    recipient_name: str = Field(description="Name of the recipient of the delivery (Name des Empfängers)")
 
 
 class Delivery(BaseModel):

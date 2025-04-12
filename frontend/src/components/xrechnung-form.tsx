@@ -226,12 +226,24 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
     // Calculate allowances and charges
     let allowancesTotal = 0
     let chargesTotal = 0
+    let itemsGrossTotal = 0
+    let allowancesGrossTotal = 0
+    let chargesGrossTotal = 0
 
     // Calculate allowances total
     if (state.trade.allowances && state.trade.allowances.length > 0) {
       state.trade.allowances.forEach((allowance: any) => {
         if (allowance.amount) {
           allowancesTotal += Number(allowance.amount)
+
+          // Calculate gross amount for each allowance
+          if (allowance.tax_rate) {
+            const taxRate = Number(allowance.tax_rate) / 100
+            allowance.gross_amount = Number.parseFloat((allowance.amount * (1 + taxRate)).toFixed(2))
+          } else {
+            allowance.gross_amount = allowance.amount
+          }
+          allowancesGrossTotal += Number(allowance.gross_amount)
         }
       })
     }
@@ -241,18 +253,56 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       state.trade.charges.forEach((charge: any) => {
         if (charge.amount) {
           chargesTotal += Number(charge.amount)
+
+          // Calculate gross amount for each charge
+          if (charge.tax_rate) {
+            const taxRate = Number(charge.tax_rate) / 100
+            charge.gross_amount = Number.parseFloat((charge.amount * (1 + taxRate)).toFixed(2))
+          } else {
+            charge.gross_amount = charge.amount
+          }
+          chargesGrossTotal += Number(charge.gross_amount)
         }
       })
     }
+
+    // Calculate the gross total for items
+    state.trade.items.forEach((item: any) => {
+      itemsGrossTotal += Number(item.total_amount || 0)
+    })
 
     // Calculate the final net total (items - allowances + charges)
     const netTotal = itemsNetTotal - allowancesTotal + chargesTotal
 
     // Calculate tax total by summing up all individual tax amounts
-    const taxTotal = state.trade.items.reduce(
+    const itemsTaxTotal = state.trade.items.reduce(
       (sum: number, item: any) => sum + Number(item.settlement_tax?.amount || 0),
       0,
     )
+
+    // Calculate tax from allowances
+    const allowancesTaxTotal =
+      state.trade.allowances?.reduce((sum: number, allowance: any) => {
+        if (allowance.amount && allowance.tax_rate) {
+          const taxRate = Number(allowance.tax_rate) / 100
+          return sum + Number(allowance.amount * taxRate)
+        }
+        return sum
+      }, 0) || 0
+
+    // Calculate tax from charges
+    const chargesTaxTotal =
+      state.trade.charges?.reduce((sum: number, charge: any) => {
+        if (charge.amount && charge.tax_rate) {
+          const taxRate = Number(charge.tax_rate) / 100
+          return sum + Number(charge.amount * taxRate)
+        }
+        return sum
+      }, 0) || 0
+
+    // Total tax is the sum of item taxes, minus allowance taxes, plus charge taxes
+    const taxTotal = Number.parseFloat((itemsTaxTotal - allowancesTaxTotal + chargesTaxTotal).toFixed(2))
+
 
     // Update monetary summation
     if (state.trade.settlement && state.trade.settlement.monetary_summation) {
@@ -262,14 +312,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
       state.trade.settlement.monetary_summation.net_total = Number.parseFloat(netTotal.toFixed(2))
       state.trade.settlement.monetary_summation.tax_total = Number.parseFloat(taxTotal.toFixed(2))
 
-      // Calculate and update the grand total (including tax)
-      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat((netTotal + taxTotal).toFixed(2))
+      // Calculate and update the grand total directly from gross amounts
+      state.trade.settlement.monetary_summation.grand_total = Number.parseFloat(
+        (itemsGrossTotal - allowancesGrossTotal + chargesGrossTotal).toFixed(2),
+      )
 
       // Calculate due amount (grand total - paid amount + rounding amount)
       const paidAmount = Number(state.trade.settlement.monetary_summation.paid_amount || 0)
       const roundingAmount = Number(state.trade.settlement.monetary_summation.rounding_amount || 0)
       state.trade.settlement.monetary_summation.due_amount = Number.parseFloat(
-        (netTotal + taxTotal - paidAmount + roundingAmount).toFixed(2),
+        (state.trade.settlement.monetary_summation.grand_total - paidAmount + roundingAmount).toFixed(2),
       )
     }
 
@@ -386,6 +438,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         percent: 0,
         tax_category: "S",
         tax_rate: 19,
+        gross_amount: 0,
         reason: "",
       })
 
@@ -423,6 +476,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         percent: 0,
         tax_category: "S",
         tax_rate: 19,
+        gross_amount: 0,
         reason: "",
       })
 
@@ -752,54 +806,61 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                 <Input
                   id="invoice-sales-order-reference"
                   placeholder="Auftragsnummer"
-                  defaultValue={formState.trade.agreement.buyer.sales_order_number || ""}
-                  onBlur={(e) => handleInputChange("trade.agreement.buyer.sales_order_number", e.target.value)}
+                  defaultValue={formState.trade.agreement.seller.order_id || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.seller.order_id", e.target.value)}
                 />
               </div>
 
-              <div className="col-span-1 md:col-span-2">
-                <Label className="flex items-center">
+              <div>
+                <Label htmlFor="invoice-sales-document-reference" className="flex items-center">
                   Dokumentreferenz
                   <span className="text-xs text-muted-foreground ml-1">(BT-17)</span>
                 </Label>
-                <div id="invoice-document-references">
-                  {formState.document_references?.map((ref: string, index: number) => (
-                    <div key={index} className="flex gap-2 mt-1">
-                      <Input
-                        type="text"
-                        placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
-                        defaultValue={ref}
-                        onBlur={(e) => {
-                          const newRefs = [...formState.document_references]
-                          newRefs[index] = e.target.value
-                          handleInputChange("document_references", newRefs)
-                        }}
-                        className="flex-grow"
-                      />
-                      <Button variant="outline" size="icon" onClick={() => removeDocumentReference(index)}>
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                      {index === formState.document_references.length - 1 && (
-                        <Button variant="outline" size="icon" onClick={addDocumentReference}>
-                          <Plus className="h-4 w-4" />
-                        </Button>
-                      )}
-                    </div>
-                  ))}
+                <Input
+                  id="invoice-sales-document-reference"
+                  placeholder="Dokumentreferenz"
+                  defaultValue={formState.trade.agreement.document_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.document_reference", e.target.value)}
+                />
+              </div>
 
-                  {(!formState.document_references || formState.document_references.length === 0) && (
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        type="text"
-                        placeholder="Referenz auf eine Ausschreibung, ein Los oder ähnliches"
-                        className="flex-grow"
-                      />
-                      <Button variant="outline" size="icon" onClick={addDocumentReference}>
-                        <Plus className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
+              <div>
+                <Label htmlFor="invoice-object-reference" className="flex items-center">
+                  Objektreferenz
+                  <span className="text-xs text-muted-foreground ml-1">(BT-18)</span>
+                </Label>
+                <Input
+                  id="invoice-object-reference"
+                  placeholder="Objektreferenz"
+                  defaultValue={formState.trade.agreement.object_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.object_reference", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-billing-reference" className="flex items-center">
+                  Rechnungsreferenz
+                  <span className="text-xs text-muted-foreground ml-1">(BT-25)</span>
+                </Label>
+                <Input
+                  id="invoice-billing-reference"
+                  placeholder="Rechnungsreferenz"
+                  defaultValue={formState.trade.agreement.previous_billing_reference || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.previous_billing_reference", e.target.value)}
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-billing-date" className="flex items-center">
+                  Rechnungsreferenzdatum
+                  <span className="text-xs text-muted-foreground ml-1">(BT-26)</span>
+                </Label>
+                <Input
+                  id="invoice-billing-date"
+                  type="date"
+                  defaultValue={formState.trade.agreement.previous_billing_date || ""}
+                  onBlur={(e) => handleInputChange("trade.agreement.previous_billing_date", e.target.value)}
+                />
               </div>
 
               <div className="col-span-1 md:col-span-2">
@@ -1154,6 +1215,21 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                       <SelectItem value="customerId">Kundennummer</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+              </div>
+
+              <div>
+                <Label htmlFor="invoice-buyer-register-id" className="flex items-center">
+                  Registernummer<span className="text-xs text-muted-foreground ml-1">(BT-47)</span>
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    id="invoice-buyer-register-id"
+                    placeholder="Registernummer"
+                    defaultValue={formState.trade.agreement.buyer.register_id || ""}
+                    onBlur={(e) => handleInputChange("trade.agreement.buyer.register_id", e.target.value)}
+                    className="flex-grow"
+                  />
                 </div>
               </div>
 
@@ -2008,6 +2084,26 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                         </div>
                       </div>
                     </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-allowance-gross-amount-${index}`} className="flex items-center">
+                        Betrag (Brutto)
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-allowance-gross-amount-${index}`}
+                          type="number"
+                          step="any"
+                          value={allowance.gross_amount || 0}
+                          readOnly
+                          disabled
+                          className="font-medium"
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
@@ -2156,6 +2252,26 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           value={charge.amount || 0}
                           readOnly
                           disabled
+                        />
+                        <div className="flex items-center px-3 border rounded-r-md bg-muted">
+                          {formState.trade.settlement.currency_code || "€"}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label htmlFor={`invoice-charge-gross-amount-${index}`} className="flex items-center">
+                        Betrag (Brutto)
+                      </Label>
+                      <div className="flex">
+                        <Input
+                          id={`invoice-charge-gross-amount-${index}`}
+                          type="number"
+                          step="any"
+                          value={charge.gross_amount || 0}
+                          readOnly
+                          disabled
+                          className="font-medium"
                         />
                         <div className="flex items-center px-3 border rounded-r-md bg-muted">
                           {formState.trade.settlement.currency_code || "€"}

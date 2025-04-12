@@ -23,7 +23,7 @@ EXAMPLE_JSON = """
     "type": "Header",
     "type_code": "380",
     "name": "E-Rechnung",
-    "leitweg_id": "04011000-12345ABCXYZ-86",
+    "leitweg_id": "LEITWEGID-12345ABCXYZ-00",
     "issue_date_time": "2019-05-08",
     "languages": "de",
     "notes": [
@@ -47,7 +47,8 @@ EXAMPLE_JSON = """
           "postal_zone": "12345",
           "street_name2": "Gebäude 4A"
         },
-        "tax_id": "DE123456789",
+        "tax_id": "321/312/54321",
+        "order_id": "SELLER-2019-0789",
         "iban": "DE28700100809999999999",
         "phone": "(0123) 4567",
         "fax": "(0123) 4568",
@@ -85,6 +86,8 @@ EXAMPLE_JSON = """
         },
         "trade_name": "Papierflieger-Vertrieb",
         "id_type": "customerId",
+        "order_id": "BUYER-2019-0789",
+        "tax_id": "123/123/12345",
         "vat_id": "DE987654321",
         "reference": "LW-ID-123456789",
         "electronic_address": "einkauf@papierflieger.de",
@@ -92,15 +95,12 @@ EXAMPLE_JSON = """
         "contact_email": "h.musterfrau@papierflieger.de",
         "contact_phone": "+49 987 6543210"
       },
-      "orders": [
-        {
-          "type": "Order",
-          "date": "2019-05-08"
-        }
-      ],
-      "contract_reference": "V-2019-0456",
-      "project_reference": "P-2019-0123",
-      "order_id": "PO-2019-0789",
+      "contract_reference": "V-REFERENCE-0456",
+      "project_reference": "P-REFERENCE-0123",
+      "object_reference": "O-REFERENCE-0456",
+      "document_reference": "D-REFERENCE-0456",
+      "previous_billing_reference": "B-REFERENCE-0456",
+      "previous_billing_date": "2018-05-08"
     },
     "settlement": {
       "type": "Settlement",

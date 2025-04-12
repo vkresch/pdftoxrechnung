@@ -105,7 +105,7 @@ export default function HelpPage() {
         <CardContent className="space-y-4">
           <p>
             Aktuell befinden wir uns in der Testphase und versuchen den Prozess so optimal wie möglich zu machen.
-            Damit alle relevanten Felder vom PDF strukturiert erfasst werden können, braucht unser Tool aktuell ~45-60 Sekunden.
+            Damit alle relevanten Felder vom PDF strukturiert erfasst werden können, braucht unser Tool aktuell ~15-30 Sekunden.
             Je mehr Information in der Rechnung enthalten ist, desto länger könnte der Konvertierungsprozess verlaufen.
           </p>
         </CardContent>
