@@ -75,7 +75,7 @@ async def root():
     return {"message": "Hello World!"}
 
 
-@app.get("/ping/")
+@app.get("/ping")
 async def ping():
     return {"message": "alive"}
 
@@ -196,7 +196,6 @@ async def convert_to_xrechnung(
 @app.get("/validation-report-content/")
 async def validation_report(
     session_id: str = Header(..., alias="X-Session-ID"),
-    _: None = Depends(verify_origin_headers),
 ):
     session = sessions_collection.find_one({"session_id": session_id})
     filename = (
@@ -217,7 +216,6 @@ async def validation_report(
 @app.get("/validation-report/")
 async def download_report(
     session_id: str = Header(..., alias="X-Session-ID"),
-    _: None = Depends(verify_origin_headers),
 ):
     session = sessions_collection.find_one({"session_id": session_id})
     filename = (

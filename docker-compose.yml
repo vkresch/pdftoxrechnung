@@ -16,15 +16,15 @@ services:
       - frontend
       - backend
 
-    certbot:
-      image: certbot/certbot
-      container_name: certbot
-      volumes:
-        - ./nginx/ssl:/etc/letsencrypt
-        - ./certbot/www:/var/www/certbot
-      entrypoint: "/bin/sh -c 'trap exit TERM; certbot renew --deploy-hook \"nginx -s reload\"; while :; do sleep 12h & wait $${!}; done'"
-      depends_on:
-        - nginx
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./nginx/ssl:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; certbot renew --deploy-hook \"nginx -s reload\"; while :; do sleep 12h & wait $${!}; done'"
+    depends_on:
+      - nginx
 
   backend:
     build: ./backend
