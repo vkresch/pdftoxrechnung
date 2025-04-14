@@ -4,7 +4,7 @@ import subprocess
 import uuid
 from datetime import datetime
 from pymongo import MongoClient
-from fastapi import FastAPI, File, UploadFile, HTTPException, Header, Depends, Request
+from fastapi import FastAPI, File, UploadFile, HTTPException, Header, Depends, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel
@@ -99,19 +99,12 @@ async def auto_convert(
     invoice_data = extract_invoice_data(str(file_path))
     xml_content = generate_xrechnung(invoice_data)
 
-    unique_xml_name = generate_unique_filename("invoice_xrechnung", "xml")
-    xml_path = RAPID_API_FOLDER / unique_xml_name
-
-    with open(xml_path, "w") as f:
-        f.write(xml_content)
-
-    # 📤 Return XML file with proper headers
-    return FileResponse(
-        path=xml_path,
+   # 📤 Return XML content directly
+    return Response(
+        content=xml_content,
         media_type="application/xml",
-        filename=unique_xml_name,
         headers={
-            "Access-Control-Allow-Origin": "*",  # CORS - optional for RapidAPI
+            "Access-Control-Allow-Origin": "*",  # Optional CORS header
         },
     )
 
