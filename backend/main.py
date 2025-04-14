@@ -99,12 +99,11 @@ async def auto_convert(
     invoice_data = extract_invoice_data(str(file_path))
     xml_content = generate_xrechnung(invoice_data)
 
-   # 📤 Return XML content directly
-    return Response(
-        content=xml_content,
-        media_type="application/xml",
+    # 📤 Return XML content as JSON
+    return JSONResponse(
+        content={"xml_content": xml_content},
         headers={
-            "Access-Control-Allow-Origin": "*",  # Optional CORS header
+            "Access-Control-Allow-Origin": "*",  # Optional CORS
         },
     )
 
