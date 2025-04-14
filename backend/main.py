@@ -74,9 +74,11 @@ async def verify_origin_headers(request: Request):
 async def root():
     return {"message": "Hello World!"}
 
+
 @app.get("/ping/")
 async def ping():
     return {"message": "alive"}
+
 
 @app.post("/autoconvert/")
 async def auto_convert(
