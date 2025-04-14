@@ -80,7 +80,7 @@ async def ping():
     return {"message": "alive"}
 
 
-@app.post("/autoconvert/")
+@app.post("/autoconvert")
 async def auto_convert(
     file: UploadFile = File(...), session_id: str = Depends(verify_rapidapi_headers)
 ):
@@ -116,7 +116,7 @@ async def auto_convert(
     )
 
 
-@app.post("/upload/")
+@app.post("/upload")
 async def upload_pdf(
     file: UploadFile = File(...),
     session_id: str = Header(..., alias="X-Session-ID"),
@@ -164,7 +164,7 @@ async def convert_to_zugferd(
         raise HTTPException(status_code=500, detail=f"An error occurred: {str(e)}")
 
 
-@app.post("/convert/")
+@app.post("/convert")
 async def convert_to_xrechnung(
     invoice_data: dict,
     session_id: str = Header(..., alias="X-Session-ID"),
@@ -193,7 +193,7 @@ async def convert_to_xrechnung(
     return response
 
 
-@app.get("/validation-report-content/")
+@app.get("/validation-report-content")
 async def validation_report(
     session_id: str = Header(..., alias="X-Session-ID"),
 ):
@@ -213,7 +213,7 @@ async def validation_report(
     return response
 
 
-@app.get("/validation-report/")
+@app.get("/validation-report")
 async def download_report(
     session_id: str = Header(..., alias="X-Session-ID"),
 ):
@@ -233,7 +233,7 @@ async def download_report(
     return response
 
 
-@app.post("/validate/")
+@app.post("/validate")
 async def validate_xml(
     session_id: str = Header(..., alias="X-Session-ID"),
     _: None = Depends(verify_origin_headers),

@@ -79,7 +79,7 @@ export default function XRechnungGenerator() {
         return
       }
 
-      const response = await fetch("/api/upload/", {
+      const response = await fetch("/api/upload", {
         method: "POST",
         body: formData,
         headers: {
@@ -134,7 +134,7 @@ export default function XRechnungGenerator() {
         return
       }
 
-      const response = await fetch("/api/convert/", {
+      const response = await fetch("/api/convert", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -180,7 +180,7 @@ export default function XRechnungGenerator() {
       }
 
       // First call the validation endpoint
-      const response = await fetch("/api/validate/", {
+      const response = await fetch("/api/validate", {
         method: "POST",
         headers: {
           "X-Session-ID": sessionId,
@@ -194,7 +194,7 @@ export default function XRechnungGenerator() {
       const result = await response.json()
 
       // Now fetch the XML report file
-      const reportResponse = await fetch("/api/validation-report-content/", {
+      const reportResponse = await fetch("/api/validation-report-content", {
         method: "GET",
         headers: {
           "X-Session-ID": sessionId,
@@ -350,7 +350,7 @@ export default function XRechnungGenerator() {
     }
   
     try {
-      const response = await fetch("/api/validation-report/", {
+      const response = await fetch("/api/validation-report", {
         method: "GET",
         headers: {
           "X-Session-ID": sessionId,
