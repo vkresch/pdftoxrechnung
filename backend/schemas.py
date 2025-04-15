@@ -3,13 +3,7 @@ from typing import List, Optional
 import datetime
 
 # fmt: off
-class Context(BaseModel):
-    type: str = Field(description="Type of the context (Kontexttyp)")
-    guideline_parameter: str = Field(description="Parameter for guidelines (Richtlinienparameter)")
-
-
 class Address(BaseModel):
-    type: str = Field(description="Type of address (Adresstyp)")
     country: str = Field(description="Country name (Land)")
     country_code: Optional[str] = Field(description="Country code, e.g., DE for Germany (Ländercode)")
     state: Optional[str] = Field(description="State or province (Bundesland)")
@@ -21,10 +15,9 @@ class Address(BaseModel):
 
 
 class Seller(BaseModel):
-    type: str = Field(description="Type of party - Seller (Verkäufer)")
     name: str = Field(description="Company name of the seller (Firmenname des Verkäufers)")
     order_id: Optional[str] = Field(description="Sales Order Reference (Auftragsnummer (BT-14))")
-    contact_name: Optional[str] = Field(description="Name of contact person (Name der Kontaktperson)")
+    contact_name: str = Field(description="Name of contact person of the company (Name der Kontaktperson des Unternehmens)")
     address: Address = Field(description="Address of the seller (Adresse des Verkäufers)")
     tax_id: str = Field(description="Tax identification number (Steuernummer)")
     iban: Optional[str] = Field(description="International bank account number (IBAN)")
@@ -47,7 +40,6 @@ class Seller(BaseModel):
 
 
 class Buyer(BaseModel):
-    type: str = Field(description="Type of party - Buyer (Käufer)")
     id: Optional[str] = Field(description="Buyer ID (Käufer-ID, Kundennummer)")
     order_id: Optional[str] = Field(description="Purchase Order Reference (Bestellnummer (BT-13))")
     name: str = Field(description="Company name of the buyer (Firmenname des Käufers)")
@@ -66,13 +58,7 @@ class Buyer(BaseModel):
     contact_phone: Optional[str] = Field(description="Contact phone number (Kontakttelefon)")
 
 
-class Order(BaseModel):
-    type: str = Field(description="Type of order (Auftragstyp)")
-    date: datetime.date = Field(description="Order date (Bestelldatum)", json_schema_extra={"format": "date-time"})
-
-
 class Agreement(BaseModel):
-    type: str = Field(description="Type of agreement (Vereinbarungstyp)")
     seller: Seller = Field(description="Seller information (Verkäuferinformationen)")
     buyer: Buyer = Field(description="Buyer information (Käuferinformationen)")
     project_reference: Optional[str] = Field(description="Reference to project (Projektnummer (BT-11))")
@@ -80,21 +66,10 @@ class Agreement(BaseModel):
     object_reference: Optional[str] = Field(description="Reference to object order (Objektreferenz, Projektname, Bauvorhaben, Systemkennung (BT-18))")
     document_reference: Optional[str] = Field(description="Reference to document order (Dokumentreferenz, Leistungsnachweis (BT-17))")
     previous_billing_reference: Optional[str] = Field(description="Reference to previous billing invoice (Rechnungsreferenz auf vorherige Rechnung (BT-25))")
-    previous_billing_date: datetime.date = Field(description="Previous billing invoice date (Datum der vorherigen Rechnung (BT-26))", json_schema_extra={"format": "date-time"})
-
-
-class Payee(BaseModel):
-    type: str = Field(description="Type of party - Payee (Zahlungsempfänger)")
-    name: str = Field(description="Name of payee (Name des Zahlungsempfängers)")
-
-
-class Invoicee(BaseModel):
-    type: str = Field(description="Type of party - Invoicee (Rechnungsempfänger)")
-    name: str = Field(description="Name of invoicee (Name des Rechnungsempfängers)")
+    previous_billing_date: datetime.datetime = Field(description="Previous billing invoice date (Datum der vorherigen Rechnung (BT-26))", json_schema_extra={"format": "date-time"})
 
 
 class PaymentMeans(BaseModel):
-    type: str = Field(description="Type of payment means (Zahlungsmitteltyp)")
     type_code: str = Field(description="Payment type code with default value: '58' (Zahlungstypcode)")
     account_name: Optional[str] = Field(description="Account name (Kontoname)")
     iban: Optional[str] = Field(description="International bank account number (IBAN)")
@@ -103,29 +78,24 @@ class PaymentMeans(BaseModel):
 
 
 class TradeTax(BaseModel):
-    type: str = Field(description="Type of trade tax (Handelssteuertyp)")
     category: str = Field(description="Tax category (Steuerkategorie)")
     rate: float = Field(description="Tax rate in percentage (Steuersatz in Prozent)")
     amount: float = Field(description="Tax amount (Steuerbetrag)")
 
 
 class MonetarySummation(BaseModel):
-    type: str = Field(description="Type of monetary summation (Währungssummentyp)")
     net_total: Optional[float] = Field(description="Net total amount (Nettogesamtbetrag)")
     tax_total: float = Field(description="Total tax amount (Gesamtsteuerbetrag)")
-    grand_total: Optional[float] = Field(description="Grand total amount including taxes (Gesamtbetrag inkl. Steuern)")
+    grand_total: float = Field(description="Grand total amount including taxes which is also the due amount (Gesamtbetrag inkl. Steuern)")
     paid_amount: Optional[float] = Field(description="Amount already paid (Bereits gezahlter Betrag)")
     rounding_amount: Optional[float] = Field(description="Rounding amount (Rundungsbetrag)")
-    due_amount: Optional[float] = Field(description="Amount due for payment normally equals grand total amount including taxes (Fälliger Zahlungsbetrag)")
+    due_amount: float = Field(description="Amount due for payment normally equals grand total amount including taxes (Fälliger Zahlungsbetrag)")
 
 
 class Settlement(BaseModel):
-    type: str = Field(description="Type of settlement (Abrechnungstyp)")
-    payee: Payee = Field(description="Payee information (Zahlungsempfängerinformationen)")
-    invoicee: Invoicee = Field(description="Invoicee information (Rechnungsempfängerinformationen)")
     currency_code: str = Field(description="Currency code, e.g., EUR (Währungscode)")
     payment_means: PaymentMeans = Field(description="Payment means information (Zahlungsmittelinformationen)")
-    advance_payment_date: datetime.date = Field(description="Date of advance payment (Vorauszahlungsdatum)", json_schema_extra={"format": "date-time"})
+    advance_payment_date: datetime.datetime = Field(description="Date of advance payment (Vorauszahlungsdatum)", json_schema_extra={"format": "date-time"})
     trade_tax: List[TradeTax] = Field(description="List of trade taxes (Liste der Handelssteuern)")
     monetary_summation: MonetarySummation = Field(description="Monetary summation information (Währungssummeninformationen)")
     payment_reference: Optional[str] = Field(description="Payment reference (Zahlungsreferenz)")
@@ -133,14 +103,12 @@ class Settlement(BaseModel):
 
 
 class Tax(BaseModel):
-    type: str = Field(description="Type of tax (Steuertyp)")
     category: str = Field(description="Tax category (Steuerkategorie)")
     rate: float = Field(description="Tax rate in percentage (Steuersatz in Prozent)")
     amount: float = Field(description="Tax amount (Steuerbetrag)")
 
 
 class Item(BaseModel):
-    type: str = Field(description="Type of item (Positionstyp)")
     line_id: str = Field(description="Line ID (Zeilennummer)")
     product_name: str = Field(description="Product name (Produktname)")
     period_start: Optional[datetime.datetime] = Field(description="Start date of period (Startdatum des Zeitraums)", json_schema_extra={"format": "date-time"})
@@ -156,11 +124,6 @@ class Item(BaseModel):
     quantity_unit: Optional[str] = Field(description="Unit of quantity, e.g., pcs, kg (Mengeneinheit)")
 
 
-class BillingPeriod(BaseModel):
-    start_date: datetime.date = Field(description="Start date of billing period (Startdatum des Abrechnungszeitraums)", json_schema_extra={"format": "date-time"})
-    end_date: datetime.date = Field(description="End date of billing period (Enddatum des Abrechnungszeitraums)", json_schema_extra={"format": "date-time"})
-
-
 class DeliveryParty(BaseModel):
     name: str = Field(description="Name of delivery party (Name der Lieferpartei)")
     location_id: str = Field(description="Location ID (Kennung des Lieferorts)")
@@ -169,37 +132,41 @@ class DeliveryParty(BaseModel):
 
 
 class Delivery(BaseModel):
-    date: datetime.date = Field(description="Delivery date (Lieferdatum)", json_schema_extra={"format": "date-time"})
+    date: datetime.datetime = Field(description="Delivery date (Lieferdatum)", json_schema_extra={"format": "date-time"})
     delivery_note_id: Optional[str] = Field(description="Delivery note ID (Lieferscheinnummer)")
     delivery_party: DeliveryParty = Field(description="Delivery party information (Lieferparteiinformationen)")
 
 
+class AllowanceCharge(BaseModel):
+    reason: Optional[str] = Field(description="Reason description for the additional allowance/charge (Grund für zusätzliche Gebühren/Zulagen)")
+    percent: Optional[str] = Field(description="Additional allowance/charge in percentage (Gebühr in Prozent)")
+    basis_amount: Optional[str] = Field(description="Basis amount on which the allowance/charge should be applied. (Basisbetrag, auf den die Gebühr/Zulage angewendet werden soll.)")
+    amount: Optional[str] = Field(description="The actual allowance/charge amount (Gebühren-/Zulagenbetrag)")
+    tax_category: Optional[str] = Field(description="Tax category of the allowance/charge (Steuerkategorie der Gebühr/Zulage)")
+    tax_rate: Optional[str] = Field(description="Tax rate in percentage of the allowance/charge (Steuersatz in Prozent der Gebühr/Zulage)")
+
 class Trade(BaseModel):
-    type: str = Field(description="Type of trade (Handelstyp)")
     agreement: Agreement = Field(description="Agreement information (Vereinbarungsinformationen)")
     settlement: Settlement = Field(description="Settlement information (Abrechnungsinformationen)")
     items: List[Item] = Field(description="List of invoice items (Liste der Rechnungspositionen)")
-    billing_period: Optional[BillingPeriod] = Field(description="Billing period information (Abrechnungszeitrauminformationen)")
+    start_date: datetime.datetime = Field(description="Start date of billing period (Startdatum des Abrechnungszeitraums)", json_schema_extra={"format": "date-time"})
+    end_date: datetime.datetime = Field(description="End date of billing period (Enddatum des Abrechnungszeitraums)", json_schema_extra={"format": "date-time"})
     delivery: Optional[Delivery] = Field(description="Delivery information (Lieferinformationen)")
+    charges: Optional[List[AllowanceCharge]] = Field(description="Additional charges (Zusätzliche Gebühren)")
+    allowances: Optional[List[AllowanceCharge]] = Field(description="Additional allowances and discounts (Zusätzliche Zulagen und Rabatte)")
 
 
 class Header(BaseModel):
     id: str = Field(description="Invoice ID (Rechnungsnummer)")
-    type: str = Field(description="Type of header (Kopfzeilentyp)")
     leitweg_id: str = Field(description="Pflichtangabe bei Rechnungen für Behörden, optional bei Rechnungen für Firmen (Leitweg ID)")
     type_code: str = Field(description="Type code of the document with default value: '380' (Dokumententypcode)")
     name: str = Field(description="Document name (Dokumentenname)")
-    issue_date_time: datetime.date = Field(description="Issue date of the invoice (Ausstellungsdatum der Rechnung)", json_schema_extra={"format": "date-time"})
+    issue_date_time: datetime.datetime = Field(description="Issue date of the invoice (Ausstellungsdatum der Rechnung)", json_schema_extra={"format": "date-time"})
     languages: str = Field(description="Language codes (Sprachcodes)")
     notes: List[str] = Field(description="Additional notes (Zusätzliche Hinweise)")
 
 
 class Invoice(BaseModel):
-    context: Context = Field(description="Context information (Kontextinformationen)")
     header: Header = Field(description="Header information (Kopfzeileninformationen)")
     trade: Trade = Field(description="Trade information (Handelsinformationen)")
-    document_references: Optional[List[str]] = Field(description="References to other documents (Referenzen zu anderen Dokumenten)")
-    intro_text: Optional[str] = Field(description="Introductory text (Einleitungstext)")
-    output_format: Optional[str] = Field(description="Output format, e.g., 'xrechnung:ubl' (Ausgabeformat)")
-    output_lang_code: Optional[str] = Field(description="Output language code, e.g., DE (Ausgabesprachcode)")
 # fmt: on

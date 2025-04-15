@@ -696,16 +696,16 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                   <Input
                     id="invoice-billing-period-start-date"
                     type="date"
-                    defaultValue={formState.trade.billing_period?.start_date || ""}
-                    onBlur={(e) => handleInputChange("trade.billing_period.start_date", e.target.value)}
+                    defaultValue={formState.trade?.start_date || ""}
+                    onBlur={(e) => handleInputChange("trade.start_date", e.target.value)}
                     className="flex-grow"
                   />
                   <span className="px-3">bis</span>
                   <Input
                     id="invoice-billing-period-end-date"
                     type="date"
-                    defaultValue={formState.trade.billing_period?.end_date || ""}
-                    onBlur={(e) => handleInputChange("trade.billing_period.end_date", e.target.value)}
+                    defaultValue={formState.trade?.end_date || ""}
+                    onBlur={(e) => handleInputChange("trade.end_date", e.target.value)}
                     className="flex-grow"
                   />
                 </div>
@@ -2021,7 +2021,7 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
         {
           /* Allowances Section */
         }
-        ;<Card>
+        <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <span className="text-muted-foreground">⬇️</span>
@@ -2070,8 +2070,8 @@ export function XRechnungForm({ data, onChange }: XRechnungFormProps) {
                           id={`invoice-allowance-percent-${index}`}
                           type="number"
                           step="any"
-                          defaultValue={allowance.percent || 0}
-                          onBlur={(e) => {
+                          value={allowance.percent || 0}
+                          onChange={(e) => {
                             const value = Number(e.target.value)
                             handleInputChange(`trade.allowances.${index}.percent`, value)
                             // Remove the immediate=true parameter to use the default behavior

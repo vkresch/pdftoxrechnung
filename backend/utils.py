@@ -1,3 +1,4 @@
+import re
 from schemas import Invoice
 
 
@@ -11,16 +12,59 @@ def remove_nulls(obj):
         return obj
 
 
+def format_dates(obj):
+    if isinstance(obj, dict):
+        return {k: format_dates(v) for k, v in obj.items()}
+    elif isinstance(obj, list):
+        return [format_dates(item) for item in obj]
+    elif isinstance(obj, str):
+        # Match ISO 8601 UTC date format: "2019-05-08T00:00:00Z"
+        match = re.fullmatch(r"(\d{4}-\d{2}-\d{2})T\d{2}:\d{2}:\d{2}Z", obj)
+        if match:
+            return match.group(1)
+        return obj
+    else:
+        return obj
+
+
+def fix_settlement_tax(data):
+    trade = data.get("trade", {})
+    for item in trade.get("items", []):
+        delivery = item.get("delivery_details", 0)
+        tax_info = item.get("settlement_tax", {})
+        rate = tax_info.get("rate", 0)
+
+        # Calculate amount as rate percent of delivery_details
+        tax_amount = round((delivery * rate) / 100, 2)
+        tax_info["amount"] = tax_amount
+
+        # Calculate total amount
+        item["total_amount"] = round(delivery + tax_amount, 2)
+
+    return data
+
+
+def replace_value_in_dict(data, target_key, target_value, replacement_value):
+    def recursive_replace(obj):
+        if isinstance(obj, dict):
+            for key, value in obj.items():
+                if key == target_key and value == target_value:
+                    obj[key] = replacement_value
+                else:
+                    recursive_replace(value)
+        elif isinstance(obj, list):
+            for item in obj:
+                recursive_replace(item)
+
+    recursive_replace(data)
+    return data
+
+
 EXAMPLE_JSON = """
 ```
 {
-  "context": {
-    "type": "Context",
-    "guideline_parameter": "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
-  },
   "header": {
     "id": "2019-03",
-    "type": "Header",
     "type_code": "380",
     "name": "E-Rechnung",
     "leitweg_id": "LEITWEGID-12345ABCXYZ-00",
@@ -31,15 +75,11 @@ EXAMPLE_JSON = """
     ]
   },
   "trade": {
-    "type": "Trade",
     "agreement": {
-      "type": "Agreement",
       "seller": {
-        "type": "Seller",
         "name": "Kraxi GmbH",
         "contact_name": "Paul Kraxi",
         "address": {
-          "type": "Address",
           "country": "Germany",
           "country_code": "DE",
           "street_name": "Flugzeugallee 17",
@@ -68,7 +108,6 @@ EXAMPLE_JSON = """
         "contact_phone": "+49 123 4567890"
       },
       "buyer": {
-        "type": "Buyer",
         "id": "987-654",
         "name": "Papierflieger-Vertriebs-GmbH",
         "contact_name": "Helga Musterfrau",
@@ -76,7 +115,6 @@ EXAMPLE_JSON = """
         "contract_document_reference": "COSNTR-XXX", 
         "legal_form": "GmbH",
         "address": {
-          "type": "Address",
           "country": "Germany",
           "country_code": "DE",
           "street_name": "Rabattstr. 25",
@@ -103,18 +141,14 @@ EXAMPLE_JSON = """
       "previous_billing_date": "2018-05-08"
     },
     "settlement": {
-      "type": "Settlement",
       "payee": {
-        "type": "Payee",
         "name": "Kraxi GmbH"
       },
       "invoicee": {
-        "type": "Invoicee",
         "name": "Papierflieger-Vertriebs-GmbH"
       },
       "currency_code": "EUR",
       "payment_means": {
-        "type": "PaymentMeans",
         "type_code": "58",
         "account_name": "Kraxi GmbH",
         "iban": "DE28700100809999999999",
@@ -124,14 +158,12 @@ EXAMPLE_JSON = """
       "advance_payment_date": "2019-05-08",
       "trade_tax": [
         {
-          "type": "TradeTax",
           "category": "S",
           "rate": 19,
           "amount": 160.55
         }
       ],
       "monetary_summation": {
-        "type": "MonetarySummation",
         "net_total": 845,
         "tax_total": 160.55,
         "grand_total": 1005.55,
@@ -144,7 +176,6 @@ EXAMPLE_JSON = """
     },
     "items": [
       {
-        "type": "Item",
         "line_id": "1",
         "product_name": "Superdrachen",
         "period_start": "2019-05-08",
@@ -153,7 +184,6 @@ EXAMPLE_JSON = """
         "quantity": 2,
         "delivery_details": 40,
         "settlement_tax": {
-          "type": "Tax",
           "category": "S",
           "rate": 19,
           "amount": 7.6
@@ -165,7 +195,6 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       },
       {
-        "type": "Item",
         "line_id": "2",
         "product_name": "Turbo Flyer",
         "period_start": "2019-05-08",
@@ -174,7 +203,6 @@ EXAMPLE_JSON = """
         "quantity": 5,
         "delivery_details": 200,
         "settlement_tax": {
-          "type": "Tax",
           "category": "S",
           "rate": 19,
           "amount": 38
@@ -186,7 +214,6 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       },
       {
-        "type": "Item",
         "line_id": "3",
         "product_name": "Sturzflug-Geier",
         "period_start": "2019-05-08",
@@ -195,7 +222,6 @@ EXAMPLE_JSON = """
         "quantity": 1,
         "delivery_details": 180,
         "settlement_tax": {
-          "type": "Tax",
           "category": "S",
           "rate": 19,
           "amount": 34.2
@@ -207,7 +233,6 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       },
       {
-        "type": "Item",
         "line_id": "4",
         "product_name": "Eisvogel",
         "period_start": "2019-05-08",
@@ -216,7 +241,6 @@ EXAMPLE_JSON = """
         "quantity": 3,
         "delivery_details": 150,
         "settlement_tax": {
-          "type": "Tax",
           "category": "S",
           "rate": 19,
           "amount": 28.5
@@ -228,7 +252,6 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       },
       {
-        "type": "Item",
         "line_id": "5",
         "product_name": "Storch",
         "period_start": "2019-05-08",
@@ -237,7 +260,6 @@ EXAMPLE_JSON = """
         "quantity": 10,
         "delivery_details": 200,
         "settlement_tax": {
-          "type": "Tax",
           "category": "S",
           "rate": 19,
           "amount": 38
@@ -249,7 +271,6 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       },
       {
-        "type": "Item",
         "line_id": "6",
         "product_name": "Adler",
         "period_start": "2019-05-08",
@@ -270,7 +291,6 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       },
       {
-        "type": "Item",
         "line_id": "7",
         "product_name": "Kostenlose Zugabe",
         "period_start": "2019-05-08",
@@ -279,7 +299,6 @@ EXAMPLE_JSON = """
         "quantity": 1,
         "delivery_details": 0,
         "settlement_tax": {
-          "type": "Tax",
           "category": "S",
           "rate": 19,
           "amount": 0
@@ -291,10 +310,8 @@ EXAMPLE_JSON = """
         "quantity_unit": "H87"
       }
     ],
-    "billing_period": {
-      "start_date": "2019-05-01",
-      "end_date": "2019-05-31"
-    },
+    "start_date": "2019-05-01",
+    "end_date": "2019-05-31",
     "delivery": {
       "date": "2019-05-07",
       "delivery_note_id": "LN-2019-05-07-001",
@@ -309,13 +326,6 @@ EXAMPLE_JSON = """
       }
     }
   },
-  "document_references": [
-    "Ausschreibung 2019-04-XYZ",
-    "Los 3: Papierflugzeuge"
-  ],
-  "intro_text": "Vielen Dank für Ihren Auftrag. Wir stellen Ihnen hiermit folgende Positionen in Rechnung:",
-  "output_format": "zugferd:xrechnung",
-  "output_lang_code": "de"
 }
 
 ```
@@ -346,6 +356,6 @@ Here is an example of the expected output format:
 
 {EXAMPLE_JSON}
 
-Now extract the data from the following invoice text:
-
+Now extract the data from the attached invoice pdf file.
+For extraction support the following plain text was extracted from the attached pdf:
 """

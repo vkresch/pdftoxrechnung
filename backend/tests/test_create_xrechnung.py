@@ -6,13 +6,8 @@ from xrechnung_generator import generate_xrechnung
 from pdfplumber import open as open_pdf
 
 invoice_data = {
-    "context": {
-        "type": "Context",
-        "guideline_parameter": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
-    },
     "header": {
         "id": "2019-03",
-        "type": "Header",
         "type_code": "380",
         "name": "E-Rechnung",
         "issue_date_time": "2019-05-08",
@@ -22,15 +17,11 @@ invoice_data = {
         ],
     },
     "trade": {
-        "type": "Trade",
         "agreement": {
-            "type": "Agreement",
             "seller": {
-                "type": "Seller",
                 "name": "Kraxi GmbH",
                 "contact_name": "Paul Kraxi",
                 "address": {
-                    "type": "Address",
                     "country": "Germany",
                     "country_code": "DE",
                     "street_name": "Flugzeugallee 17",
@@ -57,7 +48,6 @@ invoice_data = {
                 "contact_phone": "+49 123 4567890",
             },
             "buyer": {
-                "type": "Buyer",
                 "id": "987-654",
                 "name": "Papierflieger-Vertriebs-GmbH",
                 "contact_name": "Helga Musterfrau",
@@ -65,7 +55,6 @@ invoice_data = {
                 "contract_document_reference": "COSNTR-XXX",
                 "legal_form": "GmbH",
                 "address": {
-                    "type": "Address",
                     "country": "Germany",
                     "country_code": "DE",
                     "street_name": "Rabattstr. 25",
@@ -92,15 +81,12 @@ invoice_data = {
         },
         "delivery": {"date": "2019-05-08"},
         "settlement": {
-            "type": "Settlement",
             "payee": {"type": "Payee", "name": "Kraxi GmbH"},
             "invoicee": {
-                "type": "Invoicee",
                 "name": "Papierflieger-Vertriebs-GmbH",
             },
             "currency_code": "EUR",
             "payment_means": {
-                "type": "PaymentMeans",
                 "type_code": "58",
                 "account_name": "Kraxi GmbH",
                 "iban": "DE28700100809999999999",
@@ -108,11 +94,8 @@ invoice_data = {
                 "bank_name": "Deutsche Postbank AG",
             },
             "advance_payment_date": "2019-05-08",
-            "trade_tax": [
-                {"type": "TradeTax", "category": "S", "rate": 19, "amount": 160.55}
-            ],
+            "trade_tax": [{"category": "S", "rate": 19, "amount": 160.55}],
             "monetary_summation": {
-                "type": "MonetarySummation",
                 "net_total": 845,
                 "tax_total": 160.55,
                 "grand_total": 1005.55,
@@ -125,7 +108,6 @@ invoice_data = {
         },
         "items": [
             {
-                "type": "Item",
                 "line_id": "1",
                 "product_name": "Superdrachen",
                 "period_start": "2019-05-08",
@@ -134,7 +116,6 @@ invoice_data = {
                 "quantity": 2,
                 "delivery_details": 40,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 7.6,
@@ -146,7 +127,6 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
             {
-                "type": "Item",
                 "line_id": "2",
                 "product_name": "Turbo Flyer",
                 "period_start": "2019-05-08",
@@ -155,7 +135,6 @@ invoice_data = {
                 "quantity": 5,
                 "delivery_details": 200,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 38,
@@ -167,7 +146,6 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
             {
-                "type": "Item",
                 "line_id": "3",
                 "product_name": "Sturzflug-Geier",
                 "period_start": "2019-05-08",
@@ -176,7 +154,6 @@ invoice_data = {
                 "quantity": 1,
                 "delivery_details": 180,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 34.2,
@@ -188,7 +165,6 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
             {
-                "type": "Item",
                 "line_id": "4",
                 "product_name": "Eisvogel",
                 "period_start": "2019-05-08",
@@ -197,7 +173,6 @@ invoice_data = {
                 "quantity": 3,
                 "delivery_details": 150,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 28.5,
@@ -209,7 +184,6 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
             {
-                "type": "Item",
                 "line_id": "5",
                 "product_name": "Storch",
                 "period_start": "2019-05-08",
@@ -218,7 +192,6 @@ invoice_data = {
                 "quantity": 10,
                 "delivery_details": 200,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 38,
@@ -230,7 +203,6 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
             {
-                "type": "Item",
                 "line_id": "6",
                 "product_name": "Adler",
                 "period_start": "2019-05-08",
@@ -239,7 +211,6 @@ invoice_data = {
                 "quantity": 1,
                 "delivery_details": 75,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 14.25,
@@ -251,7 +222,6 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
             {
-                "type": "Item",
                 "line_id": "7",
                 "product_name": "Kostenlose Zugabe",
                 "period_start": "2019-05-08",
@@ -260,7 +230,6 @@ invoice_data = {
                 "quantity": 1,
                 "delivery_details": 0,
                 "settlement_tax": {
-                    "type": "Tax",
                     "category": "S",
                     "rate": 19,
                     "amount": 0,
@@ -272,7 +241,8 @@ invoice_data = {
                 "quantity_unit": "XPP",
             },
         ],
-        "billing_period": {"start_date": "2019-05-01", "end_date": "2019-05-31"},
+        "start_date": "2019-05-01",
+        "end_date": "2019-05-31",
         "delivery": {
             "date": "2019-05-07",
             "delivery_note_id": "LN-2019-05-07-001",
@@ -287,18 +257,10 @@ invoice_data = {
             },
         },
     },
-    "document_references": ["Ausschreibung 2019-04-XYZ", "Los 3: Papierflugzeuge"],
-    "intro_text": "Vielen Dank für Ihren Auftrag. Wir stellen Ihnen hiermit folgende Positionen in Rechnung:",
-    "output_format": "urn:oasis:names:specification:ubl:schema:xsd:Invoice-2",
-    "output_lang_code": "de",
 }
 
 
 def test_xml_creation_output():
-
-    invoice_data["context"][
-        "guideline_parameter"
-    ] = "urn:cen.eu:en16931:2017#conformant#urn:factur-x.eu:1p0:extended"
 
     with open("tests/samples/output.xml") as xml:
         xml_string = xml.read()
