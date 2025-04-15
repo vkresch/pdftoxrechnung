@@ -3,11 +3,19 @@ import re
 import json
 import logging
 import requests
+from google import genai
+from google.genai import types
 from schemas import Invoice
-from utils import PROMPT, remove_nulls
+from utils import (
+    PROMPT,
+    remove_nulls,
+    format_dates,
+    fix_settlement_tax,
+    replace_value_in_dict,
+)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
-URL = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={GEMINI_API_KEY}"
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 logging.basicConfig(
@@ -16,27 +24,50 @@ logging.basicConfig(
 )
 
 
-def process_with_gemini(pdf_text):
+def process_with_gemini(pdf_file, pdf_text):
     """Main function to automate chat using Gemini via HTTP"""
     logging.info("Starting gemini extraction process ...")
+    invoice = client.files.upload(file=pdf_file)
+    response = client.models.generate_content(
+        model="gemini-2.0-flash",
+        contents=[invoice, PROMPT, pdf_text],
+        config=types.GenerateContentConfig(
+            response_mime_type="application/json",
+            response_schema=Invoice.model_json_schema(),
+            temperature=0,
+        ),
+    )
+    json_str = response.text
+    logging.info(f"JSON String:\n{json_str}")
 
-    headers = {"Content-Type": "application/json"}
+    raw_invoice_data = json.loads(json_str)
 
-    payload = {"contents": [{"parts": [{"text": f"{PROMPT} {pdf_text}"}]}]}
+    # Replace default values
+    preprocessed_invoice_data = replace_value_in_dict(
+        raw_invoice_data, "leitweg_id", "LEITWEGID-12345ABCXYZ-00", 0
+    )
+    preprocessed_invoice_data = replace_value_in_dict(
+        preprocessed_invoice_data, "leitweg_id", "string", 0
+    )
+    preprocessed_invoice_data = replace_value_in_dict(
+        preprocessed_invoice_data, "tax_id", "321/312/54321", None
+    )
+    preprocessed_invoice_data = replace_value_in_dict(
+        preprocessed_invoice_data, "order_id", "SELLER-2019-0789", None
+    )
+    preprocessed_invoice_data = replace_value_in_dict(
+        preprocessed_invoice_data, "order_id", "BUYER-2019-0789", None
+    )
 
-    response = requests.post(URL, headers=headers, data=json.dumps(payload))
+    # Remove null
+    preprocessed_invoice_data = remove_nulls(preprocessed_invoice_data)
 
-    if response.status_code != 200:
-        logging.error(f"Request failed: {response.text}")
-        raise Exception("Gemini API request failed")
+    # Format dates
+    preprocessed_invoice_data = format_dates(preprocessed_invoice_data)
 
-    result = response.json()
-    try:
-        raw_text = result["candidates"][0]["content"]["parts"][0]["text"]
-        json_match = re.search(r"({.*})", raw_text, re.DOTALL)
-        json_str = json_match.group(1)
-        logging.info(f"JSON String:\n{json_str}")
-        return remove_nulls(json.loads(json_str))
-    except Exception as e:
-        logging.error(f"Failed to extract JSON: {e}")
-        raise
+    # Calculate the settlement tax amount
+    preprocessed_invoice_data = fix_settlement_tax(preprocessed_invoice_data)
+
+    logging.info(f"Preprocessed invoice data:\n{preprocessed_invoice_data}")
+
+    return preprocessed_invoice_data
