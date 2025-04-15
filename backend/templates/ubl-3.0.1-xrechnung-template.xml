@@ -92,13 +92,13 @@
             {% endif -%}
             <cac:PartyLegalEntity>
                 <cbc:RegistrationName>{{ data.ownCompanyName }}</cbc:RegistrationName>
-                {% if data.ownHraNo != "" -%}<cbc:CompanyID>{{ data.ownHraNo }}</cbc:CompanyID>{% endif -%}
-                {% if data.ownLegalForm != "" -%}<cbc:CompanyLegalForm>{{ data.ownLegalForm }}</cbc:CompanyLegalForm>{% endif -%}
+                {% if data.ownHraNo != "" -%}<cbc:CompanyID>{{ data.ownHraNo }}</cbc:CompanyID>{%- endif %}
+                {% if data.ownLegalForm != "" -%}<cbc:CompanyLegalForm>{{ data.ownLegalForm }}</cbc:CompanyLegalForm>{%- endif %}
             </cac:PartyLegalEntity>
             <cac:Contact>
                 <cbc:Name>{{ data.ownContactName }}</cbc:Name>
-                {% if data.ownContactPhone != "" -%}<cbc:Telephone>{{ data.ownContactPhone }}</cbc:Telephone>{% endif -%}
-                {% if data.ownContactEmail != "" -%}<cbc:ElectronicMail>{{ data.ownContactEmail }}</cbc:ElectronicMail>{% endif -%}
+                {% if data.ownContactPhone != "" -%}<cbc:Telephone>{{ data.ownContactPhone }}</cbc:Telephone>{%- endif %}
+                {% if data.ownContactEmail != "" -%}<cbc:ElectronicMail>{{ data.ownContactEmail }}</cbc:ElectronicMail>{%- endif %}
             </cac:Contact>
         </cac:Party>
     </cac:AccountingSupplierParty>
@@ -193,13 +193,13 @@
         {% if data.paymentMeansCode != "" -%}<cbc:PaymentMeansCode>{{ data.paymentMeansCode }}</cbc:PaymentMeansCode>{% endif %}
         {% if data.invoiceNumber != "" -%}<cbc:PaymentID>{{ data.invoiceNumber }}</cbc:PaymentID>{% endif %}
         <cac:PayeeFinancialAccount>
-            {% if data.ownIban != "" -%}<cbc:ID>{{ data.ownIban }}</cbc:ID>{% endif -%}
-            {% if data.ownCompanyName != "" -%}<cbc:Name>{{ data.ownCompanyName }}</cbc:Name>{% endif -%}
+            {% if data.ownIban != "" -%}<cbc:ID>{{ data.ownIban }}</cbc:ID>{%- endif %}
+            {% if data.ownCompanyName != "" -%}<cbc:Name>{{ data.ownCompanyName }}</cbc:Name>{%- endif %}
             {% if data.ownBIC != "" -%}
             <cac:FinancialInstitutionBranch>
 				<cbc:ID>{{ data.ownBIC }}</cbc:ID>
 			</cac:FinancialInstitutionBranch>
-            {% endif -%}
+            {%- endif %}
         </cac:PayeeFinancialAccount>
     </cac:PaymentMeans>
     {% if data.paymentTerms != "" -%}
