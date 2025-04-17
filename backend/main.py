@@ -96,6 +96,9 @@ async def auto_convert(
     if not file.filename.lower().endswith(".pdf"):
         raise HTTPException(status_code=400, detail="Only PDF files are allowed")
 
+    # 📁 Create folder if does not exist
+    RAPID_API_FOLDER.mkdir(parents=True, exist_ok=True)
+
     # 📁 Save uploaded file
     unique_filename = generate_unique_filename("invoice", "pdf")
     file_path = RAPID_API_FOLDER / unique_filename

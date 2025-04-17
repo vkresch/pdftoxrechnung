@@ -13,42 +13,23 @@ export default function HelpPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p>Eine <strong>XRechnung</strong> ist ein standardisiertes elektronisches Rechnungsformat, das speziell für die <strong>elektronische Rechnungsstellung an öffentliche Auftraggeber in Deutschland</strong> entwickelt wurde. Sie basiert auf einem strukturierten XML-Datenformat und ist <strong>rechtskonform zur EU-Richtlinie 2014/55/EU</strong> über die elektronische Rechnungsstellung im öffentlichen Auftragswesen.</p>
-  
-          <h3>Merkmale der XRechnung</h3>
+          <p>Die <b>XRechnung</b> ist ein <b>standardisiertes elektronisches Rechnungsformat</b> in Deutschland. Sie wurde entwickelt, um den Austausch von Rechnungsdaten zwischen Unternehmen und der öffentlichen Verwaltung zu vereinfachen und zu automatisieren.</p>
+          <p>Die wichtigsten Punkte zur XRechnung:</p>
           <ul>
-            <li><strong>Rein maschinenlesbar</strong>: Keine bildhafte Darstellung wie bei PDFs.</li>
-            <li><strong>XML-basiert</strong>: Inhalte wie Rechnungsbetrag, Steuern, Lieferdatum etc. sind klar strukturiert.</li>
-            <li><strong>Standardisiert</strong>: Basierend auf dem europäischen Standard EN 16931.</li>
-            <li><strong>Pflicht im B2G-Bereich</strong>: Seit dem 27. November 2020 für Rechnungen an Bundesbehörden.</li>
+              <li><b>Standard für elektronische Rechnungen:</b> Die XRechnung definiert die Art und technische Zusammensetzung von Rechnungsinformationen in einem strukturierten <b>XML-Datensatz</b>.</li>
+              <br />
+              <li><b>Maschinenlesbar:</b> Das XML-Format ermöglicht es Softwaresystemen, die Rechnungsdaten automatisch auszulesen und zu verarbeiten.</li>
+              <br />
+              <li><b>Erfüllt EU-Norm:</b> Die XRechnung ist eine nationale Ausgestaltung der europäischen Norm <b>EN 16931</b> für die elektronische Rechnungsstellung.</li>
+              <br />
+              <li><b>Pflicht für öffentliche Auftraggeber:</b> Seit dem 27. November 2020 müssen Lieferanten des Bundes Rechnungen an Bundesbehörden im XRechnungsformat stellen. Auch viele Landesbehörden akzeptieren oder fordern die XRechnung.</li>
+              <br />
+              <li><b>Wichtig für B2B:</b> Seit dem 1. Januar 2025 gilt in Deutschland eine <b>E-Rechnungspflicht im B2B-Bereich</b>, wobei die XRechnung als eines der zulässigen Formate verwendet werden kann.</li>
+              <br />
+              <li><b>Bestandteile:</b> Eine XRechnung enthält Header-Informationen (z.B. Rechnungssteller, Rechnungsempfänger, Rechnungsnummer), Rechnungspositionen, Steuerangaben und gegebenenfalls zusätzliche Informationen wie Bestell- oder Auftragsnummern.</li>
+              <br />
+              <li><b>Austausch:</b> XRechnungen werden in der Regel als Anhang einer E-Mail oder über spezielle Rechnungsportale ausgetauscht.</li>
           </ul>
-
-          <h3>Vorteile</h3>
-          <ul>
-            <li><strong>Automatisierte Verarbeitung</strong>: Rechnungen können direkt in Buchhaltungssysteme eingelesen werden.</li>
-            <li><strong>Fehlerreduktion</strong> durch strukturierte Daten.</li>
-            <li><strong>Schnellere Zahlungsabwicklung</strong>.</li>
-          </ul>
-
-          <h3>Wichtige Bestandteile</h3>
-          <ul>
-            <li>Rechnungsnummer</li>
-            <li>Rechnungsdatum</li>
-            <li>Zahlungsempfänger</li>
-            <li>USt.-ID oder Steuernummer</li>
-            <li>Lieferdatum</li>
-            <li>Bestellreferenz (z.&nbsp;B. Leitweg-ID)</li>
-          </ul>
-
-          <h3>Wann ist sie erforderlich?</h3>
-          <p>Die XRechnung ist verpflichtend bei:</p>
-          <ul>
-            <li>Rechnungen an <strong>öffentliche Auftraggeber des Bundes</strong>.</li>
-            <li>Rechnungsbeträgen <strong>über 1.000 € netto</strong> (variiert je nach Bundesland).</li>
-          </ul>
-
-          <p>Wenn Sie Rechnungen z.&nbsp;B. an eine Bundesbehörde, ein Ministerium oder eine andere öffentliche Institution stellen, müssen Sie eine XRechnung übermitteln.</p>
-          <p>Mehr Information finden sie beim <a href="https://www.e-rechnung-bund.de/faq/xrechnung/" target="_blank">FAQ zum Thema XRechnung</a></p>
         </CardContent>
       </Card>
     
@@ -60,7 +41,7 @@ export default function HelpPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p>
-            Nein! Nachdem deine Rechnung in die XRechnung konvertiert worden ist, wird diese von unserem Server sofort gelöscht.
+            Nein! Hochgeladene Rechnungen werden mit einem Cron Job für immer vom Server gelöscht.
           </p>
         </CardContent>
       </Card>
@@ -72,7 +53,7 @@ export default function HelpPage() {
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <p>Damit eine korrekte XRechnung erzeugt werden kann.</p>
+          <p>Kurz: Damit eine korrekte XRechnung erzeugt werden kann.</p>
           <p>
             Im ersten Schritt wird die PDF Rechnung hochgeladen und in eine strukturierte Form umgewandelt.
             Im zweiten Schritt kann der Benutzer die strukturierte Form manuell validieren und selber Felder hinzufügen falls nötig.
@@ -89,7 +70,7 @@ export default function HelpPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           <p>
-            Ja! Wir benutzen <a href="https://github.com/JaidedAI/EasyOCR" target="_blank">EasyOCR</a> um in den Bildern Text zu erkennen.
+            Ja! Wir benutzen <a href="https://github.com/JaidedAI/EasyOCR" target="_blank" rel="nofollow" className="underline">EasyOCR</a> und <a href="https://deepmind.google/technologies/gemini/" target="_blank" className="underline" rel="nofollow">Gemini 2.0 Flash</a> um in den Bildern Text zu erkennen.
             Dieser Text wird dann in eine strukturiert Form konvertiert, die vom Benutzer im zweiten Schritt noch korrigiert werden kann.
             Als Input wird nur das PDF Format akzeptiert.
           </p>
@@ -105,8 +86,36 @@ export default function HelpPage() {
         <CardContent className="space-y-4">
           <p>
             Aktuell befinden wir uns in der Testphase und versuchen den Prozess so optimal wie möglich zu machen.
-            Damit alle relevanten Felder vom PDF strukturiert erfasst werden können, braucht unser Tool aktuell ~15-30 Sekunden.
+            Damit alle relevanten Felder vom PDF strukturiert erfasst werden können, braucht unser Tool aktuell ~10-20 Sekunden.
             Je mehr Information in der Rechnung enthalten ist, desto länger könnte der Konvertierungsprozess verlaufen.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Kann ich automatisiert mehrere PDF Rechnungen in XRechnungen konvertieren?
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p>
+            Ja dazu kannst du unseren Endpoint auf <a href="https://rapidapi.com/kretronik/api/pdftoxrechnung" target="_blank" rel="nofollow" className="underline">RapidAPI</a> verwenden.
+            Bei Anfrage kann auch ein individueller Plan vereinbart werden nach Bedarf.
+          </p>
+        </CardContent>
+      </Card>
+
+      <Card className="mb-8">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            Ist pdftoxrechnung.de kostenlos?
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p>
+            Ja die Nutzung der Webapplikation is <b>kostenlos</b>. 
+            Die API Nutzung auf <a href="https://rapidapi.com/kretronik/api/pdftoxrechnung" target="_blank" rel="nofollow" className="underline">RapidAPI</a> ist kostenpflichtig.
           </p>
         </CardContent>
       </Card>
@@ -122,7 +131,7 @@ export default function HelpPage() {
             Aktuell befindet sich das Tool in der Testphase und wird ständig weiterentwickelt.
             Es gibt viele Ursachen warum der Prozess fehlschlagen kann. Somit müssen wir den Fehler zuerst analysieren. 
             Als ersten Schritt bitte Seite neu laden und erneut probieren.
-            Falls es andauert bitte ein Issue auf <a href="https://github.com/kretronik/pdftoxrechnung/issues" target="_blank"><b>GitHub</b></a> öffnen,
+            Falls es andauert bitte ein Issue auf <a href="https://github.com/kretronik/pdftoxrechnung/issues" target="_blank" rel="nofollow" className="underline">GitHub</a> öffnen,
             damit wir den Fehler reproduzieren können.
           </p>
         </CardContent>
